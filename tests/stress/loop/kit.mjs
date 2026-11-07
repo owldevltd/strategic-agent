@@ -65,6 +65,10 @@ export function fakeGate( { deliveries = {}, confirm = true, lease = null } = {}
 			calls.push( [ 'withdraw', id ] );
 			return { status: 'not_sent' };
 		},
+		withdrawContract: async ( hash ) => {
+			calls.push( [ 'withdrawContract', hash ] );
+			return { withdrawn: true, status: 'withdrawn' };
+		},
 		submit: async ( request ) => {
 			calls.push( [ 'submit', request ] );
 			return { delivery: `dl-${calls.length}`, status: 'executed', receipt: { id: 'rc-1' } };

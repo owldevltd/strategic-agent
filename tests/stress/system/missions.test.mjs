@@ -138,7 +138,11 @@ attack( SUBJECT, 'ops chain: a dependency cycle back to the goal\'s own service 
 	const _nodes = tree( _root );
 	assert.ok( _nodes.length <= 6, `${_nodes.length} nodes` );
 	assert.deepEqual( o.outbox.messages( 'ops' ), [] );
-	assert.ok( _nodes.some( node => node.result.status === 'refused' && JSON.stringify( node.result.problems ).includes( 'R5' ) ), 'the repeated goal is refused' );
+	// R5: the repeated goal never runs. The judgment makes no child of a precondition that is an outcome of a goal above
+	// it; a child that restates one anyway is refused at G1.
+	const _outcomes = node => JSON.stringify( node.contract.outcomes().map( item => [ item.type, item.values ] ) );
+	const _running = _nodes.filter( node => node.result.status !== 'refused' );
+	assert.equal( new Set( _running.map( _outcomes ) ).size, _running.length, 'no goal runs twice in one chain' );
 	await clean( o );
 } );
 

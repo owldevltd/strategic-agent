@@ -51,6 +51,22 @@ attack( S, 'since() pages by 1000 by default; paging from the last id gets the r
 	assert.deepEqual( [ ..._first, ..._rest ].map( event => event.data.i ), Array.from( { length: 1500 }, ( _, i ) => i ) );
 } );
 
+attack( S, 'start(): a live log that has seen nothing and asks for a tail starts at the last events, not the first page', () => {
+	const _log = fresh();
+	_log.db.transaction( () => { for ( let i = 0; i < 1500; i++ ) { _log.append( 'k', { i } ); } } );
+	const q = text => new URLSearchParams( text );
+	assert.equal( _log.start( q( 'tail=600' ) ), 900 );
+	assert.equal( _log.since( _log.start( q( 'tail=600' ) ) )[ 0 ].data.i, 900, 'the first event sent is the 901st' );
+	assert.equal( _log.start( q( 'since=0&tail=600' ) ), 900 );
+	assert.equal( _log.start( q( 'since=1200&tail=600' ) ), 1200, 'a client that has seen events goes on from there' );
+	assert.equal( _log.start( q( '' ) ), 0, 'without a tail, from the beginning as before' );
+	assert.equal( _log.start( q( 'tail=99999' ) ), 500, 'at most a page' );
+	assert.equal( fresh().start( q( 'tail=600' ) ), 0, 'an empty log starts at 0' );
+	for ( const bad of [ 'tail=-5', 'tail=abc', 'since=-3', 'since=abc&tail=600' ] ) {
+		assert.ok( Number.isInteger( _log.start( q( bad ) ) ) && _log.start( q( bad ) ) >= 0, bad );
+	}
+} );
+
 attack( S, 'since( id, limit ) honours the limit and starts after id', () => {
 	const _log = fresh();
 	const _ids = Array.from( { length: 10 }, () => _log.append( 'k' ).id );

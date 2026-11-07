@@ -20,10 +20,7 @@ app.define( 'Core.Main', [
 			// A public demo (PUBLIC_DEMO=1) limits what one visitor can start: every run costs model calls.
 			this.demo = process.env.PUBLIC_DEMO === '1';
 			this.streams = new Map();
-			this.limits = {
-				calls: new Limits( { perCaller: 40, total: 600 } ),
-				starts: new Limits( { perCaller: 4, total: 30, windowMs: 3600000 } ),
-			};
+			this.limits = Object.fromEntries( Object.entries( Main.LIMITS ).map( ( [ kind, limit ] ) => [ kind, new Limits( limit ) ] ) );
 			this.board = new Access( {
 				secret: process.env.CORE_BOARD_PIN, name: 'CORE_BOARD_PIN', header: 'x-board-pin', missing: 'board pin required', log: this.log,
 			} );
@@ -35,6 +32,15 @@ app.define( 'Core.Main', [
 
 		// A token a program sends (the inbound channel) is no pin a person types: long and random.
 		static TOKEN_MIN = 24;
+		// The public demo's limits per caller and in total. Calls: anything; starts: a run, which costs model calls, generous
+		// enough that a visitor can try both missions, abort and try again; probes: the escape test, which starts containers
+		// but no model, counted apart so trying the missions never uses it up.
+		static LIMITS = {
+			calls: { perCaller: 40, total: 600 },
+			starts: { perCaller: 12, total: 60, windowMs: 3600000 },
+			probes: { perCaller: 10, total: 120, windowMs: 3600000 },
+		};
+
 		// One message from outside: its id, sender and text as texts, at most this long.
 		static MESSAGE_MAX = 64 * 1024;
 
@@ -126,7 +132,7 @@ app.define( 'Core.Main', [
 
 		// → null when the request may pass, else [ status, body ]: the board pin, when one is set.
 		_boardRefusal( req ) {
-			const _result = this.board.check( this.board.given( req ) );
+			const _result = this.board.check( this.board.given( req ), Access.client( req ) );
 			return _result === 'ok' ? null : this.board.refusal( _result );
 		}
 
@@ -161,7 +167,10 @@ app.define( 'Core.Main', [
 					const _gate = await this.system.gate.contract( 'health' ).then( () => true ).catch( () => false );
 					Http.json( res, 200, { ok: true, gate: _gate, ...this.system.describe() } );
 				} )
-				.route( 'GET', '/api/missions', this._person( ( { res } ) => Http.json( res, 200, Mission.list().map( item => item.describe() ) ) ) )
+				// Each mission with its task run now (none, going, or how it ended), so a page that opens late knows it.
+				.route( 'GET', '/api/missions', this._person( ( { res } ) => Http.json( res, 200, Mission.list().map( item => ( {
+					...item.describe(), run: this.system.run( item.id ),
+				} ) ) ) ) )
 				.route( 'POST', '/api/missions/:id/start', this._person( async ( { req, res, params, body } ) => {
 					const _busy = this.demo && this.system.running( params.id ) ? 'a run of this mission is still going; abort it first' : null;
 					const _refused = _busy || this._limited( req, 'starts' );
@@ -209,7 +218,14 @@ app.define( 'Core.Main', [
 			this.http
 				.route( 'POST', '/api/missions/:id/inbound/:message', this._person( async ( { res, params } ) => Http.json(
 					res, 200, await this.system.inbound( params.id, params.message ) ), 'calls' ) )
-				.route( 'POST', '/api/missions/:id/probes', this._person( ( { res, params } ) => Http.json( res, ...this.probe( params.id ) ), 'starts' ) )
+				// The demo: before a visitor gives a task, the office has the agent forget what earlier visitors taught it.
+				.route( 'POST', '/api/missions/:id/forget', this._person( async ( { res, params } ) => {
+					const _mission = Mission.ID.test( params.id ) && Mission.list().find( item => item.id === params.id );
+					if ( !_mission ) { return Http.json( res, 404, { error: 'no such mission' } ); }
+					const _counts = this.system.forget( _mission );
+					return _counts ? Http.json( res, 200, _counts ) : Http.json( res, 409, { error: 'a run of this mission is still going; abort it first' } );
+				}, 'calls' ) )
+				.route( 'POST', '/api/missions/:id/probes', this._person( ( { res, params } ) => Http.json( res, ...this.probe( params.id ) ), 'probes' ) )
 			// The demo counters belong to the world, not to the core.
 				.route( 'GET', '/api/missions/:id/exposure', this._person( async ( { res, params } ) => {
 					const [ Exposure ] = await app.use( [ 'World.Exposure' ] );
@@ -226,7 +242,7 @@ app.define( 'Core.Main', [
 			if ( this.demo && _open >= Main.STREAMS ) { return Http.json( res, 429, { error: 'too many open live logs; close one first' } ); }
 			this.streams.set( _caller, _open + 1 );
 			const _stream = Http.events( req, res );
-			this.log.since( Number( query.get( 'since' ) || 0 ) ).forEach( _stream.send );
+			this.log.since( this.log.start( query ) ).forEach( _stream.send );
 			const _unsubscribe = this.log.subscribe( _stream.send );
 			_stream.closed.then( () => {
 				_unsubscribe();
@@ -239,7 +255,7 @@ app.define( 'Core.Main', [
 		// The inbound channel is off until INBOUND_TOKEN is set: nothing from outside starts a process unasked.
 		_inboundRefusal( req ) {
 			if ( !this.inbound.on ) { return [ 403, { error: 'the inbound channel is off (INBOUND_TOKEN is not set)' } ]; }
-			const _result = this.inbound.check( this.inbound.given( req ) );
+			const _result = this.inbound.check( this.inbound.given( req ), Access.client( req ) );
 			return _result === 'ok' ? null : this.inbound.refusal( _result );
 		}
 

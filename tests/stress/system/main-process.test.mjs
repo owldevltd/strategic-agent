@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { attack, attacks, within } from '../hostile.mjs';
-import { CoreMain, deployment, configFor, tempRoot, withEnv, json } from './processes.mjs';
+import { CoreMain, deployment, configFor, tempRoot, withEnv, json, until } from './processes.mjs';
 
 const SUBJECT = 'core/main.js';
 const request = ( ip = '10.0.0.1', forwarded = null ) => ( { headers: forwarded ? { 'x-forwarded-for': forwarded } : {}, socket: { remoteAddress: ip } } );
@@ -46,11 +46,23 @@ attack( SUBJECT, 'limits: in the demo one caller gets 40 calls, the 41st is refu
 	fs.rmSync( root, { recursive: true, force: true } );
 } );
 
-attack( SUBJECT, 'limits: in the demo one caller may start four runs an hour', async () => {
+attack( SUBJECT, 'limits: in the demo one caller may start twelve runs an hour, then is refused; calls and the escape test count apart', async () => {
 	const { main, root } = await make( { PUBLIC_DEMO: '1' } );
-	for ( let i = 0; i < 4; i++ ) { assert.equal( main._limited( request(), 'starts' ), null ); }
+	assert.equal( CoreMain.LIMITS.starts.perCaller, 12 );
+	for ( let i = 0; i < CoreMain.LIMITS.starts.perCaller; i++ ) { assert.equal( main._limited( request(), 'starts' ), null ); }
 	assert.notEqual( main._limited( request(), 'starts' ), null );
 	assert.equal( main._limited( request(), 'calls' ), null, 'starts and calls are counted apart' );
+	assert.equal( main._limited( request(), 'probes' ), null, 'trying the missions never uses up the escape test' );
+	fs.rmSync( root, { recursive: true, force: true } );
+} );
+
+attack( SUBJECT, 'limits: a visitor who tries both missions twice, with a fresh start each time, can still run the escape test', async () => {
+	const { main, root } = await make( { PUBLIC_DEMO: '1' } );
+	for ( let i = 0; i < 4; i++ ) {
+		assert.equal( main._limited( request(), 'calls' ), null, 'forget' );
+		assert.equal( main._limited( request(), 'starts' ), null, 'start' );
+	}
+	assert.equal( main._limited( request(), 'probes' ), null );
 	fs.rmSync( root, { recursive: true, force: true } );
 } );
 
@@ -64,13 +76,13 @@ attack( SUBJECT, 'limits: inventing a new X-Forwarded-For for every call still h
 	fs.rmSync( root, { recursive: true, force: true } );
 } );
 
-attack( SUBJECT, 'limits: the 31st start in the demo is refused for everybody', async () => {
+attack( SUBJECT, 'limits: beyond the total of starts in the demo everybody is refused', async () => {
 	const { main, root } = await make( { PUBLIC_DEMO: '1' } );
 	let _allowed = 0;
-	for ( let i = 0; i < 40; i++ ) {
-		if ( main._limited( request( `10.1.0.${i}` ), 'starts' ) === null ) { _allowed++; }
+	for ( let i = 0; i < CoreMain.LIMITS.starts.total + 10; i++ ) {
+		if ( main._limited( request( `10.1.${Math.floor( i / 250 )}.${i % 250}` ), 'starts' ) === null ) { _allowed++; }
 	}
-	assert.equal( _allowed, 30 );
+	assert.equal( _allowed, CoreMain.LIMITS.starts.total );
 	fs.rmSync( root, { recursive: true, force: true } );
 } );
 
@@ -159,6 +171,18 @@ attack( SUBJECT, 'GET /api/health: says whether the gate answers', async () => {
 	await d.stop();
 	assert.deepEqual( [ _up.status, _up.body.ok, _up.body.gate ], [ 200, true, true ] );
 	assert.deepEqual( [ _down.status, _down.body.ok, _down.body.gate ], [ 200, true, false ] );
+} );
+
+attack( SUBJECT, 'GET /api/missions: each mission says its task run, so a page that opens late knows it: none, going, aborted', async () => {
+	const d = await deployment();
+	const _run = async () => ( await json( await d.call( 'GET', '/api/missions' ) ) ).body.find( item => item.id === 'survey' ).run;
+	assert.equal( await _run(), null );
+	await d.call( 'POST', '/api/missions/survey/start', {} );
+	await until( async () => ( await _run() )?.open === true );
+	await d.call( 'POST', '/api/missions/survey/abort' );
+	await until( async () => ( await _run() )?.open === false );
+	assert.equal( ( await _run() ).status, 'aborted' );
+	await d.stop();
 } );
 
 attack( SUBJECT, 'GET /api/missions: the demo missions in their order, without data, answers or master data', async () => {

@@ -32,6 +32,18 @@ test( '7.3: a precondition gate blocks the move; the judgment sees the precondit
 	assert.equal( _root.result.status, 'fulfilled', JSON.stringify( _root.result ) );
 } );
 
+test( '7.3, R5: a precondition gate that is an outcome of the goal itself makes no child that restates it; the goal is still reached', async () => {
+	const _range = { quantity: 'answers:design', min: 1, max: 10000 };
+	const _o = await office( { edit: ( mission ) => {
+		withGates( { rule: 'precondition', move: 'report.send', criterion: { type: 'number_in_range', values: _range } } )( mission );
+		mission.contract.criteria.push( { id: 'k4', type: 'number_in_range', values: _range } );
+	} } );
+	const _root = await _o.run();
+	const _all = _root.children.flatMap( function tree( child ) { return [ child, ...child.children.flatMap( tree ) ]; } );
+	assert.ok( !_all.some( child => child.result?.status === 'refused' ), JSON.stringify( _all.map( child => child.result ) ) );
+	assert.equal( _root.result.status, 'fulfilled', JSON.stringify( _root.result ) );
+} );
+
 test( '21: when strategy gates leave no strategy, a person gets "check the gates" with the blocking instances; only they can lift them', async () => {
 	const _asked = [];
 	const _o = await office( {

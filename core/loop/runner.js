@@ -187,6 +187,8 @@ app.define( 'Core.Loop.Runner',
 					const _late = !( Date.now() < Date.parse( node.contract.deadline ) );
 					if ( node.stopping || _late ) {
 						const _reason = _late ? 'never confirmed before the deadline' : 'never confirmed';
+						// Nobody confirms it any more: the card leaves the person's list (a gate that cannot be reached keeps it).
+						await this.gate.withdrawContract?.( node.contract.hash ).catch( () => null );
 						this.refuse( node, { status: node.stopping?.status || 'failed', reason: _reason } );
 						return;
 					}

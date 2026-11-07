@@ -199,6 +199,30 @@ attack( SUBJECT, 'a precondition a child has met lets the move run', () => {
 	assert.equal( _store.blocking( { move: 'report.send', params: {}, target: 'hr' }, _node, 'hr-survey', registry ), null );
 } );
 
+attack( SUBJECT, 'what a child that met its goal measured counts for the parent\'s precondition', () => {
+	const _store = store();
+	_store.propose( PRECONDITION, scope );
+	const _node = nodeOf();
+	const _child = nodeOf();
+	_child.addFact( measured( 5 ) );
+	_child.result = { status: 'fulfilled' };
+	_node.children.push( _child );
+	assert.equal( _store.blocking( { move: 'report.send', params: {}, target: 'hr' }, _node, 'hr-survey', registry ), null );
+} );
+
+attack( SUBJECT, 'a child that did not meet its goal, or measured too little, does not open the gate', () => {
+	for ( const [ status, value ] of [ [ 'failed', 9 ], [ 'refused', 9 ], [ undefined, 9 ], [ 'fulfilled', 4 ] ] ) {
+		const _store = store();
+		_store.propose( PRECONDITION, scope );
+		const _node = nodeOf();
+		const _child = nodeOf();
+		_child.addFact( measured( value ) );
+		if ( status ) { _child.result = { status }; }
+		_node.children.push( _child );
+		assert.ok( _store.blocking( { move: 'report.send', params: {}, target: 'hr' }, _node, 'hr-survey', registry ), `${status} ${value}` );
+	}
+} );
+
 attack( SUBJECT, 'a child\'s fact for another precondition does not count', () => {
 	const _store = store();
 	_store.propose( PRECONDITION, scope );

@@ -358,6 +358,39 @@ app.define( 'Core.System', [ 'Core.Criteria.Registry', 'Core.Move.Catalog', 'Cor
 		}
 
 		// Is a goal of this mission still open?
+		// The public demo: what the agent learned about the mission's kind of task (lessons, diagnoses, its own strategy
+		// gates, the strategies proposed for the mission) is set aside, so every visitor starts from the same office and
+		// nobody's earlier runs change what the next one sees. Nothing is deleted (the rows keep their history under the
+		// status forgotten), nothing the mission's files bring is touched, and the next start seeds the mission's own
+		// gates again. Never while a run of the mission is going. → the counts set aside, or null for no such mission.
+		forget( mission ) {
+			if ( !mission || this.running( mission.id ) ) { return null; }
+			const _kind = mission.kind;
+			// A table nobody has written yet (a fresh server) holds nothing to forget.
+			const _set = ( sql, values ) => {
+				try {
+					return this.db.run( sql, values ).changes;
+				} catch ( error ) {
+					if ( /no such table/.test( error.message ) ) { return 0; }
+					throw error;
+				}
+			};
+			const _counts = this.db.transaction( () => ( {
+				lessons: _set( 'UPDATE lessons SET status = \'forgotten\' WHERE kind = :kind AND status = \'valid\'', { kind: _kind } ),
+				diagnoses: _set( 'UPDATE diagnoses SET status = \'forgotten\' WHERE kind = :kind AND status = \'valid\'', { kind: _kind } ),
+				gates: _set( 'UPDATE strategy_gates SET status = \'forgotten\' WHERE scope = :kind AND status = \'active\'', { kind: _kind } ),
+				proposals: _set( 'UPDATE proposals SET status = \'forgotten\' WHERE mission = :mission AND status IN ( \'proposed\', \'approved\' )', { mission: mission.id } ),
+			} ) );
+			this.log.append( 'knowledge_forgotten', { mission: mission.id, kind: _kind, ..._counts } );
+			return _counts;
+		}
+
+		// The task run of a mission as the office shows it: its root, whether it is still going, how it ended; null for none.
+		run( missionId ) {
+			const _root = this.runners.filter( item => item.mission.id === missionId ).at( -1 )?.root;
+			return _root ? { node: _root.id, open: this.running( missionId ), status: _root.result?.status || null } : null;
+		}
+
 		running( missionId ) {
 			const _runner = this.runners.filter( item => item.mission.id === missionId ).at( -1 );
 			return Boolean( _runner?.root ) && _runner.cascade.constructor.tree( _runner.root ).some( node => node.state !== 'closed' );

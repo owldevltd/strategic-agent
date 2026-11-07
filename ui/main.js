@@ -136,7 +136,7 @@ app.define( 'Ui.Main', [ 'Ui.Describe', 'Ui.Cards', 'Ui.Client' ], ( Describe, C
 	}
 
 	_listen( url, source ) {
-		const _gate = [ 'contract_proposed', 'contract_confirmed', 'awaiting_approval', 'approved', 'approval_refused', 'withdrawn', 'unclear', 'settled',
+		const _gate = [ 'contract_proposed', 'contract_confirmed', 'contract_withdrawn', 'awaiting_approval', 'approved', 'approval_refused', 'withdrawn', 'unclear', 'settled',
 			'proposal_received', 'proposal_approved', 'proposal_rejected', 'proposal_revoked' ];
 		const _tickets = [ 'ticket_opened', 'ticket_answered', 'ticket_withdrawn', 'ticket_expired' ];
 		return this.client.stream( url, ( event ) => {

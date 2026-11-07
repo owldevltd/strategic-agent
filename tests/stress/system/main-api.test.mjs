@@ -2,7 +2,7 @@
 // A real gate and a real core over HTTP; a person confirms and approves only at the gate, as in production.
 import assert from 'node:assert/strict';
 import { attack, attacks } from '../hostile.mjs';
-import { deployment, withEnv, json, until } from './processes.mjs';
+import { CoreMain, deployment, withEnv, json, until } from './processes.mjs';
 
 const SUBJECT = 'core/main.js';
 const started = async ( d, mission = 'invoices', body = {} ) => {
@@ -285,16 +285,21 @@ attack( SUBJECT, 'probes: a runtime that fails in the middle frees the escape te
 	assert.ok( _errors.some( text => /the runtime broke/.test( text ) ) );
 } );
 
-attack( SUBJECT, 'probes: in the public demo the escape test counts as a start for the limits', async () => {
+attack( SUBJECT, 'probes: in the public demo the escape test has a limit of its own, and using it up never blocks a task', async () => {
 	const d = await deployment( { env: { PUBLIC_DEMO: '1' }, core: { runtime: 'docker' } } );
 	d.main.system.runtime = new Contained( {} );
 	const _statuses = [];
-	for ( let i = 0; i < 6; i++ ) {
+	const _limit = CoreMain.LIMITS.probes.perCaller;
+	for ( let i = 0; i < _limit + 2; i++ ) {
 		_statuses.push( ( await d.call( 'POST', '/api/missions/survey/probes' ) ).status );
 		await until( () => !d.main._probing );
 	}
+	const _start = ( await d.call( 'POST', '/api/missions/survey/start', {} ) ).status;
+	await d.call( 'POST', '/api/missions/survey/abort' );
+	await until( () => !d.main.system.running( 'survey' ) );
 	await d.stop();
-	assert.deepEqual( _statuses, [ 202, 202, 202, 202, 429, 429 ] );
+	assert.deepEqual( _statuses, [ ...Array( _limit ).fill( 202 ), 429, 429 ] );
+	assert.notEqual( _start, 429, 'a task can still be given' );
 } );
 
 attack( SUBJECT, 'probes: the engine of the container sandbox is named in the log', async () => {

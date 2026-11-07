@@ -99,6 +99,36 @@ attack( S, 'on: a secret set is on', () => {
 	assert.equal( guard().access.on, true );
 } );
 
+attack( S, 'pin: the default minimum takes a pin of four characters and refuses three', () => {
+	assert.doesNotThrow( () => new Access( { secret: '1234', name: 'TEST_PIN', header: 'x-test-pin' } ) );
+	assert.throws( () => new Access( { secret: '123', name: 'TEST_PIN', header: 'x-test-pin' } ), /TEST_PIN needs at least 4 characters/ );
+} );
+
+attack( S, 'lock: one client\'s wrong answers lock that client only; everybody else still gets in with the right one', () => {
+	const { access } = guard();
+	for ( let i = 0; i < Access.TRIES; i++ ) { access.check( `guess-${i}`, '203.0.113.7' ); }
+	assert.equal( access.check( SECRET, '203.0.113.7' ), 'locked' );
+	assert.equal( access.check( SECRET, '198.51.100.20' ), 'ok', 'another client is not locked out' );
+	assert.equal( access.check( SECRET ), 'ok', 'nor is a request without a client address' );
+} );
+
+attack( S, 'lock: the clients remembered are bounded; the oldest is forgotten first', () => {
+	const { access } = guard();
+	for ( let i = 0; i < Access.CLIENTS + 50; i++ ) { access.check( 'wrong', `10.0.${Math.floor( i / 256 ) % 256}.${i % 256}-${i}` ); }
+	assert.ok( access._clients.size <= Access.CLIENTS );
+} );
+
+attacks( S, [
+	{ name: 'client: the address of the connection', socket: '203.0.113.7', headers: {}, want: '203.0.113.7' },
+	{ name: 'client: behind the proxy on this host, the last address the proxy forwarded', socket: '127.0.0.1', headers: { 'x-forwarded-for': '198.51.100.9' }, want: '198.51.100.9' },
+	{ name: 'client: a forged first address in the header does not count, the proxy\'s last one does', socket: '::1', headers: { 'x-forwarded-for': '1.2.3.4, 198.51.100.9' }, want: '198.51.100.9' },
+	{ name: 'client: from far away the header is ignored, so nobody names themselves anew', socket: '203.0.113.7', headers: { 'x-forwarded-for': '1.2.3.4' }, want: '203.0.113.7' },
+	{ name: 'client: IPv4 in IPv6 from this host counts as local', socket: '::ffff:127.0.0.1', headers: { 'x-forwarded-for': '198.51.100.9' }, want: '198.51.100.9' },
+	{ name: 'client: without a socket the client is empty', socket: undefined, headers: {}, want: '' },
+], ( { socket, headers, want } ) => {
+	assert.equal( Access.client( { socket: socket === undefined ? undefined : { remoteAddress: socket }, headers } ), want );
+} );
+
 attack( S, 'lock: four wrong answers leave the right one working', () => {
 	const { access } = guard();
 	for ( let i = 0; i < Access.TRIES - 1; i++ ) { assert.equal( access.check( `guess-${i}` ), 'wrong' ); }

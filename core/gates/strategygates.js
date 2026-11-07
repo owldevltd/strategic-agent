@@ -178,12 +178,14 @@ app.define( 'Core.Gates.StrategyGates', [ 'Lib.Hash', 'Core.Loop.Plan' ], ( Hash
 	}
 
 	// Before a move runs: the first precondition instance for it that the node's facts do not meet, as a precondition
-	// with an id (16.4). A precondition a child has met counts while its evidence is valid (B2, R7).
+	// with an id (16.4). A precondition a child has met counts while its evidence is valid (B2, R7), and so does what a
+	// child that met its goal observed: a follow-up survey's count of the answers is a fact about the same world, valid
+	// no longer than in the child.
 	blocking( step, node, scope, registry ) {
+		const _facts = [ ...node.valid(), ...( node.children || [] ).filter( child => child.result?.status === 'fulfilled' ).flatMap( child => child.valid() ) ];
 		for ( const gate of this.active( scope ).filter( item => item.rule === 'precondition' && item.move === step.move ) ) {
 			const _values = Plan.fill( gate.criterion.values || {}, { ...( step.params || {} ), target: step.target } );
 			const _criterion = registry.create( { id: `gate-${gate.id}`, type: gate.criterion.type, values: _values } );
-			const _facts = node.valid();
 			const _met = _criterion.check( _facts ).met || _facts.some( fact => fact.kind === 'precondition_met' && fact.data?.id === _criterion.id );
 			if ( !_met ) { return { gate, precondition: { id: _criterion.id, type: _criterion.type, values: _values } }; }
 		}

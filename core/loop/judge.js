@@ -7,7 +7,7 @@
 //   U4 escalate  in every other case: a person decides
 // A verdict whose condition does not hold is overruled; the code's own reading then applies.
 
-app.define( 'Core.Loop.Judge', [ 'Core.Check.CloseCheck', 'Core.Move.Causes' ], ( CloseCheck, Causes ) => class Judge {
+app.define( 'Core.Loop.Judge', [ 'Core.Check.CloseCheck', 'Core.Move.Causes', 'Lib.Hash' ], ( CloseCheck, Causes, Hash ) => class Judge {
 
 	static VERDICTS = [ 'done', 'other', 'deeper', 'escalate' ];
 	// A later deadline the model may suggest: at most a year more (3.2); the client decides on it anyway.
@@ -118,8 +118,22 @@ app.define( 'Core.Loop.Judge', [ 'Core.Check.CloseCheck', 'Core.Move.Causes' ], 
 		if ( node.preconditionMet?.( _pre.id ) ) {
 			return { verdict: 'escalate', rule: 'R8', reason: `${_pre.id} is named missing again although its evidence is valid` };
 		}
+		// No way down either for a precondition a child already tried and did not meet (a second child changes nothing),
+		// or for one that is an outcome of this goal or a goal above it: G1 would refuse that child as a restatement (R5).
+		// The code's reading goes on to another strategy or to a person, instead of a child after child.
+		if ( node.preconditionsTried?.has?.( _pre.id ) || Judge.restates( node, _pre ) ) {
+			return null;
+		}
 		const _serves = wall.criterion && node.openOutcomes().some( item => item.id === wall.criterion );
 		return _serves ? { verdict: 'deeper', rule: 'U2', precondition: { ..._pre, serves: wall.criterion } } : null;
+	}
+
+	// A precondition that is, type and values, an outcome of the node's goal or of a goal above it.
+	static restates( node, precondition ) {
+		const _contracts = [ node.contract, ...( typeof node.ancestors === 'function' ? node.ancestors() : [] ) ].filter( Boolean );
+		const _values = Hash.canonical( precondition.values || {} );
+		return _contracts.some( contract => ( typeof contract.outcomes === 'function' ? contract.outcomes() : [] )
+			.some( item => item.type === precondition.type && Hash.canonical( item.values || {} ) === _values ) );
 	}
 
 	async _propose( node, alternatives ) {

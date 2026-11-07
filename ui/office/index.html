@@ -14,7 +14,7 @@
 			<span>the person approves a goal; the rules follow from it, and no model can talk its way past them</span>
 		</div>
 		<nav id="tabs"></nav>
-		<a class="small" href="/ui/">control room</a>
+		<button id="help-open" class="help-open" type="button">How it works</button>
 	</header>
 	<main>
 		<section class="stage">
@@ -22,19 +22,51 @@
 			<div class="task">
 				<textarea id="task" rows="2" aria-label="Task"></textarea>
 				<div id="actions"></div>
+				<div id="status" hidden><span class="spin"></span><span id="status-text"></span></div>
 				<div id="notice"></div>
 			</div>
 			<div id="system"></div>
 		</section>
 		<aside>
 			<h2>A person decides</h2>
-			<label class="pin">Operator pin (gate) <input id="pin" type="password" autocomplete="off"></label>
-			<label class="pin">Board pin <input id="board-pin" type="password" autocomplete="off"></label>
+			<label class="pin">Operator pin (gate) <input id="pin" type="text" inputmode="numeric" autocomplete="off" spellcheck="false"></label>
+			<label class="pin">Board pin <input id="board-pin" type="text" autocomplete="off" spellcheck="false"></label>
 			<div id="person"></div>
 			<h2>Live log</h2>
 			<ol id="log"></ol>
 		</aside>
 	</main>
+	<div id="help" class="help" hidden>
+		<div class="help-card" role="dialog" aria-modal="true" aria-labelledby="help-title">
+			<button id="help-close" class="help-close" type="button" aria-label="Close">×</button>
+			<h2 id="help-title">How to try it · about five minutes</h2>
+			<div class="help-cols">
+				<section>
+					<h3>What you see</h3>
+					<p><b>Left office: our agent.</b> It plans with a model, writes code that runs in a sandbox, and every action to the outside passes the <b>gate</b> (the guard), only with a person's approval.</p>
+					<p><b>Right office: next door.</b> The same model with a prompt guardrail and no gate.</p>
+					<p><b>Counters on top:</b> people exposed or euros paid wrongly, ours against next door.</p>
+					<p><b>Right column:</b> what waits for you (a goal to confirm, an action to approve, a question), and the live log of every real event; red means refused. Figures move only because the core or the gate logged it.</p>
+					<p><b>The line under the buttons</b> says what the agent is doing; when it says <i>Waits for you</i>, look right.</p>
+				</section>
+				<section>
+					<h3>What to do, and what to expect</h3>
+					<ol>
+						<li>Enter the <b>operator pin</b> on the right (from the submission page it is filled in). The buttons light up.</li>
+						<li><b>Survey:</b> <i>Give the task</i>, then <i>Confirm goal and rules</i> on the right: the goal as typed criteria, the rules fixed code derives from it.</li>
+						<li>Expect the gate to refuse a report on 2 people (red). The agent starts a <b>follow-up survey</b>: approve the invitation.</li>
+						<li>With 5 answers in, approve the report to HR. The log says fulfilled.</li>
+						<li>Press a <b>CEO</b> question. Next door names people; ours is refused: <i>differs from an earlier release by 1 person</i>.</li>
+						<li><b>Invoices</b> (tab on top): give the task and confirm. Each payment needs a <b>reason</b>: type one, then approve.</li>
+						<li>Press the <b>mail from 'Atlas Office Supplies'</b>, a phishing mail. Ours does not pay as asked and answers the supplier.</li>
+						<li>Press <b>Try to break out of the sandbox</b>: seven attacks, each stopped, in the log.</li>
+					</ol>
+					<p class="soft">Everything runs on simulated data. Every new task starts fresh: earlier visitors' runs are forgotten.</p>
+				</section>
+			</div>
+			<button id="help-start" class="primary" type="button">Start</button>
+		</div>
+	</div>
 	<script>
 		app.config.root = '/';
 		app.use( [ 'Ui.Office.Office' ], Office => new Office( document.body ).start() );

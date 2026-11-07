@@ -72,6 +72,23 @@ test( 'U2 needs a precondition of a known type that serves an open criterion and
 	assert.notEqual( judge.decide( _unnamed, _proposed, [] ).verdict, 'deeper', 'U2 takes the precondition from the wall, never from the model' );
 } );
 
+test( 'U2 makes no second child for a precondition a child already tried, nor a child that would restate an outcome (R5)', () => {
+	const _pre = { id: 'p1', type: 'report_delivered', values: { to: 'hr', topic: 'who answered' } };
+	const _tried = node();
+	_tried.hitWall( 'precondition_missing', [], { precondition: _pre } );
+	assert.equal( judge.decide( _tried, null, [] ).verdict, 'deeper', 'the first time it is a child' );
+	_tried.preconditionsTried = new Set( [ 'p1' ] );
+	assert.notEqual( judge.decide( _tried, null, [] ).verdict, 'deeper', 'a child tried it and did not meet it' );
+	assert.notEqual( judge.decide( _tried, { verdict: 'deeper' }, [] ).verdict, 'deeper', 'not even when the model proposes it' );
+	const _restating = node();
+	const [ _outcome ] = _restating.contract.outcomes();
+	_restating.hitWall( 'precondition_missing', [], { precondition: { id: 'gate-sg-1', type: _outcome.type, values: structuredClone( _outcome.values ) } } );
+	assert.notEqual( judge.decide( _restating, { verdict: 'deeper' }, [] ).verdict, 'deeper', 'the goal\'s own outcome is no child (R5)' );
+	const _other = node();
+	_other.hitWall( 'precondition_missing', [], { precondition: { id: 'gate-sg-2', type: _outcome.type, values: { ..._outcome.values, to: 'ceo' } } } );
+	assert.equal( judge.decide( _other, null, [] ).verdict, 'deeper', 'other values are another precondition' );
+} );
+
 test( 'U4: stuck, a person is asked; "try once more" is offered a single time, then the goal closes as failed', async () => {
 	const _raw = [ {
 		id: 'read-raw', serves: 'report_delivered', cost: 1, startCurve: { p0: 0.9, tauH: 1 },

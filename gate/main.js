@@ -89,7 +89,7 @@ app.define( 'Gate.Main', [ 'Lib.Config', 'Lib.Db', 'Lib.EventLog', 'Lib.Http', '
 			if ( !_carried ) {
 				return [ 403, { error: _on.map( item => item.missing ).join( ' or ' ) } ];
 			}
-			const _result = _carried.check( _carried.given( req, body, _carried.header === 'x-operator-pin' ? 'pin' : null ) );
+			const _result = _carried.check( _carried.given( req, body, _carried.header === 'x-operator-pin' ? 'pin' : null ), Access.client( req ) );
 			return _result === 'ok' ? null : _carried.refusal( _result );
 		}
 
@@ -138,6 +138,7 @@ app.define( 'Gate.Main', [ 'Lib.Config', 'Lib.Db', 'Lib.EventLog', 'Lib.Http', '
 				.route( 'GET', '/contracts', _read( ( { res, query } ) => Http.json( res, 200, this.store.withStatus( query.get( 'status' ) || 'proposed' ).map( Main.proposal ) ) ) )
 				.route( 'GET', '/contracts/:hash', _read( ( { res, params } ) => Http.json( res, 200, this.store.contract( params.hash ) ) ) )
 				.route( 'GET', '/contracts/:hash/deliveries', _read( ( { res, params } ) => Http.json( res, 200, this.store.deliveries( params.hash ) ) ) )
+				.route( 'POST', '/contracts/:hash/withdraw', _core( ( { res, params } ) => Http.json( res, 200, this.egress.withdrawContract( params.hash ) ) ) )
 				.route( 'POST', '/contracts/:hash/confirm', _person( ( { res, params, body } ) => Http.json( res, 200, this.egress.confirm( params.hash, _by( body ) ) ) ) )
 				// The body as it came: what is no request is refused and booked by the gate itself (A8).
 				.route( 'POST', '/deliveries', _core( async ( { res, body } ) => Http.json( res, 200, await this.egress.submit( body ) ) ) )
@@ -183,7 +184,7 @@ app.define( 'Gate.Main', [ 'Lib.Config', 'Lib.Db', 'Lib.EventLog', 'Lib.Http', '
 				.route( 'GET', '/log', _read( ( { res, query } ) => Http.json( res, 200, this.log.since( Number( query.get( 'since' ) || 0 ) ) ) ) )
 				.route( 'GET', '/events', _read( ( { req, res, query } ) => {
 					const _stream = Http.events( req, res );
-					this.log.since( Number( query.get( 'since' ) || 0 ) ).forEach( _stream.send );
+					this.log.since( this.log.start( query ) ).forEach( _stream.send );
 					_stream.closed.then( this.log.subscribe( _stream.send ) );
 				} ) );
 		}

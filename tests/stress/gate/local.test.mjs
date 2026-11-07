@@ -10,7 +10,7 @@ const twelve = people( 12 );
 // deliveries( contract ): read only, for O9 at a restart (a delivery whose record the dying core lost).
 // proposeAt, gateProposal(s) and learnedActions submit and read what the agent proposes at the gate; deciding is not among them.
 const METHODS = [ 'propose', 'contract', 'submit', 'delivery', 'deliveries', 'withdraw', 'redeem', 'unclear', 'lease', 'beat', 'release', 'outbox',
-	'proposeAt', 'gateProposal', 'gateProposals', 'learnedActions' ];
+	'proposeAt', 'gateProposal', 'gateProposals', 'learnedActions', 'withdrawContract' ];
 const json = value => JSON.parse( JSON.stringify( value ?? null ) );
 
 // An Egress with a confirmed survey and the Local in front of it.

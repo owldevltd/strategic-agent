@@ -18,6 +18,10 @@ app.define( 'Gate.Local', [], () => class Local {
 		return this.#egress.store.contract( hash );
 	}
 
+	async withdrawContract( hash ) {
+		return this.#egress.withdrawContract( hash );
+	}
+
 	async submit( request ) {
 		return this.#egress.submit( request );
 	}

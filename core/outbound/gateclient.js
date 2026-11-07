@@ -23,6 +23,11 @@ app.define( 'Core.Outbound.GateClient', [], () => class GateClient {
 		return this._call( 'GET', `/contracts/${GateClient.segment( hash )}` );
 	}
 
+	// A goal aborted before anyone confirmed it is taken back from the person's list.
+	async withdrawContract( hash ) {
+		return this._call( 'POST', `/contracts/${GateClient.segment( hash )}/withdraw`, {} );
+	}
+
 	async submit( request ) {
 		return this._call( 'POST', '/deliveries', request );
 	}

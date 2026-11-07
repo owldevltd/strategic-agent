@@ -27,6 +27,8 @@ app.define( 'Ui.Describe', [], () => class Describe {
 			factDelivered: () => [ `fact: ${_d.kind} (${_d.evidenceClass})`, _d.kind === 'delivered' ? 'ok' : '' ],
 			contractProposed: () => [ `goal proposed, waits for a person${_d.goal ? `: ${_d.goal}` : ''}`, 'wait' ],
 			contractConfirmed: () => [ `goal and rules confirmed by ${_d.by}`, 'ok' ],
+			contractWithdrawn: () => [ 'goal withdrawn before anyone confirmed it', '' ],
+			knowledgeForgotten: () => [ `fresh start: earlier runs forgotten (${_d.lessons} lessons, ${_d.gates} strategy gates, ${_d.proposals} proposals)`, '' ],
 			refused: () => [ `BLOCKED ${_d.action} → ${_d.target || ''}: ${( _d.reasons || [] ).map( item => item.reason ).join( '; ' )}`, 'no' ],
 			awaitingApproval: () => [ `waits for approval: ${_d.summary.action} → ${_d.summary.target}`, 'wait' ],
 			approved: () => [ `approved by ${_d.by}`, 'ok' ],

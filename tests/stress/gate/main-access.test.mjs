@@ -98,6 +98,29 @@ attack( S, 'person: the core token never confirms a goal; the pin in its header 
 	assert.equal( server.main.store.contract( contract.hash ).status, 'confirmed' );
 } );
 
+attack( S, 'withdraw: the core takes back a goal nobody confirmed; it leaves the list and can no longer be confirmed', async () => {
+	const { contract, body } = goal();
+	await server.call( 'POST', '/contracts', body );
+	const _answer = await server.call( 'POST', `/contracts/${contract.hash}/withdraw`, {} );
+	assert.deepEqual( [ _answer.status, _answer.data ], [ 200, { withdrawn: true, status: 'withdrawn' } ] );
+	const _listed = ( await server.call( 'GET', '/contracts?status=proposed' ) ).data;
+	assert.ok( !_listed.some( item => item.hash === contract.hash ) );
+	await server.call( 'POST', `/contracts/${contract.hash}/confirm`, { by: 'hr-lead' }, { headers: { 'x-operator-pin': PIN } } );
+	assert.equal( server.main.store.contract( contract.hash ).status, 'withdrawn', 'a withdrawn goal is never confirmed' );
+	assert.ok( server.main.log.since( 0, 1e9 ).some( event => event.kind === 'contract_withdrawn' && event.data.hash === contract.hash ) );
+} );
+
+attack( S, 'withdraw: only the core may, and a confirmed goal stays confirmed', async () => {
+	const { contract, body } = goal();
+	await server.call( 'POST', '/contracts', body );
+	assert.equal( ( await server.call( 'POST', `/contracts/${contract.hash}/withdraw`, {}, { headers: NONE } ) ).status, 403 );
+	assert.equal( ( await server.call( 'POST', `/contracts/${contract.hash}/withdraw`, {}, { headers: { ...NONE, 'x-operator-pin': PIN } } ) ).status, 403,
+		'the operator pin is no core token' );
+	await server.call( 'POST', `/contracts/${contract.hash}/confirm`, { by: 'hr-lead' }, { headers: { 'x-operator-pin': PIN } } );
+	assert.deepEqual( ( await server.call( 'POST', `/contracts/${contract.hash}/withdraw`, {} ) ).data, { withdrawn: false, status: 'confirmed' } );
+	assert.deepEqual( ( await server.call( 'POST', '/contracts/unknown-hash/withdraw', {} ) ).data, { withdrawn: false, status: null } );
+} );
+
 attack( S, 'person: guessing the pin locks the person routes, not the core: the core still reads and proposes', async () => {
 	const _own = await startGate( { pin: PIN } );
 	try {

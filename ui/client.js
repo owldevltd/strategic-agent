@@ -7,6 +7,8 @@
 app.define( 'Ui.Client', [], () => class Client {
 
 	static RETRY_MS = 2000;
+	// How many past events a live log shows when it opens.
+	static TAIL = 600;
 	static RETRY_MAX_MS = 30000;
 
 	// gateUrl: where the gate is for the browser; pins: () => ( { gate, board } ), read at every call.
@@ -54,7 +56,8 @@ app.define( 'Ui.Client', [], () => class Client {
 			const _abort = new AbortController();
 			_control.abort = _abort;
 			try {
-				const _url = `${url}${url.includes( '?' ) ? '&' : '?'}since=${_last}`;
+				// The first time the last events only (what happens now), after that everything since the last one seen.
+				const _url = `${url}${url.includes( '?' ) ? '&' : '?'}since=${_last}${_last ? '' : `&tail=${Client.TAIL}`}`;
 				const _response = await fetch( _url, { headers: this.headers( url, { Accept: 'text/event-stream' } ), signal: _abort.signal, cache: 'no-store' } );
 				if ( !_response.ok ) {
 					_refused = [ 401, 403, 429 ].includes( _response.status );

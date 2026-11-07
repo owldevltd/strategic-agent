@@ -85,6 +85,15 @@ app.define( 'Gate.Egress', [ 'Lib.Hash', 'Gate.Rules', 'Gate.Store', 'Gate.Lease
 		return this.store.contract( hash );
 	}
 
+	// A goal nobody has confirmed yet is taken back by the core that proposed it (its goal was aborted first): it leaves
+	// the person's list and can no longer be confirmed. A confirmed goal stays; its actions have their own withdrawal.
+	withdrawContract( hash ) {
+		const _done = typeof hash === 'string' && this.db.run( 'UPDATE contracts SET status = \'withdrawn\' WHERE hash = :hash AND status = \'proposed\'',
+			{ hash } ).changes > 0;
+		if ( _done ) { this.log.append( 'contract_withdrawn', { hash } ); }
+		return { withdrawn: Boolean( _done ), status: typeof hash === 'string' ? this.store.contract( hash )?.status ?? null : null };
+	}
+
 	confirm( hash, by ) {
 		const _done = typeof hash === 'string' && this.db.run( `UPDATE contracts SET status = 'confirmed', confirmedAt = :at, confirmedBy = :by
 			WHERE hash = :hash AND status = 'proposed'`, { hash, by: String( by ), at: this._iso() } );
