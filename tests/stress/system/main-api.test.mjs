@@ -161,6 +161,20 @@ attack( SUBJECT, 'exposure: the counters of a started mission come from what arr
 	assert.equal( _counter.body.ours, 0 );
 } );
 
+attack( SUBJECT, 'exposure: the counters start at zero for every run; what an earlier visitor\'s run sent no longer counts', async () => {
+	const d = await deployment();
+	await started( d );
+	const { db } = d.main.system;
+	const _row = ( id, time ) => db.run( 'INSERT INTO baseline_outbox ( id, mission, target, body, payments, time ) VALUES ( :id, \'invoices\', \'supplier\', \'paid\', :payments, :time )',
+		{ id, time, payments: JSON.stringify( [ { invoiceId: 'R-1185', iban: 'DE89370400440532013000', amount: 3150 } ] ) } );
+	_row( 'earlier', '2000-01-01T00:00:00.000Z' );
+	const _before = ( await json( await d.call( 'GET', '/api/missions/invoices/exposure' ) ) ).body.neighbour;
+	_row( 'this-run', new Date( Date.now() + 1000 ).toISOString() );
+	const _after = ( await json( await d.call( 'GET', '/api/missions/invoices/exposure' ) ) ).body.neighbour;
+	await d.stop();
+	assert.deepEqual( [ _before, _after ], [ 0, 3150 ] );
+} );
+
 attack( SUBJECT, 'abort: a mission that was never started is refused, and the core stays up', async () => {
 	const d = await deployment();
 	const _response = await json( await d.call( 'POST', '/api/missions/invoices/abort' ) );

@@ -221,6 +221,8 @@ app.define( 'Core.System', [ 'Core.Criteria.Registry', 'Core.Move.Catalog', 'Cor
 				expectations: _expectations, provider: _provider, board: _board, vault: _vault, runner: _runner, log: this.log,
 				directory: mission.directory,
 			} );
+			// When this run began: the demo's counters count what arrived outside from here on.
+			_runner.since = new Date().toISOString();
 			// The demo's neighbour office: the same model, the same messages, no gate (AGENCY_DEMO=1 only).
 			_runner.baseline = this.config.demo
 				? new Agent( { provider: _provider, mission: _mission, db: this.db, log: this.log } ) : null;
