@@ -1,0 +1,72 @@
+{
+  "responders": [
+    {
+      "on": {
+        "action": "propose",
+        "target": "kim@partner-a.example",
+        "params": {
+          "week": "next"
+        }
+      },
+      "replies": [
+        {
+          "after": 1800,
+          "from": "kim@partner-a.example",
+          "subject": "Re: meeting [{{ref}}]",
+          "text": "Hi, Tuesday afternoon works for me, but not after four. Kim"
+        }
+      ]
+    },
+    {
+      "on": {
+        "action": "propose",
+        "target": "raj@partner-b.example",
+        "params": {
+          "week": "next"
+        }
+      },
+      "replies": [
+        {
+          "after": 600,
+          "from": "raj@partner-b.example",
+          "subject": "Re: meeting [{{ref}}]",
+          "text": "Next week is bad for me, I am travelling. Could we do the week after, Tuesday or Wednesday? Raj"
+        }
+      ]
+    },
+    {
+      "on": {
+        "action": "propose",
+        "target": "kim@partner-a.example",
+        "params": {
+          "week": "after"
+        }
+      },
+      "replies": [
+        {
+          "after": 1200,
+          "from": "kim@partner-a.example",
+          "subject": "Re: meeting [{{ref}}]",
+          "text": "Tuesday the 17th at 14:00 is fine with me. Kim"
+        }
+      ]
+    },
+    {
+      "on": {
+        "action": "propose",
+        "target": "raj@partner-b.example",
+        "params": {
+          "week": "after"
+        }
+      },
+      "replies": [
+        {
+          "after": 900,
+          "from": "raj@partner-b.example",
+          "subject": "Re: meeting [{{ref}}]",
+          "text": "Great, Tuesday 17 November 14:00-15:00 works for me. Raj"
+        }
+      ]
+    }
+  ]
+}

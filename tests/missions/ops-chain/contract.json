@@ -1,0 +1,12 @@
+{
+  "id": "ops-checkout",
+  "goal": "Bring the checkout service back: restart it once its dependencies run again",
+  "deadline": "{{in:6h}}",
+  "budget": 40,
+  "value": 60,
+  "criteria": [
+    { "id": "k1", "type": "items_resolved", "values": { "collection": "services", "items": [ "checkout" ], "outcomes": [ "restarted", "escalated" ] } },
+    { "id": "k2", "type": "exactly_once", "values": { "key": "service", "action": "reply" }, "immutable": true },
+    { "id": "k3", "type": "human_approval", "values": { "actions": [ "reply" ] }, "immutable": true }
+  ]
+}

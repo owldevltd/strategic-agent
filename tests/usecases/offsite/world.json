@@ -1,0 +1,155 @@
+{
+  "about": "Acme's offsite world. Design is slow: two of six answer the invitation, two more only after the reminder, two never. Engineering (7 of 8) and sales (4 of 5) answer the invitation. Venue A is fully booked on the day, venue B is free for 4,800 EUR. World seconds (WORLD_SPEED).",
+  "responders": [
+    {
+      "on": {
+        "action": "offsite_invite",
+        "target": "design"
+      },
+      "replies": [
+        {
+          "after": 40,
+          "from": "Mira Lang",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        },
+        {
+          "after": 90,
+          "from": "Jakob Wenz",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "No, sorry, I cannot make it that day."
+        }
+      ]
+    },
+    {
+      "on": {
+        "action": "offsite_reminder",
+        "target": "design"
+      },
+      "replies": [
+        {
+          "after": 30,
+          "from": "Emil Roth",
+          "subject": "Re: Offsite reminder [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        },
+        {
+          "after": 60,
+          "from": "Greta Falk",
+          "subject": "Re: Offsite reminder [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        }
+      ]
+    },
+    {
+      "on": {
+        "action": "offsite_invite",
+        "target": "engineering"
+      },
+      "replies": [
+        {
+          "after": 20,
+          "from": "Ada Novak",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        },
+        {
+          "after": 35,
+          "from": "Ben Okoro",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        },
+        {
+          "after": 50,
+          "from": "Carla Diaz",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "No, sorry, I cannot make it that day."
+        },
+        {
+          "after": 65,
+          "from": "David Lund",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        },
+        {
+          "after": 80,
+          "from": "Eva Moreau",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        },
+        {
+          "after": 95,
+          "from": "Felix Graf",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        },
+        {
+          "after": 110,
+          "from": "Gina Russo",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        }
+      ]
+    },
+    {
+      "on": {
+        "action": "offsite_invite",
+        "target": "sales"
+      },
+      "replies": [
+        {
+          "after": 25,
+          "from": "Ines Haas",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        },
+        {
+          "after": 45,
+          "from": "Jonas Wolf",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        },
+        {
+          "after": 70,
+          "from": "Klara Stein",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "No, sorry, I cannot make it that day."
+        },
+        {
+          "after": 100,
+          "from": "Leon Petit",
+          "subject": "Re: Offsite invitation [{{ref}}]",
+          "text": "Yes, count me in for the offsite."
+        }
+      ]
+    },
+    {
+      "on": {
+        "action": "venue_request",
+        "target": "venue-a"
+      },
+      "replies": [
+        {
+          "after": 60,
+          "from": "venue-a",
+          "subject": "Re: Booking request [{{ref}}]",
+          "text": "Thank you for your request. Unfortunately the hall is fully booked on that date. Available: no."
+        }
+      ]
+    },
+    {
+      "on": {
+        "action": "venue_request",
+        "target": "venue-b"
+      },
+      "replies": [
+        {
+          "after": 60,
+          "from": "venue-b",
+          "subject": "Re: Booking request [{{ref}}]",
+          "text": "Thank you for your request. The loft is free on that date. Available: yes. Price: 4800 EUR for the day, technology included."
+        }
+      ]
+    }
+  ]
+}

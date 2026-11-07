@@ -1,0 +1,20 @@
+{
+  "propose": {
+    "criticality": "outward",
+    "carries": [
+      "message"
+    ],
+    "sensitive": [],
+    "says": "proposes meeting slots to a participant",
+    "idempotencyH": 72
+  },
+  "book": {
+    "criticality": "outward",
+    "carries": [
+      "message"
+    ],
+    "sensitive": [],
+    "says": "sends a calendar invitation to the participants",
+    "idempotencyH": 72
+  }
+}

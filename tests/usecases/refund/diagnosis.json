@@ -1,0 +1,8 @@
+{
+  "move_failed": [
+    {
+      "hypothesis": "the_ledger_does_not_hold_it",
+      "class": "explain"
+    }
+  ]
+}

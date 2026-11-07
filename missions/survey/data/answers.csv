@@ -1,0 +1,13 @@
+respondent,team,workload,manager,theme,comment
+r01,product,3,4,workload,Too many parallel launches this quarter
+r02,product,2,4,workload,Weekends before every release
+r03,product,3,3,tools,The ticket system slows us down
+r04,product,2,4,workload,No time for planning
+r05,product,4,4,growth,Would like more mentoring
+r06,product,3,3,workload,Scope changes late in the sprint
+r07,design,1,1,manager,My manager takes credit for my work and shouts in reviews
+r08,design,2,3,workload,Two people for four product lines
+r09,product,3,4,tools,Too many meetings
+r10,product,2,3,workload,Hiring freeze leaves gaps
+r11,product,4,4,growth,Unclear promotion criteria
+r12,product,3,4,workload,On-call on top of feature work

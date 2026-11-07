@@ -1,0 +1,19 @@
+{
+  "id": "ops-chain",
+  "title": "Ops chain",
+  "contract": "contract.json",
+  "data": "data",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "gates": "gates.json",
+  "stub": "stub.json",
+  "kind": "it-operations",
+  "task": "Bring the checkout service back within six hours. Restart what it depends on first; every restart is approved by a person and no service is restarted twice.",
+  "invariants": [
+    { "type": "exactly_once", "values": { "key": "service", "action": "reply" } },
+    { "type": "human_approval", "values": { "actions": [ "reply" ] } }
+  ],
+  "defaults": { "budget": 40, "value": 60, "deadlineHours": 6 },
+  "context": { "data": "the service inventory with hosts and dependencies" },
+  "office": {}
+}

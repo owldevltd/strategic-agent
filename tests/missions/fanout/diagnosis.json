@@ -1,0 +1,14 @@
+{
+  "rejected_by_person": [
+    {
+      "hypothesis": "the_person_wants_another_way",
+      "class": "hand_over"
+    }
+  ],
+  "move_failed": [
+    {
+      "hypothesis": "the_way_is_broken",
+      "class": "hand_over"
+    }
+  ]
+}

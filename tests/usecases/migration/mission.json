@@ -1,0 +1,21 @@
+{
+  "id": "migration",
+  "title": "Migration",
+  "contract": "contract.json",
+  "data": "data",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "stub": "stub.json",
+  "kind": "data-migration",
+  "task": "Migrate the 500 legacy customer rows into the new schema; nothing lost, nothing guessed, bad rows to the data owner.",
+  "invariants": [],
+  "defaults": {
+    "budget": 10,
+    "value": 15,
+    "deadlineHours": 48
+  },
+  "context": {
+    "data": "the legacy customer table"
+  },
+  "office": {}
+}

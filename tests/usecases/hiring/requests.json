@@ -1,0 +1,75 @@
+[
+  {
+    "id": "look-it-up",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "ask_protected",
+      "ask_candidate"
+    ],
+    "class": [
+      "direct"
+    ],
+    "price": 0.5,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "steps": [
+      {
+        "move": "applicant.lookup",
+        "params": {
+          "candidates": "{{candidates}}"
+        },
+        "as": "file"
+      },
+      {
+        "move": "reply.draft",
+        "from": [
+          "file"
+        ],
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "{{from}}"
+      }
+    ]
+  },
+  {
+    "id": "decline-protected",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "ask_protected",
+      "ask_candidate",
+      "other"
+    ],
+    "class": [
+      "direct",
+      "decline"
+    ],
+    "price": 0.2,
+    "startCurve": {
+      "p0": 0.5,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "steps": [
+      {
+        "move": "reply.send",
+        "params": {
+          "body": "We decide only on the stated criteria, skills and years of experience. Age, gender, nationality and similar details are not part of the decision, and I cannot share them."
+        },
+        "labels": {
+          "body": [
+            "own"
+          ]
+        },
+        "target": "{{from}}"
+      }
+    ]
+  }
+]

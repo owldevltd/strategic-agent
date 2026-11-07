@@ -1,0 +1,128 @@
+[
+  {
+    "id": "three-quotes-then-order",
+    "serves": "report_delivered",
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.6,
+      "tauH": 48
+    },
+    "tSignalH": 24,
+    "describe": "ask four suppliers, wait for the quotes, order the cheapest that delivers in time",
+    "steps": [
+      {
+        "move": "rfq.send",
+        "params": {
+          "body": "We need 20 business laptops (14 inch, 32 GB RAM, 1 TB SSD, 3 years on-site warranty), delivered to our Berlin office by 26 November 2026. Please send your total price without VAT and your delivery date."
+        },
+        "labels": {
+          "body": [
+            "own"
+          ]
+        },
+        "target": "northwind",
+        "as": "to_northwind"
+      },
+      {
+        "move": "rfq.send",
+        "params": {
+          "body": "We need 20 business laptops (14 inch, 32 GB RAM, 1 TB SSD, 3 years on-site warranty), delivered to our Berlin office by 26 November 2026. Please send your total price without VAT and your delivery date."
+        },
+        "labels": {
+          "body": [
+            "own"
+          ]
+        },
+        "target": "contoso",
+        "as": "to_contoso"
+      },
+      {
+        "move": "rfq.send",
+        "params": {
+          "body": "We need 20 business laptops (14 inch, 32 GB RAM, 1 TB SSD, 3 years on-site warranty), delivered to our Berlin office by 26 November 2026. Please send your total price without VAT and your delivery date."
+        },
+        "labels": {
+          "body": [
+            "own"
+          ]
+        },
+        "target": "fabrikam",
+        "as": "to_fabrikam"
+      },
+      {
+        "move": "rfq.send",
+        "params": {
+          "body": "We need 20 business laptops (14 inch, 32 GB RAM, 1 TB SSD, 3 years on-site warranty), delivered to our Berlin office by 26 November 2026. Please send your total price without VAT and your delivery date."
+        },
+        "labels": {
+          "body": [
+            "own"
+          ]
+        },
+        "target": "litware",
+        "as": "to_litware"
+      },
+      {
+        "move": "quotes.wait",
+        "for": "to_northwind",
+        "params": {
+          "minutes": 120
+        }
+      },
+      {
+        "move": "quotes.wait",
+        "for": "to_contoso",
+        "params": {
+          "minutes": 120
+        }
+      },
+      {
+        "move": "quotes.wait",
+        "for": "to_fabrikam",
+        "params": {
+          "minutes": 120
+        }
+      },
+      {
+        "move": "quotes.compare",
+        "params": {
+          "needBy": "2026-11-26",
+          "framework": "northwind"
+        },
+        "as": "best"
+      },
+      {
+        "move": "order.send",
+        "from": "best",
+        "target": "purchasing"
+      }
+    ]
+  },
+  {
+    "id": "hand-to-purchasing",
+    "serves": "report_delivered",
+    "class": "hand_over",
+    "price": 0.3,
+    "startCurve": {
+      "p0": 0.5,
+      "tauH": 24
+    },
+    "tSignalH": null,
+    "describe": "not enough valid quotes: purchasing decides",
+    "steps": [
+      {
+        "move": "person.decide",
+        "params": {
+          "question": "Fewer than three suppliers quoted in time for the 20 laptops. How should we go on?",
+          "options": [
+            "ask more suppliers",
+            "order from the framework supplier anyway",
+            "stop"
+          ],
+          "recommendation": "ask more suppliers"
+        }
+      }
+    ]
+  }
+]

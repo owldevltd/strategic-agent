@@ -1,0 +1,198 @@
+{
+  "group_too_small": {
+    "says": "a release would be about fewer people than allowed",
+    "rules": [
+      "min_group"
+    ],
+    "strategy": true,
+    "suggest": "report on a larger group, or ask more people of the group"
+  },
+  "difference_too_small": {
+    "says": "two releases would differ by fewer people than allowed",
+    "rules": [
+      "no_difference"
+    ],
+    "strategy": true,
+    "suggest": "report on the same group as before, or on one that differs by enough people"
+  },
+  "label_blocked": {
+    "says": "data of the wrong origin would flow into a parameter",
+    "rules": [
+      "flow",
+      "sensitive",
+      "confidential",
+      "action",
+      "group"
+    ],
+    "strategy": true,
+    "suggest": "take the value from our own data, not from the message or the document"
+  },
+  "unknown_account": {
+    "says": "the account is not in the master data",
+    "rules": [
+      "known_account"
+    ],
+    "strategy": true,
+    "suggest": "hand it to a person who checks the counterparty and the master data"
+  },
+  "unknown_recipient": {
+    "says": "the recipient is not in the master data, or not the person the data is about",
+    "rules": [
+      "recipient",
+      "data_subject"
+    ],
+    "strategy": true,
+    "suggest": "report to a recipient in the master data, or a person adds this one there"
+  },
+  "already_done": {
+    "says": "the item already has this action",
+    "rules": [
+      "exactly_once"
+    ],
+    "strategy": true,
+    "suggest": "nothing to do: the item already has this action"
+  },
+  "budget_cap": {
+    "says": "the sum would exceed its cap",
+    "rules": [
+      "sum_max"
+    ],
+    "strategy": true,
+    "suggest": "pay less this round, or ask the client for a higher cap"
+  },
+  "soft_rule": {
+    "says": "a rule of the user's base setup would be broken",
+    "rules": [
+      "soft"
+    ],
+    "strategy": true
+  },
+  "plan_refused": {
+    "says": "the plan did not pass the plan check",
+    "strategy": true,
+    "suggest": "choose a strategy whose data flow fits the goal"
+  },
+  "move_failed": {
+    "says": "a move failed while running",
+    "strategy": true
+  },
+  "child_failed": {
+    "says": "a child could not reach its goal",
+    "strategy": true
+  },
+  "precondition_missing": {
+    "says": "something the goal depends on is not there yet",
+    "strategy": false,
+    "suggest": "make the missing precondition a goal of its own"
+  },
+  "no_reaction": {
+    "says": "the other side did not react in time",
+    "strategy": true,
+    "suggest": "wait a little longer, remind, or try another channel"
+  },
+  "not_reached": {
+    "says": "the other side could not be reached",
+    "rules": [
+      "channel"
+    ],
+    "strategy": true
+  },
+  "unachievable": {
+    "says": "a fact makes the criterion impossible",
+    "strategy": false,
+    "suggest": "ask the client whether the goal can change"
+  },
+  "conflict": {
+    "says": "facts from different origins contradict each other",
+    "strategy": false,
+    "suggest": "ask a person which of the facts holds"
+  },
+  "expired": {
+    "says": "the deadline has passed",
+    "rules": [
+      "expires"
+    ],
+    "strategy": false
+  },
+  "not_confirmed": {
+    "says": "the goal is not confirmed at the gate",
+    "rules": [
+      "contract",
+      "rules"
+    ],
+    "strategy": false
+  },
+  "approval_void": {
+    "says": "the approval no longer fits the action: it is missing, used or expired, the action is no longer waiting for it, or its content changed since (F2 to F5)",
+    "rules": [
+      "token",
+      "operation",
+      "hash"
+    ],
+    "strategy": false,
+    "suggest": "ask the person to approve the action again as it stands now"
+  },
+  "request_unreadable": {
+    "says": "the gate could not read the request as it stands: no object, a field of the wrong kind, or too large (A8)",
+    "rules": [
+      "request",
+      "size",
+      "node",
+      "target",
+      "params",
+      "labels",
+      "cohort",
+      "flags"
+    ],
+    "strategy": false,
+    "suggest": "hand it to a person: the plan built a request the gate cannot check"
+  },
+  "person_busy": {
+    "says": "too many actions of this goal already wait for a person (P6)",
+    "rules": [
+      "waiting"
+    ],
+    "strategy": false,
+    "suggest": "wait until the person decided what already waits"
+  },
+  "rejected_by_person": {
+    "says": "a person declined the action",
+    "rules": [
+      "rejected"
+    ],
+    "strategy": true
+  },
+  "unclear": {
+    "says": "it is not clear whether the action took effect",
+    "rules": [
+      "unclear"
+    ],
+    "strategy": false
+  },
+  "not_sent": {
+    "says": "the action was withdrawn before it was sent",
+    "rules": [
+      "not_sent"
+    ],
+    "strategy": true
+  },
+  "escalated": {
+    "says": "a person decided to stop",
+    "strategy": false
+  },
+  "aborted": {
+    "says": "the node was aborted from above or by its client",
+    "strategy": false
+  },
+  "lease_expired": {
+    "says": "a move ran past its lease and was ended; what it produced was discarded",
+    "strategy": true,
+    "rules": [
+      "lease"
+    ]
+  },
+  "interrupted": {
+    "says": "the core stopped while the move ran; the move counts as aborted and the strategy may run again",
+    "strategy": true
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "recon.write": {
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "coder",
+    "labels": [],
+    "describe": "the agent writes the reconciliation code; it never sees the lines, only their form",
+    "instructions": "Write Python 3 code that reconciles a bank statement with the ledger for October. The variable rows is a list of dicts with the keys source ('bank' or 'ledger'), id, date (YYYY-MM-DD), amount (a number, negative for money going out), ref (a reference, may be empty) and text. Match each bank line to at most one ledger line of the same amount, preferring the same ref, else a date within three days. Every line that stays unmatched, or a matched-by-ref pair whose amounts differ, becomes a difference {'kind': one of 'fee', 'timing', 'duplicate', 'unknown', 'bank': bank id or None, 'ledger': ledger id or None, 'amount': bank amount minus ledger amount, a missing side counting 0}. A ledger line that repeats a matched booking (same ref and amount) is a duplicate; a ledger line from the last days of the month without a bank line is timing; a bank line that is a bank fee, or a pair whose amounts differ by a fee, is fee. Set result to {'pairs': [[bank id, ledger id], ...], 'differences': [...], 'total': the sum of the difference amounts, rounded to 2 decimals}. Use every line exactly once. Use no imports, no files and no printing. Answer with the code in the field code.",
+    "contract": {
+      "fields": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "inherit": true
+  },
+  "recon.run": {
+    "price": 0.1,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [
+      "reconciled"
+    ],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/frame.py",
+    "agentCode": "sandbox/tools/agent_code.py",
+    "labels": [
+      "own"
+    ],
+    "describe": "runs the agent's code on the lines in its own sandbox; the frame checks that every line is used once and the differences add up to the cent",
+    "fact": "reconciled"
+  },
+  "recon.report": {
+    "price": 0.4,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "writer",
+    "inherit": true,
+    "labels": [],
+    "outbound": "report",
+    "describe": "writes the reconciliation report with proposed journal entries",
+    "instructions": "You write the month-end bank reconciliation report for the finance lead from the checked result you are given. State how many lines matched, list every difference with its kind, ids and amount, show that the differences add up to the total difference, and propose a journal entry for each fee, duplicate and unknown item for the finance lead to post. Say clearly that nothing has been posted. Be short.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "extractor": [
+    {
+      "when": "Northwind",
+      "answer": {
+        "total": 23960,
+        "delivery": "2026-11-20"
+      }
+    },
+    {
+      "when": "21,400",
+      "answer": {
+        "total": 21400,
+        "delivery": "2026-12-08"
+      }
+    },
+    {
+      "when": "22,850",
+      "answer": {
+        "total": 22850,
+        "delivery": "2026-11-24",
+        "alsoAsks": "yes"
+      }
+    },
+    {
+      "when": "20,990",
+      "answer": {
+        "total": 20990,
+        "delivery": "2026-11-18"
+      }
+    }
+  ]
+}

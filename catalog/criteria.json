@@ -1,0 +1,21 @@
+{
+  "min_group": "Core.Criteria.MinGroup",
+  "no_difference": "Core.Criteria.NoDifference",
+  "exactly_once": "Core.Criteria.ExactlyOnce",
+  "account_from_master": "Core.Criteria.AccountFromMaster",
+  "sum_max": "Core.Criteria.SumMax",
+  "human_approval": "Core.Criteria.HumanApproval",
+  "deadline": "Core.Criteria.Deadline",
+  "report_delivered": "Core.Criteria.ReportDelivered",
+  "items_resolved": "Core.Criteria.ItemsResolved",
+  "event_occurred": "Core.Criteria.EventOccurred",
+  "commitment_received": "Core.Criteria.CommitmentReceived",
+  "state_is": "Core.Criteria.StateIs",
+  "test_green": "Core.Criteria.TestGreen",
+  "count_matches": "Core.Criteria.CountMatches",
+  "number_in_range": "Core.Criteria.NumberInRange",
+  "document_present": "Core.Criteria.DocumentPresent",
+  "confirmed_by": "Core.Criteria.ConfirmedBy",
+  "soft": "Core.Criteria.Soft",
+  "to_data_subject": "Core.Criteria.ToDataSubject"
+}

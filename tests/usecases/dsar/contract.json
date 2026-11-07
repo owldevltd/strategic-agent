@@ -1,0 +1,24 @@
+{
+  "id": "dsar-77",
+  "goal": "Answer the data access request of customer Max Muster (cust-0077) with a complete copy of his data",
+  "deadline": "{{in:720h}}",
+  "budget": 10,
+  "value": 15,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "report_delivered",
+      "values": {
+        "to": "max.muster@example.org",
+        "topic": "copy of personal data",
+        "action": "export"
+      }
+    },
+    {
+      "id": "k2",
+      "type": "to_data_subject",
+      "values": {},
+      "immutable": true
+    }
+  ]
+}

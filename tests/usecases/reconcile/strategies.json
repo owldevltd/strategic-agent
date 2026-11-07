@@ -1,0 +1,39 @@
+[
+  {
+    "id": "reconcile-and-report",
+    "serves": "report_delivered",
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "the agent writes the reconciliation code, the frame checks it to the cent, the finance lead gets the report",
+    "steps": [
+      {
+        "move": "recon.write",
+        "as": "code"
+      },
+      {
+        "move": "recon.run",
+        "from": [
+          "code"
+        ],
+        "as": "result"
+      },
+      {
+        "move": "recon.report",
+        "from": [
+          "result"
+        ],
+        "as": "report"
+      },
+      {
+        "move": "report.send",
+        "from": "report",
+        "target": "finance-lead"
+      }
+    ]
+  }
+]

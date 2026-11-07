@@ -1,0 +1,21 @@
+{
+  "verify": {
+    "criticality": "outward",
+    "carries": [
+      "message"
+    ],
+    "sensitive": [],
+    "says": "a question to a person at the address on file, to confirm a request",
+    "idempotencyH": 72
+  },
+  "export": {
+    "criticality": "outward",
+    "carries": [
+      "data",
+      "message"
+    ],
+    "sensitive": [],
+    "says": "a copy of the data we hold about a person, for that person",
+    "idempotencyH": 72
+  }
+}

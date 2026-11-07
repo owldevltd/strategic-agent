@@ -1,0 +1,6 @@
+charge_id,customer,date,amount,method,status
+C-9001,cust-1042,2026-11-02,89.90,card-1042,charged
+P-9002,cust-1042,2026-11-02,89.90,card-1042,preauth_released
+C-9003,cust-2210,2026-11-03,45.00,card-2210,charged
+C-9004,cust-2210,2026-11-03,45.00,card-2210,charged
+C-9005,cust-1042,2026-10-12,19.99,card-1042,charged

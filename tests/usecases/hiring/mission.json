@@ -1,0 +1,24 @@
+{
+  "id": "hiring",
+  "title": "Hiring",
+  "contract": "contract.json",
+  "data": "data",
+  "master": "master.json",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "requests": "requests.json",
+  "inbound": "inbound.json",
+  "stub": "stub.json",
+  "kind": "hiring",
+  "task": "Shortlist five of the forty applicants for the backend role by skills and years of experience.",
+  "invariants": [],
+  "defaults": {
+    "budget": 10,
+    "value": 15,
+    "deadlineHours": 72
+  },
+  "context": {
+    "data": "forty applications; they hold age, gender and nationality, which the decision must not use"
+  },
+  "office": {}
+}

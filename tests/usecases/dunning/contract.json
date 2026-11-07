@@ -1,0 +1,15 @@
+{
+  "id": "dunning-2026-w45",
+  "goal": "This week's payment reminders: every open invoice either found paid in the bank statement, not more than 14 days past due, or reminded once, friendly, at the customer's billing address on file; the AR team lead gets a summary with counts",
+  "deadline": "{{in:168h}}",
+  "budget": 300,
+  "value": 300,
+  "criteria": [
+    { "id": "k1", "type": "items_resolved",
+      "values": { "collection": "invoices", "items": [ "AR-2026-0388:C101", "AR-2026-0391:C102", "AR-2026-0402:C103", "AR-2026-0405:C104", "AR-2026-0409:C105", "AR-2026-0411:C107", "AR-2026-0414:C108", "AR-2026-0417:C106", "AR-2026-0420:C101", "AR-2026-0423:C102", "AR-2026-0426:C108", "AR-2026-0430:C106" ], "outcomes": [ "paid", "not_due", "reminded", "escalated" ] } },
+    { "id": "k2", "type": "report_delivered", "values": { "to": "ar-lead", "topic": "dunning summary week 45", "action": "report" } },
+    { "id": "k3", "type": "exactly_once", "values": { "key": "invoiceId", "action": "reminder" }, "immutable": true },
+    { "id": "k4", "type": "human_approval", "values": { "actions": [ "reminder" ] }, "immutable": true },
+    { "id": "k5", "type": "to_data_subject", "values": {}, "immutable": true }
+  ]
+}

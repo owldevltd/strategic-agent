@@ -1,0 +1,18 @@
+{
+  "id": "meeting-partners",
+  "goal": "Book a 60-minute meeting next week that Anna, Ben, Kim and Raj all confirmed, and send the invitation",
+  "deadline": "{{in:96h}}",
+  "budget": 10,
+  "value": 10,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "report_delivered",
+      "values": {
+        "to": "participants",
+        "topic": "meeting invitation",
+        "action": "book"
+      }
+    }
+  ]
+}

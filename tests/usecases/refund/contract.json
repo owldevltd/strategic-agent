@@ -1,0 +1,54 @@
+{
+  "id": "refund-cust-1042",
+  "goal": "Answer customer cust-1042 on the double charge of 2 November under the refund policy",
+  "deadline": "{{in:24h}}",
+  "budget": 10,
+  "value": 15,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "report_delivered",
+      "values": {
+        "to": "cust-1042",
+        "topic": "double charge claim",
+        "action": "reply"
+      }
+    },
+    {
+      "id": "k2",
+      "immutable": true,
+      "type": "exactly_once",
+      "values": {
+        "key": "chargeId",
+        "action": "refund"
+      }
+    },
+    {
+      "id": "k3",
+      "immutable": true,
+      "type": "account_from_master",
+      "values": {
+        "param": "method",
+        "kind": "payment_method"
+      }
+    },
+    {
+      "id": "k4",
+      "immutable": true,
+      "type": "human_approval",
+      "values": {
+        "actions": [
+          "refund"
+        ]
+      }
+    },
+    {
+      "id": "k5",
+      "immutable": true,
+      "type": "sum_max",
+      "values": {
+        "max": 200
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "id": "reconcile",
+  "title": "Reconciliation",
+  "contract": "contract.json",
+  "data": "data",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "stub": "stub.json",
+  "kind": "month-end-close",
+  "task": "Reconcile the October bank statement with the ledger and report every difference to the finance lead; post nothing.",
+  "invariants": [],
+  "defaults": {
+    "budget": 10,
+    "value": 15,
+    "deadlineHours": 48
+  },
+  "context": {
+    "data": "the bank statement and the ledger for October"
+  },
+  "office": {}
+}

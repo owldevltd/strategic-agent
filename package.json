@@ -1,0 +1,26 @@
+{
+  "name": "strategic-agency",
+  "version": "0.1.0",
+  "private": true,
+  "description": "An agentic system that works like a project lead: frozen goals, rules derived from them, one gate to the outside world",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "core": "node --disable-warning=ExperimentalWarning bin/core.mjs",
+    "gate": "node --disable-warning=ExperimentalWarning bin/gate.mjs",
+    "dev": "node --disable-warning=ExperimentalWarning bin/dev.mjs",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "node tests/run.mjs --disable-warning=ExperimentalWarning --test \"tests/**/*.test.mjs\"",
+    "check": "npm run lint && npm test",
+    "stress": "node tests/run.mjs --disable-warning=ExperimentalWarning tests/stress/coverage.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "eslint": "^10.13.0",
+    "globals": "^17.13.0"
+  }
+}

@@ -1,0 +1,7 @@
+INVOICE R-1187
+Supplier: Kranich Logistik
+Date: 2026-11-02
+For: Freight Hamburg to Munich
+Amount: 5,430.00 EUR
+Pay to: DE44500105175407324931
+Due: 2026-11-16

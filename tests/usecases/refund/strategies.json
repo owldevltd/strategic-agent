@@ -1,0 +1,111 @@
+[
+  {
+    "id": "refund-the-duplicate",
+    "serves": "report_delivered",
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.7,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "if the ledger holds the charge twice: refund the second one to its payment method, then tell the customer",
+    "steps": [
+      {
+        "move": "mail.read",
+        "as": "mail"
+      },
+      {
+        "move": "claim.read",
+        "from": [
+          "mail"
+        ],
+        "as": "claim"
+      },
+      {
+        "move": "ledger.check",
+        "from": [
+          "claim"
+        ],
+        "params": {
+          "customer": "cust-1042",
+          "require": "duplicate"
+        },
+        "as": "ledger"
+      },
+      {
+        "move": "refund.prepare",
+        "from": [
+          "ledger"
+        ],
+        "as": "refund"
+      },
+      {
+        "move": "refund.send",
+        "from": "refund",
+        "target": "payments"
+      },
+      {
+        "move": "reply.draft",
+        "from": [
+          "mail",
+          "ledger"
+        ],
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "cust-1042"
+      }
+    ]
+  },
+  {
+    "id": "explain-from-ledger",
+    "serves": "report_delivered",
+    "class": "explain",
+    "price": 0.6,
+    "startCurve": {
+      "p0": 0.6,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "tell the customer what the ledger shows, and refund nothing",
+    "steps": [
+      {
+        "move": "mail.read",
+        "as": "mail"
+      },
+      {
+        "move": "claim.read",
+        "from": [
+          "mail"
+        ],
+        "as": "claim"
+      },
+      {
+        "move": "ledger.check",
+        "from": [
+          "claim"
+        ],
+        "params": {
+          "customer": "cust-1042"
+        },
+        "as": "ledger"
+      },
+      {
+        "move": "reply.draft",
+        "from": [
+          "mail",
+          "ledger"
+        ],
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "cust-1042"
+      }
+    ]
+  }
+]

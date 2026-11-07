@@ -1,0 +1,14 @@
+{
+  "move_failed": [
+    {
+      "hypothesis": "no_slot_for_everyone",
+      "class": "hand_over"
+    }
+  ],
+  "no_reaction": [
+    {
+      "hypothesis": "not_everyone_answered",
+      "class": "hand_over"
+    }
+  ]
+}

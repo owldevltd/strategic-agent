@@ -1,0 +1,236 @@
+{
+  "slots.find": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "week": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/slots.py",
+    "labels": [
+      "own"
+    ],
+    "describe": "three slots free in both internal calendars"
+  },
+  "propose.kim": {
+    "price": 0.1,
+    "criticality": "outward",
+    "params": {
+      "body": {
+        "type": "string",
+        "optional": true
+      },
+      "week": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 72,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "action": "propose",
+    "param": "body",
+    "humanMinutes": 0,
+    "describe": "proposes the slots to an external participant; the answer comes back as its own process",
+    "creates": {
+      "expectation": {
+        "key": "ref",
+        "prefix": "MTG",
+        "fact": "availability",
+        "need": 1,
+        "minutes": 60,
+        "extract": {
+          "slot": {
+            "type": "enum",
+            "values": [
+              "S1",
+              "S2",
+              "S3",
+              "none"
+            ],
+            "describe": "the one proposed slot (S1, S2 or S3) the person clearly accepts; none if they accept none of them or propose another time",
+            "critical": true
+          }
+        },
+        "store": {
+          "rows": [
+            {
+              "file": "answers.csv",
+              "key": "person",
+              "row": {
+                "person": "{{team}}",
+                "slot": "{{slot}}"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "propose.raj": {
+    "price": 0.1,
+    "criticality": "outward",
+    "params": {
+      "body": {
+        "type": "string",
+        "optional": true
+      },
+      "week": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 72,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "action": "propose",
+    "param": "body",
+    "humanMinutes": 0,
+    "describe": "proposes the slots to an external participant; the answer comes back as its own process",
+    "creates": {
+      "expectation": {
+        "key": "ref",
+        "prefix": "MTG",
+        "fact": "availability",
+        "need": 1,
+        "minutes": 60,
+        "extract": {
+          "slot": {
+            "type": "enum",
+            "values": [
+              "S1",
+              "S2",
+              "S3",
+              "none"
+            ],
+            "describe": "the one proposed slot (S1, S2 or S3) the person clearly accepts; none if they accept none of them or propose another time",
+            "critical": true
+          }
+        },
+        "store": {
+          "rows": [
+            {
+              "file": "answers.csv",
+              "key": "person",
+              "row": {
+                "person": "{{team}}",
+                "slot": "{{slot}}"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "answers.wait": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "minutes": {
+        "type": "number",
+        "optional": true
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": 72,
+    "leaseMaxMin": null,
+    "reversible": true,
+    "commits": null,
+    "executor": "wait",
+    "describe": "waits for an answer"
+  },
+  "slot.pick": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "people": {
+        "type": "list"
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/pick.py",
+    "labels": [
+      "own"
+    ],
+    "describe": "the slot everyone accepted, or a wall"
+  },
+  "meeting.book": {
+    "price": 0.1,
+    "criticality": "outward",
+    "params": {
+      "slot": {
+        "type": "string",
+        "optional": true
+      },
+      "answers": {
+        "type": "object",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 72,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "action": "book",
+    "humanMinutes": 1,
+    "describe": "sends the calendar invitation for the slot to all four"
+  },
+  "invite.text": {
+    "price": 0.2,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "writer",
+    "inherit": true,
+    "labels": [],
+    "outbound": "propose",
+    "describe": "writes the proposal to an external participant",
+    "instructions": "You write a short, friendly mail to an external partner proposing a one-hour meeting next week with our team. Offer exactly the slots you are given, by their labels S1 to S3 with day and time, and ask which one works. Say nothing else about anyone's calendar.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

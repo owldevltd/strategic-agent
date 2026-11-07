@@ -1,0 +1,30 @@
+{
+  "goal": "{{item}}: one venue booked for the offsite day at its quoted price, at most 6,000 EUR, approved by a person",
+  "budget": 40,
+  "value": 40,
+  "serves": {
+    "criterion": "k1"
+  },
+  "criteria": [
+    {
+      "id": "c1",
+      "type": "items_resolved",
+      "values": {
+        "collection": "offsite",
+        "items": [
+          "{{item}}"
+        ],
+        "outcomes": [
+          "booked"
+        ]
+      }
+    },
+    {
+      "id": "c2",
+      "type": "sum_max",
+      "values": {
+        "max": 6000
+      }
+    }
+  ]
+}

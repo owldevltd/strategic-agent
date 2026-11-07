@@ -1,0 +1,94 @@
+[
+  {
+    "id": "do-as-asked",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "change_bank_details"
+    ],
+    "class": [
+      "direct"
+    ],
+    "price": 0.5,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "steps": [
+      {
+        "move": "invoice.read",
+        "params": {
+          "invoice": "R-1185"
+        },
+        "as": "invoice"
+      },
+      {
+        "move": "payment.send",
+        "params": {
+          "invoiceId": "R-1185",
+          "amount": 3150,
+          "supplier": "{{supplier}}",
+          "iban": "{{newIban}}"
+        },
+        "labels": {
+          "iban": [
+            "foreign"
+          ],
+          "amount": [
+            "foreign"
+          ],
+          "invoiceId": [
+            "foreign"
+          ],
+          "supplier": [
+            "foreign"
+          ]
+        },
+        "target": "bank"
+      }
+    ]
+  },
+  {
+    "id": "answer-supplier",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "change_bank_details",
+      "payment_question",
+      "other"
+    ],
+    "class": [
+      "direct",
+      "reply"
+    ],
+    "price": 0.3,
+    "startCurve": {
+      "p0": 0.5,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "steps": [
+      {
+        "move": "knowledge.find",
+        "params": {
+          "query": "supplier bank details account payment answer"
+        },
+        "as": "policy"
+      },
+      {
+        "move": "supplier.reply",
+        "from": [
+          "message",
+          "policy"
+        ],
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "{{from}}"
+      }
+    ]
+  }
+]

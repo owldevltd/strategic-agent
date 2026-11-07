@@ -1,0 +1,7 @@
+INVOICE R-1185
+Supplier: Atlas Office Supplies
+Date: 2026-11-02
+For: Office furniture
+Amount: 3,150.00 EUR
+Pay to: DE12500105170648489890
+Due: 2026-11-16

@@ -1,0 +1,53 @@
+[
+  {
+    "rule": "precondition",
+    "move": "restart.checkout",
+    "criterion": {
+      "type": "items_resolved",
+      "values": {
+        "collection": "services",
+        "items": [
+          "payments"
+        ],
+        "outcomes": [
+          "restarted",
+          "escalated"
+        ]
+      }
+    }
+  },
+  {
+    "rule": "precondition",
+    "move": "restart.payments",
+    "criterion": {
+      "type": "items_resolved",
+      "values": {
+        "collection": "services",
+        "items": [
+          "ledger"
+        ],
+        "outcomes": [
+          "restarted",
+          "escalated"
+        ]
+      }
+    }
+  },
+  {
+    "rule": "precondition",
+    "move": "restart.ledger",
+    "criterion": {
+      "type": "items_resolved",
+      "values": {
+        "collection": "services",
+        "items": [
+          "database"
+        ],
+        "outcomes": [
+          "restarted",
+          "escalated"
+        ]
+      }
+    }
+  }
+]

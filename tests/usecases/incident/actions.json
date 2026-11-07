@@ -1,0 +1,18 @@
+{
+  "rotate_logs": {
+    "criticality": "internal",
+    "carries": [],
+    "sensitive": [],
+    "says": "rotates and compresses a log file on a server",
+    "idempotencyH": 24
+  },
+  "delete_files": {
+    "criticality": "irreversible",
+    "carries": [],
+    "sensitive": [
+      "path"
+    ],
+    "says": "deletes files on a server",
+    "idempotencyH": 24
+  }
+}

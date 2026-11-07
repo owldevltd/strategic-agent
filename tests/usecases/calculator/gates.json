@@ -1,0 +1,13 @@
+[
+  {
+    "rule": "precondition",
+    "move": "person.confirm",
+    "criterion": {
+      "type": "test_green",
+      "values": {
+        "test": "calculator-hidden",
+        "commit": "501f0df1e2bdcaa2"
+      }
+    }
+  }
+]

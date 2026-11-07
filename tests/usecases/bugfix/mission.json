@@ -1,0 +1,15 @@
+{
+  "id": "bugfix",
+  "title": "Bug fix",
+  "contract": "contract.json",
+  "data": "data",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "stub": "stub.json",
+  "kind": "code-change",
+  "task": "Fix the rounding bug of support ticket #4711 in the billing module; the frozen regression suite must pass within a day.",
+  "invariants": [],
+  "defaults": { "budget": 10, "value": 20, "deadlineHours": 24 },
+  "context": { "data": "the billing module and the support ticket; the regression suite is frozen in the goal and never shown to the model" },
+  "office": {}
+}

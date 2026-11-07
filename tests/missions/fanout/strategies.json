@@ -1,0 +1,75 @@
+[
+  {
+    "id": "one-child-per-supplier",
+    "serves": "items_resolved",
+    "depth": 0,
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 4
+    },
+    "tSignalH": null,
+    "describe": "one child goal per supplier",
+    "steps": [
+      {
+        "move": "notice.child",
+        "forEach": "{{items}}"
+      }
+    ]
+  },
+  {
+    "id": "write-and-send",
+    "serves": "items_resolved",
+    "depth": 1,
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "the model writes the notice, a person approves it at the gate",
+    "steps": [
+      {
+        "move": "notice.write",
+        "as": "notice"
+      },
+      {
+        "move": "notice.send",
+        "from": "notice",
+        "params": {
+          "supplier": "{{item}}"
+        },
+        "target": "{{item}}"
+      }
+    ]
+  },
+  {
+    "id": "hand-to-person",
+    "serves": "items_resolved",
+    "depth": 1,
+    "class": "hand_over",
+    "price": 2,
+    "startCurve": {
+      "p0": 0.95,
+      "tauH": 8
+    },
+    "tSignalH": 4,
+    "describe": "a person takes over the notice for this supplier",
+    "steps": [
+      {
+        "move": "person.decide",
+        "params": {
+          "supplier": "{{item}}",
+          "question": "The notice to {{item}} could not be sent. What now?",
+          "options": [
+            "I will call them",
+            "skip this supplier"
+          ],
+          "recommendation": "I will call them"
+        }
+      }
+    ]
+  }
+]

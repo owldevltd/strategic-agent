@@ -1,0 +1,52 @@
+{
+  "id": "refund",
+  "title": "Refund",
+  "contract": "contract.json",
+  "data": "data",
+  "master": "master.json",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "stub": "stub.json",
+  "diagnosis": "diagnosis.json",
+  "kind": "support-refund",
+  "task": "Answer customer cust-1042 on the double charge of 2 November under the refund policy.",
+  "invariants": [
+    {
+      "type": "exactly_once",
+      "values": {
+        "key": "chargeId",
+        "action": "refund"
+      }
+    },
+    {
+      "type": "account_from_master",
+      "values": {
+        "param": "method",
+        "kind": "payment_method"
+      }
+    },
+    {
+      "type": "human_approval",
+      "values": {
+        "actions": [
+          "refund"
+        ]
+      }
+    },
+    {
+      "type": "sum_max",
+      "values": {
+        "max": 200
+      }
+    }
+  ],
+  "defaults": {
+    "budget": 10,
+    "value": 15,
+    "deadlineHours": 24
+  },
+  "context": {
+    "data": "the customer's mail and our ledger; refunds only of charges in the ledger, only to the original payment method, at most 200 EUR"
+  },
+  "office": {}
+}

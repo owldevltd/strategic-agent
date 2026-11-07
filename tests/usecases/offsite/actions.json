@@ -1,0 +1,26 @@
+{
+  "offsite_invite": {
+    "criticality": "outward", "carries": [ "message" ], "sensitive": [], "inside": true, "idempotencyH": 72,
+    "says": "the offsite invitation to one team; each member answers yes or no"
+  },
+  "offsite_reminder": {
+    "criticality": "outward", "carries": [ "message" ], "sensitive": [], "inside": true, "idempotencyH": 72,
+    "says": "one friendly reminder to a team that the offsite invitation is still open"
+  },
+  "venue_request": {
+    "criticality": "outward", "carries": [ "message" ], "sensitive": [], "idempotencyH": 72,
+    "says": "asks a venue from our supplier list whether it is free on the offsite day and what the day costs"
+  },
+  "venue_booking": {
+    "criticality": "money_or_law", "carries": [ "money" ], "sensitive": [ "supplier" ], "commits": "venue_booking", "idempotencyH": 168,
+    "says": "books a venue for the offsite day at its quoted price"
+  },
+  "catering_order": {
+    "criticality": "money_or_law", "carries": [ "money" ], "sensitive": [ "supplier" ], "commits": "catering_order", "idempotencyH": 168,
+    "says": "orders the offsite catering for the confirmed headcount"
+  },
+  "offsite_details": {
+    "criticality": "outward", "carries": [ "message" ], "sensitive": [], "inside": true, "idempotencyH": 72,
+    "says": "the final offsite details (date, venue, time) to one team"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "goal": "Invoice {{item}}: found paid, not more than 14 days past due, or one friendly reminder to the billing address on file",
+  "budget": 12,
+  "value": 12,
+  "serves": { "criterion": "k1" },
+  "criteria": [
+    { "id": "c1", "type": "items_resolved",
+      "values": { "collection": "invoices", "items": [ "{{item}}" ], "outcomes": [ "paid", "not_due", "reminded", "escalated" ] } }
+  ]
+}

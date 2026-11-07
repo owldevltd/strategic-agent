@@ -1,0 +1,38 @@
+{
+  "code.write": {
+    "executor": "ai",
+    "role": "coder",
+    "labels": [],
+    "describe": "the agent writes the function itself; it sees the task and three examples, never the acceptance tests",
+    "instructions": "Write a Python 3 function normalise_iban(text). Remove spaces, tabs and hyphens, turn letters into upper case, and return the result if it is a valid IBAN: two ASCII letters, two digits, then 11 to 30 ASCII letters or digits, and the ISO 13616 check (move the first four characters to the end, replace each letter by its number A=10 to Z=35, the whole number modulo 97 is 1). Return None for anything else, including values that are not text. Examples: 'de89 3704 0044 0532 0130 00' gives 'DE89370400440532013000'; 'GB82-WEST-1234-5698-7654-32' gives 'GB82WEST12345698765432'; 'not an iban' gives None. Use no imports, no files and no printing. Answer with the code in the field code.",
+    "contract": { "fields": { "code": { "type": "string" } } },
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null
+  },
+  "code.test": {
+    "executor": "code",
+    "tool": "tests/missions/coding/tools/acceptance.py",
+    "describe": "runs the agent's function against the frozen acceptance tests in a trusted frame in the sandbox; green is an observation",
+    "labels": [ "own" ],
+    "fact": "test_run",
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "cases": { "type": "list", "required": true },
+      "seconds": { "type": "number", "optional": true, "min": 0.1 }
+    },
+    "evidence": [ "test_run" ],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  }
+}

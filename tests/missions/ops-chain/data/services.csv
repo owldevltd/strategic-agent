@@ -1,0 +1,8 @@
+service,host,status,dependsOn
+checkout,app-01,down,payments
+payments,app-02,down,ledger
+ledger,db-02,down,database
+database,db-01,down,
+storage,st-01,up,
+network,net-01,up,
+power,pdu-01,up,

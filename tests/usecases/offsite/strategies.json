@@ -1,0 +1,109 @@
+[
+  {
+    "id": "plan-the-offsite", "serves": "items_resolved", "kind": "offsite-planning", "depth": 0, "class": "direct",
+    "price": 1, "startCurve": { "p0": 0.9, "tauH": 72 }, "tSignalH": null,
+    "describe": "one sub-goal per team; then the venue and the catering (each held by a strategy gate until every team is counted); then one sub-goal per team for the final details (held until venue and catering are confirmed)",
+    "steps": [
+      { "move": "team.child", "forEach": "{{teams}}" },
+      { "move": "venue.child", "forEach": "{{venues}}" },
+      { "move": "catering.child", "forEach": "{{caterings}}" },
+      { "move": "details.child", "forEach": "{{notices}}" }
+    ]
+  },
+
+  {
+    "id": "invite-the-team", "serves": "items_resolved", "kind": "offsite-planning", "depth": 1, "class": "direct",
+    "fits": { "items": "^rsvp:[a-z]+$" },
+    "price": 0.3, "startCurve": { "p0": 0.9, "tauH": 48 }, "tSignalH": null,
+    "describe": "the one invitation to the team, then its reply window",
+    "steps": [
+      { "move": "invite.prepare", "params": { "mode": "invitation", "team": "{{item|subject}}", "event": "{{event}}", "date": "{{date}}", "time": "{{time}}" }, "as": "letter" },
+      { "move": "invite.send", "from": "letter", "target": "{{item|subject}}", "as": "invite" },
+      { "move": "offsite.wait", "for": "invite" }
+    ]
+  },
+  {
+    "id": "count-the-answers", "serves": "items_resolved", "kind": "offsite-planning", "depth": 1, "class": "count",
+    "fits": { "items": "^rsvp:[a-z]+$" },
+    "price": 0.1, "startCurve": { "p0": 0.8, "tauH": 1 }, "tSignalH": null,
+    "describe": "the reply window is over (or the reminder round is done): trusted code counts the team, or names the reminder round as the missing precondition",
+    "steps": [
+      { "move": "rsvp.count", "params": { "mode": "count", "item": "{{item}}", "quorum": "{{quorum}}" } }
+    ]
+  },
+  {
+    "id": "office-manager-decides", "serves": "items_resolved", "kind": "offsite-planning", "depth": 1, "class": "hand_over",
+    "fits": { "items": "^rsvp:[a-z]+$" },
+    "price": 2, "startCurve": { "p0": 0.95, "tauH": 24 }, "tSignalH": null,
+    "describe": "the team stayed below the quorum after its reminder round: the office manager decides",
+    "steps": [
+      { "move": "team.decide", "params": {
+        "item": "{{item}}",
+        "question": "Team {{item|subject}} is still below 60 % answers after its reminder round. How do we plan for it?",
+        "options": [ "plan with the yes answers only", "plan with the whole team" ],
+        "recommendation": "plan with the yes answers only" } }
+    ]
+  },
+
+  {
+    "id": "one-reminder-round", "serves": "number_in_range", "kind": "offsite-planning", "depth": 2, "class": "direct",
+    "fits": { "quantity": "^late:[a-z]+$" },
+    "price": 0.3, "startCurve": { "p0": 0.7, "tauH": 24 }, "tSignalH": null,
+    "describe": "one friendly reminder to the team, then wait for the answers it still lacks and measure them",
+    "steps": [
+      { "move": "reminder.prepare", "params": { "mode": "reminder", "team": "{{quantity|subject}}", "event": "{{event}}", "date": "{{date}}" }, "as": "letter" },
+      { "move": "reminder.send", "from": "letter", "target": "{{quantity|subject}}", "params": { "need": "{{min}}" }, "as": "reminder" },
+      { "move": "offsite.wait", "for": "reminder" },
+      { "move": "late.measure", "params": { "mode": "measure", "quantity": "{{quantity}}" } }
+    ]
+  },
+
+  {
+    "id": "ask-venue-a", "serves": "items_resolved", "kind": "offsite-planning", "depth": 1, "class": "direct",
+    "fits": { "items": "^venue:[a-z]+$" },
+    "price": 0.5, "startCurve": { "p0": 0.8, "tauH": 24 }, "tSignalH": null,
+    "describe": "ask venue A; free and within the cap, book it",
+    "steps": [
+      { "move": "venue.ask", "params": { "mode": "venue_request", "venue": "venue-a", "event": "{{event}}", "date": "{{date}}" }, "as": "letter" },
+      { "move": "venue.request", "from": "letter", "target": "venue-a", "as": "ask" },
+      { "move": "offsite.wait", "for": "ask" },
+      { "move": "venue.check", "params": { "mode": "venue_check", "venue": "venue-a", "item": "{{item}}", "event": "{{event}}", "cap": "{{venueCap}}" }, "as": "offer" },
+      { "move": "venue.book", "from": "offer", "target": "venue-a" }
+    ]
+  },
+  {
+    "id": "ask-venue-b", "serves": "items_resolved", "kind": "offsite-planning", "depth": 1, "class": "other_venue",
+    "fits": { "items": "^venue:[a-z]+$" },
+    "price": 0.5, "startCurve": { "p0": 0.8, "tauH": 24 }, "tSignalH": null,
+    "describe": "venue A declined, is over the cap or did not answer: ask venue B; free and within the cap, book it",
+    "steps": [
+      { "move": "venue.ask", "params": { "mode": "venue_request", "venue": "venue-b", "event": "{{event}}", "date": "{{date}}" }, "as": "letter" },
+      { "move": "venue.request", "from": "letter", "target": "venue-b", "as": "ask" },
+      { "move": "offsite.wait", "for": "ask" },
+      { "move": "venue.check", "params": { "mode": "venue_check", "venue": "venue-b", "item": "{{item}}", "event": "{{event}}", "cap": "{{venueCap}}" }, "as": "offer" },
+      { "move": "venue.book", "from": "offer", "target": "venue-b" }
+    ]
+  },
+
+  {
+    "id": "order-for-the-headcount", "serves": "items_resolved", "kind": "offsite-planning", "depth": 1, "class": "direct",
+    "fits": { "items": "^catering:[a-z]+$" },
+    "price": 0.3, "startCurve": { "p0": 0.9, "tauH": 8 }, "tSignalH": null,
+    "describe": "the caterer's order for the confirmed headcount, priced and capped by trusted code",
+    "steps": [
+      { "move": "catering.prepare", "params": { "mode": "catering", "item": "{{item}}", "event": "{{event}}", "supplier": "{{caterer}}", "cap": "{{perPersonCap}}" }, "as": "order" },
+      { "move": "catering.order", "from": "order", "target": "{{caterer}}" }
+    ]
+  },
+
+  {
+    "id": "send-the-details", "serves": "items_resolved", "kind": "offsite-planning", "depth": 1, "class": "direct",
+    "fits": { "items": "^details:[a-z]+$" },
+    "price": 0.2, "startCurve": { "p0": 0.9, "tauH": 8 }, "tSignalH": null,
+    "describe": "the final details for one team from a fixed template",
+    "steps": [
+      { "move": "details.prepare", "params": { "mode": "details", "item": "{{item}}", "event": "{{event}}", "date": "{{date}}", "time": "{{time}}" }, "as": "notice" },
+      { "move": "details.send", "from": "notice", "target": "{{item|subject}}" }
+    ]
+  }
+]

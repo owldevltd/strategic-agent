@@ -1,0 +1,14 @@
+{
+  "supplier_payment": {
+    "criticality": "money_or_law", "carries": [ "money" ], "sensitive": [ "iban" ], "commits": "payment",
+    "says": "a bank transfer to a new supplier, to the account of our own registration", "idempotencyH": 168
+  },
+  "doc_request": {
+    "criticality": "outward", "carries": [ "message" ], "sensitive": [], "recipient": "contact",
+    "says": "asks a new supplier for one onboarding document (tax registration certificate or bank confirmation letter)", "idempotencyH": 168
+  },
+  "doc_reminder": {
+    "criticality": "outward", "carries": [ "message" ], "sensitive": [], "recipient": "contact",
+    "says": "reminds a new supplier, once, of an onboarding document it has not sent", "idempotencyH": 168
+  }
+}

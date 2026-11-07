@@ -1,0 +1,79 @@
+[
+  {
+    "id": "one-child-per-invoice",
+    "serves": "items_resolved",
+    "depth": 0,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 4
+    },
+    "steps": [
+      {
+        "move": "invoice.child",
+        "forEach": "{{items}}"
+      }
+    ],
+    "price": 1,
+    "class": "direct",
+    "tSignalH": null
+  },
+  {
+    "id": "pay-from-master-data",
+    "serves": "items_resolved",
+    "depth": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 2
+    },
+    "steps": [
+      {
+        "move": "invoice.read",
+        "params": {
+          "invoice": "{{item}}"
+        },
+        "as": "invoice"
+      },
+      {
+        "move": "payment.prepare",
+        "from": [
+          "invoice"
+        ],
+        "as": "payment"
+      },
+      {
+        "move": "payment.send",
+        "from": "payment",
+        "target": "bank"
+      }
+    ],
+    "price": 1,
+    "class": "direct",
+    "tSignalH": null
+  },
+  {
+    "id": "hand-to-person",
+    "serves": "items_resolved",
+    "depth": 1,
+    "startCurve": {
+      "p0": 0.95,
+      "tauH": 8
+    },
+    "steps": [
+      {
+        "move": "person.decide",
+        "params": {
+          "invoiceId": "{{item}}",
+          "question": "Invoice {{item}} cannot be paid automatically: its supplier is not in our master data. What should happen?",
+          "options": [
+            "check with the supplier and add them to the master data",
+            "reject the invoice"
+          ],
+          "recommendation": "check with the supplier and add them to the master data"
+        }
+      }
+    ],
+    "price": 3,
+    "class": "hand_over",
+    "tSignalH": 4
+  }
+]

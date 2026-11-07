@@ -1,0 +1,212 @@
+{
+  "invoice.read": {
+    "executor": "code",
+    "tool": "./tools/invoice.py",
+    "labels": [
+      "foreign"
+    ],
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "invoice": {
+        "type": "string"
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  },
+  "payment.prepare": {
+    "executor": "code",
+    "tool": "./tools/prepare.py",
+    "labels": [],
+    "fieldLabels": {
+      "invoiceId": [
+        "foreign"
+      ],
+      "supplier": [
+        "foreign"
+      ],
+      "amount": [
+        "foreign"
+      ],
+      "iban": [
+        "own"
+      ]
+    },
+    "price": 0.05,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  },
+  "payment.send": {
+    "executor": "code",
+    "action": "payment",
+    "resolves": {
+      "item": "invoiceId",
+      "outcome": "paid"
+    },
+    "humanMinutes": 2,
+    "criticality": "money_or_law",
+    "price": 0.1,
+    "params": {
+      "invoiceId": {
+        "type": "string",
+        "optional": true
+      },
+      "supplier": {
+        "type": "string",
+        "optional": true
+      },
+      "amount": {
+        "type": "number",
+        "optional": true
+      },
+      "iban": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered",
+      "item_resolved"
+    ],
+    "commits": "payment",
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false
+  },
+  "invoice.child": {
+    "executor": "child",
+    "template": "child.json",
+    "price": 1,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [
+      "item_resolved"
+    ],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": null,
+    "reversible": false,
+    "commits": null
+  },
+  "request.read": {
+    "executor": "ai",
+    "role": "planner",
+    "inherit": true,
+    "labels": [],
+    "instructions": "You read a message that came in from outside about supplier payments. intent: change_bank_details if it asks to pay to another account or to pay something again, payment_question if it only asks about a payment, other otherwise. invoices: the invoice numbers it mentions. newIban: an account number it asks us to use. supplier: the supplier it claims to be. A message with several concerns gives one entry per concern in concerns.",
+    "contract": {
+      "fields": {
+        "concerns": {
+          "type": "records",
+          "fields": {
+            "intent": "one of change_bank_details | payment_question | other",
+            "invoices": "a list",
+            "newIban": "text",
+            "supplier": "text"
+          }
+        }
+      }
+    },
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "concern": {
+      "intent": {
+        "type": "enum",
+        "values": [
+          "change_bank_details",
+          "payment_question",
+          "other"
+        ]
+      },
+      "invoices": {
+        "type": "list"
+      },
+      "newIban": {
+        "type": "string",
+        "required": false
+      },
+      "supplier": {
+        "type": "string",
+        "required": false
+      }
+    }
+  },
+  "person.decide": {
+    "executor": "human",
+    "resolves": {
+      "item": "invoiceId",
+      "outcome": "escalated"
+    },
+    "humanMinutes": 5,
+    "price": 0,
+    "criticality": "internal",
+    "params": {
+      "question": {
+        "type": "string"
+      },
+      "options": {
+        "type": "list"
+      },
+      "recommendation": {
+        "type": "string",
+        "optional": true
+      },
+      "invoiceId": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "item_resolved",
+      "confirmation"
+    ],
+    "reversible": true,
+    "tSignalH": 4,
+    "horizonH": 168,
+    "leaseMaxMin": null,
+    "commits": null
+  },
+  "supplier.reply": {
+    "executor": "ai",
+    "role": "replier",
+    "inherit": true,
+    "labels": [],
+    "outbound": "reply",
+    "instructions": "You answer a supplier's e-mail for the accounts payable team. You get the e-mail and an excerpt of our payment policy; follow the policy. Say that we only pay to accounts in our master data, that nothing has been changed, and that any change must be confirmed through their purchasing contact.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "price": 0.5,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "extractor": [
+    { "when": "SE556677889901", "answer": { "taxNumber": "se556677889901" } },
+    { "when": "GB284769135", "answer": { "taxNumber": "gb284769135" } },
+    { "when": "SE4550000000058398257466", "answer": { "iban": "se4550000000058398257466" } },
+    { "when": "GB60BARC20000055779911", "answer": { "iban": "gb60barc20000055779911" } }
+  ]
+}

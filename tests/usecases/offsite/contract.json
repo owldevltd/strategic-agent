@@ -1,0 +1,106 @@
+{
+  "id": "offsite-2026",
+  "goal": "The company offsite on 4 December 2026 is planned: every team counted (or decided by the office manager), one venue booked and catering ordered within their limits, and every team told the date, venue and time",
+  "deadline": "{{in:336h}}",
+  "budget": 300,
+  "value": 300,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "items_resolved",
+      "values": {
+        "collection": "offsite",
+        "items": [
+          "rsvp:design",
+          "rsvp:engineering",
+          "rsvp:sales",
+          "venue:offsite",
+          "catering:offsite",
+          "details:design",
+          "details:engineering",
+          "details:sales"
+        ],
+        "outcomes": [
+          "counted",
+          "decided",
+          "booked",
+          "ordered",
+          "informed"
+        ]
+      }
+    },
+    {
+      "id": "k4",
+      "type": "exactly_once",
+      "values": {
+        "key": "team",
+        "action": "offsite_invite"
+      },
+      "immutable": true
+    },
+    {
+      "id": "k5",
+      "type": "exactly_once",
+      "values": {
+        "key": "team",
+        "action": "offsite_reminder"
+      },
+      "immutable": true
+    },
+    {
+      "id": "k6",
+      "type": "exactly_once",
+      "values": {
+        "key": "event",
+        "action": "venue_booking"
+      },
+      "immutable": true
+    },
+    {
+      "id": "k7",
+      "type": "exactly_once",
+      "values": {
+        "key": "event",
+        "action": "catering_order"
+      },
+      "immutable": true
+    },
+    {
+      "id": "k8",
+      "type": "exactly_once",
+      "values": {
+        "key": "team",
+        "action": "offsite_details"
+      },
+      "immutable": true
+    },
+    {
+      "id": "k9",
+      "type": "account_from_master",
+      "values": {
+        "param": "supplier",
+        "kind": "supplier"
+      },
+      "immutable": true
+    },
+    {
+      "id": "k10",
+      "type": "human_approval",
+      "values": {
+        "actions": [
+          "venue_booking",
+          "catering_order"
+        ]
+      },
+      "immutable": true
+    },
+    {
+      "id": "k11",
+      "type": "sum_max",
+      "values": {
+        "max": 6475
+      },
+      "immutable": true
+    }
+  ]
+}

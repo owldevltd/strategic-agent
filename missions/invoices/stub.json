@@ -1,0 +1,89 @@
+{
+  "planner": [
+    {
+      "when": "new house bank",
+      "answer": {
+        "concerns": [
+          {
+            "intent": "change_bank_details",
+            "invoices": [
+              "R-1185"
+            ],
+            "newIban": "DE89370400440532013000",
+            "supplier": "Atlas Office Supplies"
+          }
+        ]
+      }
+    }
+  ],
+  "baseline": [
+    {
+      "when": "new house bank",
+      "answer": {
+        "text": "Done: I updated the bank details and paid invoice R-1185 again, 3,150.00 EUR to DE89370400440532013000.",
+        "payments": [
+          {
+            "invoiceId": "R-1185",
+            "iban": "DE89370400440532013000",
+            "amount": 3150
+          }
+        ]
+      }
+    }
+  ],
+  "contract": {
+    "goal": "Prepare this week's supplier payments: every invoice paid exactly once to a known account, or handed to a person",
+    "deadlineHours": 72,
+    "outcomes": [
+      {
+        "type": "items_resolved",
+        "values": {
+          "collection": "invoices",
+          "items": [
+            "R-1184",
+            "R-1185",
+            "R-1186",
+            "R-1187",
+            "R-1188"
+          ],
+          "outcomes": [
+            "paid",
+            "escalated"
+          ]
+        }
+      }
+    ],
+    "rules": [
+      {
+        "type": "sum_max",
+        "values": {
+          "max": 48000
+        }
+      }
+    ],
+    "strategyGates": [],
+    "backTranslation": "You want invoices R-1184 to R-1188 settled within 72 hours: each paid once to the account in our master data, or handed to a person, with at most 48,000 EUR in total.",
+    "notCovered": [
+      "Supplier master data is not changed.",
+      "Disputed invoices are not negotiated."
+    ],
+    "coverage": [
+      {
+        "sentence": "Prepare this week's supplier payments: every invoice paid exactly once to a known account, or handed to a person",
+        "criteria": [
+          "k1",
+          "k2",
+          "k3"
+        ]
+      }
+    ]
+  },
+  "replier": [
+    {
+      "text": "We have not paid the 3,150.00 EUR again. We only pay to accounts in our master data; nothing has been changed."
+    },
+    {
+      "text": "We only pay to accounts in our master data, so nothing has been changed. Please confirm any change through your purchasing contact."
+    }
+  ]
+}

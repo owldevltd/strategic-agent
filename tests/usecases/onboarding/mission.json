@@ -1,0 +1,33 @@
+{
+  "id": "onboarding",
+  "title": "New suppliers: verify, then pay the first invoice",
+  "kind": "supplier-onboarding",
+  "contract": "contract.json",
+  "data": "data",
+  "master": "master.json",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "gates": "gates.json",
+  "diagnosis": "diagnosis.json",
+  "world": "world.json",
+  "stub": "stub.json",
+  "directory": "directory.csv",
+  "task": "Pay this week's first invoices of our two new suppliers, Lindqvist Tools AB (LT-2026-0117) and Okoro Metals Ltd (OKM-25-0042). Pay a supplier only once it is verified: its tax registration certificate and its bank confirmation letter are in and checked, and a person in purchasing confirms. Pay only to the supplier's account in our master data, each invoice once, at most 20,000 EUR in total this week, every payment approved by a person with a reason.",
+  "startTokens": 60,
+  "invariants": [
+    { "type": "exactly_once", "values": { "key": "invoiceId", "action": "supplier_payment" } },
+    { "type": "account_from_master", "values": { "param": "iban" } },
+    { "type": "sum_max", "values": { "max": 20000 } },
+    { "type": "human_approval", "values": { "actions": [ "supplier_payment", "doc_request", "doc_reminder" ] } },
+    { "type": "exactly_once", "values": { "key": "document", "action": "doc_request" } },
+    { "type": "exactly_once", "values": { "key": "document", "action": "doc_reminder" } }
+  ],
+  "defaults": { "budget": 120, "value": 120, "deadlineHours": 120 },
+  "context": {
+    "collections": [ "invoices", "documents" ],
+    "items": [ "LT-2026-0117:lindqvist-tools-ab", "OKM-25-0042:okoro-metals-ltd" ],
+    "outcomes": [ "paid", "escalated" ],
+    "data": "the two first invoices, the suppliers' registration (country, IBAN given at registration, contact) and the documents they send back"
+  },
+  "office": {}
+}

@@ -1,0 +1,11 @@
+{
+  "reader": {
+    "date": "2026-11-02",
+    "amount": 89.9,
+    "wants": "refund",
+    "refundTo": "new card ending 7731"
+  },
+  "replier": {
+    "text": "Hello Jonas, thank you for writing. Our records show one charge of 89.90 EUR on 2 November. The second line on your statement was a pre-authorisation that has been released, so that money was never taken and will disappear from your statement. There is nothing to refund. Kind regards, your support team"
+  }
+}

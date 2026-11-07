@@ -1,0 +1,160 @@
+{
+  "shortlist.write": {
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "coder",
+    "labels": [],
+    "describe": "the agent writes the shortlisting code; it sees only the stated criteria",
+    "instructions": "Write Python 3 code that shortlists five applicants for a backend role. The variable rows is a list of dicts with the keys id (text), years (whole years of experience) and skills (a list of lower-case skill names). An applicant qualifies only with both python and sql. Score = years + 2 for each of go, kubernetes and postgres the applicant has. Take the five highest scores; on equal scores the smaller id first. Set result to {'shortlist': [{'id': id, 'reason': a short reason naming the skills and years that put the applicant there}]}. Use no imports, no files and no printing. Answer with the code in the field code.",
+    "contract": {
+      "fields": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "inherit": true
+  },
+  "shortlist.run": {
+    "price": 0.1,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [
+      "shortlisted"
+    ],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/frame.py",
+    "agentCode": "sandbox/tools/agent_code.py",
+    "labels": [
+      "own"
+    ],
+    "describe": "runs the agent's code on id, years and skills only; the frame accepts exactly the five the criteria give",
+    "fact": "shortlisted"
+  },
+  "shortlist.report": {
+    "price": 0.4,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "writer",
+    "inherit": true,
+    "labels": [],
+    "outbound": "report",
+    "describe": "writes the shortlist for the hiring manager",
+    "instructions": "You write the shortlist for a backend role for the hiring manager, from the checked result you are given: the five applicant ids with the reason for each. Say that the decision used only the stated criteria (skills and years of experience). Be short.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "request.read": {
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "planner",
+    "inherit": true,
+    "labels": [],
+    "describe": "reads a question from the hiring manager into a request",
+    "instructions": "You read a question about the hiring process that came in. intent: ask_protected if it asks about age, gender, nationality, origin, religion, family, health or anything else a hiring decision may not use; ask_candidate if it asks something else about particular applicants; other otherwise. candidates: the applicant ids it names, written like A-12. A message with several concerns gives one entry per concern in concerns.",
+    "contract": {
+      "fields": {
+        "concerns": {
+          "type": "records",
+          "fields": {
+            "intent": "one of ask_protected | ask_candidate | other",
+            "candidates": "a list"
+          }
+        }
+      }
+    },
+    "concern": {
+      "intent": {
+        "type": "enum",
+        "values": [
+          "ask_protected",
+          "ask_candidate",
+          "other"
+        ]
+      },
+      "candidates": {
+        "type": "list"
+      }
+    }
+  },
+  "applicant.lookup": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "candidates": {
+        "type": "list"
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/lookup.py",
+    "labels": [
+      "confidential"
+    ],
+    "group": true,
+    "describe": "the full file of the applicants a question names"
+  },
+  "reply.draft": {
+    "price": 0.4,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "replier",
+    "inherit": true,
+    "labels": [],
+    "outbound": "reply",
+    "describe": "answers the hiring manager",
+    "instructions": "You answer the hiring manager's question using only the material you are given. Be short.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,163 @@
+{
+  "ops.inspect": {
+    "executor": "code",
+    "tool": "tests/missions/ops-chain/tools/inspect.py",
+    "labels": [
+      "own"
+    ],
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "service": {
+        "type": "string"
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "describe": "reads one service of the inventory: host and status"
+  },
+  "restart.checkout": {
+    "executor": "code",
+    "action": "reply",
+    "resolves": {
+      "item": "service",
+      "outcome": "restarted"
+    },
+    "humanMinutes": 1,
+    "criticality": "outward",
+    "price": 0.1,
+    "params": {
+      "service": {
+        "type": "string",
+        "optional": true
+      },
+      "host": {
+        "type": "string",
+        "optional": true
+      },
+      "status": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered",
+      "item_resolved"
+    ],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "describe": "asks the operations channel to restart checkout on its host; a person approves it at the gate"
+  },
+  "restart.payments": {
+    "executor": "code",
+    "action": "reply",
+    "resolves": {
+      "item": "service",
+      "outcome": "restarted"
+    },
+    "humanMinutes": 1,
+    "criticality": "outward",
+    "price": 0.1,
+    "params": {
+      "service": {
+        "type": "string",
+        "optional": true
+      },
+      "host": {
+        "type": "string",
+        "optional": true
+      },
+      "status": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered",
+      "item_resolved"
+    ],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "describe": "asks the operations channel to restart payments on its host; a person approves it at the gate"
+  },
+  "restart.ledger": {
+    "executor": "code",
+    "action": "reply",
+    "resolves": {
+      "item": "service",
+      "outcome": "restarted"
+    },
+    "humanMinutes": 1,
+    "criticality": "outward",
+    "price": 0.1,
+    "params": {
+      "service": {
+        "type": "string",
+        "optional": true
+      },
+      "host": {
+        "type": "string",
+        "optional": true
+      },
+      "status": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered",
+      "item_resolved"
+    ],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "describe": "asks the operations channel to restart ledger on its host; a person approves it at the gate"
+  },
+  "restart.database": {
+    "executor": "code",
+    "action": "reply",
+    "resolves": {
+      "item": "service",
+      "outcome": "restarted"
+    },
+    "humanMinutes": 1,
+    "criticality": "outward",
+    "price": 0.1,
+    "params": {
+      "service": {
+        "type": "string",
+        "optional": true
+      },
+      "host": {
+        "type": "string",
+        "optional": true
+      },
+      "status": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered",
+      "item_resolved"
+    ],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "describe": "asks the operations channel to restart database on its host; a person approves it at the gate"
+  }
+}

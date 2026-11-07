@@ -1,0 +1,7 @@
+INVOICE LT-2026-0117
+Supplier: Lindqvist Tools AB
+Date: 2026-11-02
+For: 40 torque wrenches TW-200, first order
+Amount: 12,480.00 EUR
+Pay to: SE4550000000058398257466
+Due: 2026-11-16

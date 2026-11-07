@@ -1,0 +1,14 @@
+{
+  "analyst": {
+    "path": "/var/log/postgresql/debug.log",
+    "how": "rotate",
+    "why": "the debug log grows 4G an hour since yesterday's change and is safe to rotate"
+  },
+  "extractor": {
+    "quantity": "disk:db-01",
+    "value": 79
+  },
+  "writer": {
+    "text": "db-01 disk hit 95 % because log_min_messages was set to debug5 yesterday (CHG-2231); the debug log was rotated and compressed, the disk is at 79 %. Please set the log level back."
+  }
+}

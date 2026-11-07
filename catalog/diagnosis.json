@@ -1,0 +1,14 @@
+{
+  "about": "5.6: a wall's cause is read as hypotheses, each pointing to a class of strategies. Missions add their own; a person's decisions add more over time. '*' means any other class.",
+  "causes": {
+    "no_reaction": [ { "hypothesis": "too_early", "class": "wait_longer" }, { "hypothesis": "not_reached", "class": "remind" } ],
+    "not_reached": [ { "hypothesis": "wrong_way", "class": "*" } ],
+    "plan_refused": [ { "hypothesis": "the_plan_does_not_fit_the_goal", "class": "*" } ],
+    "move_failed": [ { "hypothesis": "the_way_is_broken", "class": "hand_over" }, { "hypothesis": "something_else_works", "class": "*" } ],
+    "lease_expired": [ { "hypothesis": "too_slow", "class": "*" } ],
+    "child_failed": [ { "hypothesis": "the_precondition_is_out_of_reach", "class": "*" } ],
+    "rejected_by_person": [ { "hypothesis": "the_person_wants_another_way", "class": "*" } ],
+    "not_sent": [ { "hypothesis": "it_was_withdrawn", "class": "*" } ],
+    "soft_rule": [ { "hypothesis": "the_text_does_not_fit", "class": "*" } ]
+  }
+}

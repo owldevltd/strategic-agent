@@ -1,0 +1,23 @@
+{
+  "id": "incident",
+  "title": "Incident",
+  "contract": "contract.json",
+  "data": "data",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "stub": "stub.json",
+  "world": "world.json",
+  "diagnosis": "diagnosis.json",
+  "kind": "incident",
+  "task": "Bring the disk of db-01 below 80 % without losing data and tell on-call what happened.",
+  "invariants": [],
+  "defaults": {
+    "budget": 10,
+    "value": 20,
+    "deadlineHours": 4
+  },
+  "context": {
+    "data": "the alert and the disk report of db-01"
+  },
+  "office": {}
+}

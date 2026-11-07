@@ -1,0 +1,13 @@
+{
+  "reminder": {
+    "criticality": "outward",
+    "carries": [
+      "data",
+      "message"
+    ],
+    "sensitive": [],
+    "says": "a friendly payment reminder for one invoice, to the customer's billing contact on file",
+    "recipient": "contact",
+    "idempotencyH": 168
+  }
+}

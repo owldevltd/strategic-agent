@@ -1,0 +1,17 @@
+{
+  "id": "onboarding-2026-w45",
+  "goal": "Pay this week's first invoices of the two new suppliers: each paid once to the supplier's account in the master data after the supplier is verified, or handed to a person",
+  "deadline": "{{in:120h}}",
+  "budget": 120,
+  "value": 120,
+  "criteria": [
+    { "id": "k1", "type": "items_resolved",
+      "values": { "collection": "invoices", "items": [ "LT-2026-0117:lindqvist-tools-ab", "OKM-25-0042:okoro-metals-ltd" ], "outcomes": [ "paid", "escalated" ] } },
+    { "id": "k2", "type": "exactly_once", "values": { "key": "invoiceId", "action": "supplier_payment" }, "immutable": true },
+    { "id": "k3", "type": "account_from_master", "values": { "param": "iban" }, "immutable": true },
+    { "id": "k4", "type": "sum_max", "values": { "max": 20000 }, "immutable": true },
+    { "id": "k5", "type": "human_approval", "values": { "actions": [ "supplier_payment", "doc_request", "doc_reminder" ] }, "immutable": true },
+    { "id": "k6", "type": "exactly_once", "values": { "key": "document", "action": "doc_request" }, "immutable": true },
+    { "id": "k7", "type": "exactly_once", "values": { "key": "document", "action": "doc_reminder" }, "immutable": true }
+  ]
+}

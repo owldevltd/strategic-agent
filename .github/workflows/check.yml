@@ -1,0 +1,29 @@
+# Lint, the whole test suite and the stress coverage on every push and pull request. The page of a run is the public
+# test report for its commit: the commit id, the Node version, every test and the totals. No secret is used: the tests
+# build their configuration themselves and never read a .env.
+name: check
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Tools the tests run in the local sandbox
+        run: python3 --version && php --version && timeout --version | head -1
+      - run: npm ci
+      - name: Lint and all tests
+        run: npm run check
+      - name: Stress coverage (at least 50 tests per engine module)
+        run: npm run stress

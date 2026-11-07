@@ -1,0 +1,158 @@
+{
+  "team.child": {
+    "executor": "child", "template": "team.json", "criticality": "internal", "price": 1,
+    "evidence": [ "item_resolved" ], "describe": "one sub-goal per team: invite, count, remind once, or the office manager decides"
+  },
+  "venue.child": {
+    "executor": "child", "template": "venue.json", "criticality": "internal", "price": 1,
+    "evidence": [ "item_resolved" ], "describe": "the sub-goal of booking one venue"
+  },
+  "catering.child": {
+    "executor": "child", "template": "catering.json", "criticality": "internal", "price": 1,
+    "evidence": [ "item_resolved" ], "describe": "the sub-goal of ordering the catering"
+  },
+  "details.child": {
+    "executor": "child", "template": "details.json", "criticality": "internal", "price": 1,
+    "evidence": [ "item_resolved" ], "describe": "one sub-goal per team: the final details"
+  },
+
+  "invite.prepare": {
+    "executor": "code", "tool": "./tools/offsite.py", "labels": [ "own" ], "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "team": { "type": "string" }, "event": { "type": "string" },
+                "date": { "type": "string" }, "time": { "type": "string" } },
+    "describe": "trusted code: the invitation from the one fixed template; it names no answers"
+  },
+  "invite.send": {
+    "executor": "code", "action": "offsite_invite", "criticality": "outward", "humanMinutes": 1, "price": 0.1,
+    "params": { "team": { "type": "string", "optional": true }, "event": { "type": "string", "optional": true },
+                "body": { "type": "string", "optional": true } },
+    "evidence": [ "delivered" ], "horizonH": 168, "leaseMaxMin": 5,
+    "creates": { "expectation": {
+      "key": "ref", "prefix": "RSVP", "fact": "rsvp_answer", "need": 99, "minutes": 2880,
+      "extract": { "answer": { "type": "enum", "values": [ "yes", "no" ], "fixed": true, "describe": "yes if the person will come to the offsite, no if not" } },
+      "parser": { "answer": "\\b(yes|no)\\b" },
+      "store": {
+        "identity": { "file": "roster.csv", "by": "name", "id": "id", "prefix": "p" },
+        "rows": [ { "file": "rsvp.csv", "key": "respondent", "row": { "respondent": "{{id}}", "team": "{{team}}", "answer": "{{answer}}", "round": "invitation" } } ]
+      }
+    } },
+    "describe": "hands the invitation to the gate; the answers are read into the vault while the team's goal listens. need 99: the first wait always runs its whole window"
+  },
+  "offsite.wait": {
+    "executor": "wait", "criticality": "read", "price": 0.05, "reversible": true, "horizonH": 168,
+    "params": { "minutes": { "type": "number", "optional": true }, "node": { "type": "string", "optional": true } },
+    "describe": "waits for the answers an earlier step expects, or until its time is up"
+  },
+  "rsvp.count": {
+    "executor": "code", "tool": "./tools/offsite.py", "labels": [ "own" ], "fact": "item_resolved", "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "item": { "type": "string" }, "quorum": { "type": "number" } },
+    "evidence": [ "item_resolved" ],
+    "describe": "trusted code: the team counts once at least the quorum of its roster answered; otherwise a wall that names the reminder round as the missing precondition"
+  },
+  "team.decide": {
+    "executor": "human", "resolves": { "item": "item", "outcome": "decided" }, "criticality": "internal", "humanMinutes": 5, "price": 0,
+    "params": { "item": { "type": "string", "optional": true }, "question": { "type": "string" }, "options": { "type": "list" },
+                "recommendation": { "type": "string", "optional": true } },
+    "evidence": [ "item_resolved", "confirmation" ],
+    "describe": "the office manager decides how to plan with a team that stayed below the quorum after its reminder round"
+  },
+
+  "reminder.prepare": {
+    "executor": "code", "tool": "./tools/offsite.py", "labels": [ "own" ], "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "team": { "type": "string" }, "event": { "type": "string" }, "date": { "type": "string" } },
+    "describe": "trusted code: the one friendly reminder from a fixed template; it names nobody and no answers"
+  },
+  "reminder.send": {
+    "executor": "code", "action": "offsite_reminder", "criticality": "outward", "humanMinutes": 1, "price": 0.1,
+    "params": { "team": { "type": "string", "optional": true }, "event": { "type": "string", "optional": true },
+                "body": { "type": "string", "optional": true }, "need": { "type": "integer", "optional": true } },
+    "evidence": [ "delivered" ], "horizonH": 168, "leaseMaxMin": 5,
+    "creates": { "expectation": {
+      "key": "ref", "prefix": "REM", "fact": "rsvp_answer", "need": 1, "minutes": 1440,
+      "extract": { "answer": { "type": "enum", "values": [ "yes", "no" ], "fixed": true, "describe": "yes if the person will come to the offsite, no if not" } },
+      "parser": { "answer": "\\b(yes|no)\\b" },
+      "store": {
+        "identity": { "file": "roster.csv", "by": "name", "id": "id", "prefix": "p" },
+        "rows": [ { "file": "rsvp.csv", "key": "respondent", "row": { "respondent": "{{id}}", "team": "{{team}}", "answer": "{{answer}}", "round": "reminder" } } ]
+      }
+    } },
+    "describe": "hands the reminder to the gate; it waits for as many answers as the team still lacks"
+  },
+  "late.measure": {
+    "executor": "code", "tool": "./tools/offsite.py", "labels": [ "own" ], "fact": "measured", "about": "quantity", "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "quantity": { "type": "string" } },
+    "evidence": [ "measured" ],
+    "describe": "trusted code: how many members of the team answered the reminder round"
+  },
+
+  "venue.ask": {
+    "executor": "code", "tool": "./tools/offsite.py", "labels": [ "own" ], "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "venue": { "type": "string" }, "event": { "type": "string" }, "date": { "type": "string" } },
+    "describe": "trusted code: the request to a venue from a fixed template"
+  },
+  "venue.request": {
+    "executor": "code", "action": "venue_request", "criticality": "outward", "humanMinutes": 1, "price": 0.1,
+    "params": { "venue": { "type": "string", "optional": true }, "event": { "type": "string", "optional": true },
+                "body": { "type": "string", "optional": true } },
+    "evidence": [ "delivered" ], "horizonH": 168, "leaseMaxMin": 5,
+    "creates": { "expectation": {
+      "key": "ref", "prefix": "VEN", "fact": "venue_answer", "need": 1, "minutes": 1440,
+      "extract": {
+        "available": { "type": "enum", "values": [ "yes", "no" ], "fixed": true, "describe": "yes if the venue is free on the day" },
+        "price": { "type": "number", "min": 0, "max": 100000, "required": false, "describe": "the price for the day in EUR, if given" }
+      },
+      "parser": { "available": "available:\\s*(yes|no)", "price": "price:\\s*(\\d+)" },
+      "store": { "rows": [ { "file": "venue_answers.csv", "key": "venue", "row": { "venue": "{{team}}", "available": "{{available}}", "price": "{{price}}" } } ] }
+    } },
+    "describe": "asks one venue; its answer is read into the vault"
+  },
+  "venue.check": {
+    "executor": "code", "tool": "./tools/offsite.py", "labels": [],
+    "fieldLabels": { "item": [ "own" ], "supplier": [ "own" ], "event": [ "own" ], "venue": [ "own" ], "amount": [ "foreign" ] },
+    "criticality": "internal", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "venue": { "type": "string" }, "item": { "type": "string" },
+                "event": { "type": "string" }, "cap": { "type": "number" } },
+    "describe": "trusted code: the venue's own answer in the vault; free, priced within the cap and a supplier of ours gives the booking, anything else is a wall"
+  },
+  "venue.book": {
+    "executor": "code", "action": "venue_booking", "resolves": { "item": "item", "outcome": "booked" },
+    "criticality": "money_or_law", "humanMinutes": 2, "price": 0.1, "commits": "venue_booking",
+    "params": { "item": { "type": "string", "optional": true }, "supplier": { "type": "string", "optional": true },
+                "amount": { "type": "number", "optional": true }, "event": { "type": "string", "optional": true },
+                "venue": { "type": "string", "optional": true } },
+    "evidence": [ "delivered", "item_resolved" ], "horizonH": 168, "leaseMaxMin": 5,
+    "describe": "books the venue; a person approves the amount at the gate"
+  },
+
+  "catering.prepare": {
+    "executor": "code", "tool": "./tools/offsite.py", "labels": [ "own" ], "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "item": { "type": "string" }, "event": { "type": "string" },
+                "supplier": { "type": "string" }, "cap": { "type": "number" } },
+    "describe": "trusted code: the confirmed headcount (yes answers) times the caterer's price per person from the price list; over the cap per person is a wall"
+  },
+  "catering.order": {
+    "executor": "code", "action": "catering_order", "resolves": { "item": "item", "outcome": "ordered" },
+    "criticality": "money_or_law", "humanMinutes": 2, "price": 0.1, "commits": "catering_order",
+    "params": { "item": { "type": "string", "optional": true }, "supplier": { "type": "string", "optional": true },
+                "amount": { "type": "number", "optional": true }, "perPerson": { "type": "number", "optional": true },
+                "headcount": { "type": "integer", "optional": true }, "event": { "type": "string", "optional": true } },
+    "evidence": [ "delivered", "item_resolved" ], "horizonH": 168, "leaseMaxMin": 5,
+    "describe": "orders the catering; a person approves the amount at the gate"
+  },
+
+  "details.prepare": {
+    "executor": "code", "tool": "./tools/offsite.py", "labels": [ "own" ], "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "item": { "type": "string" }, "event": { "type": "string" },
+                "date": { "type": "string" }, "time": { "type": "string" } },
+    "describe": "trusted code: the final details for one team from a fixed template: date, venue, time; no counts, no names"
+  },
+  "details.send": {
+    "executor": "code", "action": "offsite_details", "resolves": { "item": "item", "outcome": "informed" },
+    "criticality": "outward", "humanMinutes": 1, "price": 0.1,
+    "params": { "item": { "type": "string", "optional": true }, "team": { "type": "string", "optional": true },
+                "event": { "type": "string", "optional": true }, "venue": { "type": "string", "optional": true },
+                "body": { "type": "string", "optional": true } },
+    "evidence": [ "delivered", "item_resolved" ], "horizonH": 168, "leaseMaxMin": 5,
+    "describe": "hands the final details for one team to the gate"
+  }
+}

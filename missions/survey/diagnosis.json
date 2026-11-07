@@ -1,0 +1,32 @@
+{
+  "group_too_small": [
+    {
+      "hypothesis": "too_few_of_the_team_answered",
+      "class": "ask_more"
+    },
+    {
+      "hypothesis": "the_group_is_too_narrow",
+      "class": "widen"
+    },
+    {
+      "hypothesis": "the_group_cannot_be_shown",
+      "class": "decline"
+    }
+  ],
+  "difference_too_small": [
+    {
+      "hypothesis": "the_groups_overlap_too_much",
+      "class": "widen"
+    },
+    {
+      "hypothesis": "the_difference_would_name_a_person",
+      "class": "decline"
+    }
+  ],
+  "precondition_missing": [
+    {
+      "hypothesis": "something_is_missing",
+      "class": "ask_more"
+    }
+  ]
+}

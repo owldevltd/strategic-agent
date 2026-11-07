@@ -1,0 +1,81 @@
+{
+  "source.read": {
+    "executor": "code",
+    "tool": "./tools/read_source.py",
+    "describe": "reads the library and the support ticket from the vault",
+    "labels": [
+      "own"
+    ],
+    "price": 0.02,
+    "criticality": "read",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 1,
+    "reversible": false,
+    "commits": null
+  },
+  "code.fix": {
+    "executor": "ai",
+    "role": "coder",
+    "labels": [],
+    "describe": "the agent fixes the module; it sees the module, the ticket and the visible tests, never the regression tests",
+    "instructions": "You maintain a small Python module. Fix the bug the support ticket describes, following its accounting rule exactly. Keep every function and its signature; the module may import decimal. The existing tests, which must keep passing: invoice_total([]) == '0.00', invoice_total([[1000, 1, 19]]) == '11.90', invoice_total([[250, 4, 7]]) == '10.70', invoice_total([[1999, 3, 19], [499, 2, 7]]) == '82.04'. Answer with the whole corrected module in the field code, nothing else.",
+    "contract": {
+      "fields": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "inherit": true
+  },
+  "code.test": {
+    "executor": "code",
+    "tool": "sandbox/tools/acceptance.py",
+    "describe": "runs the agent's module against the frozen regression suite in a trusted frame; green is an observation",
+    "labels": [
+      "own"
+    ],
+    "fact": "test_run",
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "suite": {
+        "type": "string",
+        "required": true
+      },
+      "cases": {
+        "type": "list",
+        "required": true
+      },
+      "modules": {
+        "type": "list",
+        "optional": true
+      },
+      "seconds": {
+        "type": "number",
+        "optional": true,
+        "min": 0.1
+      }
+    },
+    "evidence": [
+      "test_run"
+    ],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  }
+}

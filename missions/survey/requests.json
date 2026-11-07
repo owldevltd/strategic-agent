@@ -1,0 +1,115 @@
+[
+  {
+    "id": "read-the-comments",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "identify_person"
+    ],
+    "class": [
+      "direct"
+    ],
+    "price": 0.5,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "steps": [
+      {
+        "move": "survey.rows",
+        "params": {
+          "teams": "{{teams}}"
+        },
+        "as": "rows"
+      },
+      {
+        "move": "reply.draft",
+        "from": [
+          "rows"
+        ],
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "{{from}}"
+      }
+    ]
+  },
+  {
+    "id": "answer-with-numbers",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "identify_person",
+      "group_question"
+    ],
+    "class": [
+      "direct",
+      "aggregate"
+    ],
+    "price": 1,
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "steps": [
+      {
+        "move": "survey.query",
+        "params": {
+          "teams": "{{teams}}",
+          "excludePeople": "{{excludePeople}}"
+        },
+        "as": "stats"
+      },
+      {
+        "move": "reply.draft",
+        "from": [
+          "stats"
+        ],
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "{{from}}"
+      }
+    ]
+  },
+  {
+    "id": "decline-politely",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "identify_person",
+      "group_question",
+      "other"
+    ],
+    "class": [
+      "direct",
+      "decline"
+    ],
+    "price": 0.2,
+    "startCurve": {
+      "p0": 0.5,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "steps": [
+      {
+        "move": "reply.send",
+        "params": {
+          "body": "I can only report on groups of five or more people, and never on who said what."
+        },
+        "labels": {
+          "body": [
+            "own"
+          ]
+        },
+        "target": "{{from}}"
+      }
+    ]
+  }
+]

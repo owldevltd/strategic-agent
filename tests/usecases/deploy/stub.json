@@ -1,0 +1,21 @@
+{
+  "extractor": [
+    {
+      "when": "after 2 minutes",
+      "answer": {
+        "minute": 2,
+        "rate": 1.9
+      }
+    },
+    {
+      "when": "after 10 minutes",
+      "answer": {
+        "minute": 10,
+        "rate": 5.1
+      }
+    }
+  ],
+  "writer": {
+    "text": "v2.4.0 canary failed: 1.9 % errors after 2 minutes, 5.1 % after 10 (limit 2 %). Rolled back to 2.3.7. Find the cause of the errors before the next attempt."
+  }
+}

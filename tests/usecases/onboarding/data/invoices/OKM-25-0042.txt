@@ -1,0 +1,7 @@
+INVOICE OKM-25-0042
+Supplier: Okoro Metals Ltd
+Date: 2026-11-03
+For: 2.4 t aluminium sheet 6082-T6, first order
+Amount: 9,760.00 EUR
+Pay to: GB60BARC20000055779911
+Due: 2026-11-17

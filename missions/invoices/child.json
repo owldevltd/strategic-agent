@@ -1,0 +1,9 @@
+{
+  "goal": "Invoice {{item}}: paid exactly once to a known account, or handed to a person with the reasons",
+  "budget": 8,
+  "value": 10,
+  "serves": { "criterion": "k1" },
+  "criteria": [
+    { "id": "c1", "type": "items_resolved", "values": { "collection": "invoices", "items": [ "{{item}}" ], "outcomes": [ "paid", "escalated" ] } }
+  ]
+}

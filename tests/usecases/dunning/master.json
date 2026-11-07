@@ -1,0 +1,13 @@
+{
+  "recipient": [ "C101", "C102", "C103", "C104", "C105", "C106", "C107", "C108" ],
+  "contact": [
+    "C101 ap@brightline-logistics.example",
+    "C102 rechnungen@kessler-mb.example",
+    "C103 accounts@nordlicht-foods.example",
+    "C104 payables@vantage-retail.example",
+    "C105 billing@okafor-design.example",
+    "C106 finance@meridian-health.example",
+    "C107 invoice@halvorsen-marine.example",
+    "C108 compta@petit-fils.example"
+  ]
+}

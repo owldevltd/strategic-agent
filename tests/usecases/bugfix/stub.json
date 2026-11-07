@@ -1,0 +1,5 @@
+{
+  "coder": {
+    "code": "\"\"\"Invoice totals for the shop. Prices are net, in cents, as integers; VAT rates are in percent.\"\"\"\nfrom decimal import Decimal, ROUND_HALF_UP\n\n\ndef line_total(price_cents, quantity, vat_percent):\n    \"\"\"The gross amount of one invoice line, in EUR, rounded to the cent (half up).\"\"\"\n    gross = Decimal(price_cents) * quantity * (100 + Decimal(str(vat_percent))) / Decimal(10000)\n    return gross.quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP)\n\n\ndef invoice_total(lines):\n    \"\"\"lines: a list of [price_cents, quantity, vat_percent]. Returns the total in EUR as text with two decimals.\"\"\"\n    total = sum((line_total(*line) for line in lines), Decimal(\"0.00\"))\n    return f\"{total:.2f}\"\n"
+  }
+}

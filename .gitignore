@@ -1,0 +1,15 @@
+.env
+node_modules/
+storage/
+infra/.instance-id
+infra/.sshkey-id
+# Databases, keys and logs a local run leaves behind
+*.db
+*.db-wal
+*.db-shm
+memory.key
+*.log
+# Python caches of the sandbox tools
+__pycache__/
+*.pyc
+.DS_Store

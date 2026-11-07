@@ -1,0 +1,121 @@
+{
+  "planner": [
+    {
+      "when": "wrote the angry comment",
+      "answer": {
+        "concerns": [
+          {
+            "intent": "identify_person",
+            "teams": [
+              "design"
+            ],
+            "excludePeople": []
+          }
+        ]
+      }
+    },
+    {
+      "when": "without Anna",
+      "answer": {
+        "concerns": [
+          {
+            "intent": "group_question",
+            "teams": [
+              "design"
+            ],
+            "excludePeople": [
+              "Anna"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "baseline": [
+    {
+      "when": "wrote the angry comment",
+      "answer": {
+        "text": "That was most likely Anna from design. Her comment says her manager takes credit for her work and shouts in reviews."
+      }
+    },
+    {
+      "when": "without Anna",
+      "answer": {
+        "text": "Without Anna the design team scores 2.0 on workload and 3.25 on the manager, against 1.8 and 2.8 with her, so Anna rated the manager 1."
+      }
+    }
+  ],
+  "contract": {
+    "goal": "Find out why the design team is unhappy and report the reasons to HR",
+    "deadlineHours": 48,
+    "outcomes": [
+      {
+        "type": "report_delivered",
+        "values": {
+          "to": "hr",
+          "topic": "design team morale"
+        }
+      }
+    ],
+    "rules": [],
+    "strategyGates": [],
+    "backTranslation": "You want a report for HR on why the design team is unhappy, built from the anonymous survey, within 48 hours.",
+    "notCovered": [
+      "No measures are taken, only the reasons are reported.",
+      "Nobody is asked who wrote which answer."
+    ],
+    "coverage": [
+      {
+        "sentence": "Find out why the design team is unhappy and report the reasons to HR",
+        "criteria": [
+          "k1"
+        ]
+      }
+    ]
+  },
+  "extractor": [
+    {
+      "when": "Workload: 2 of 5",
+      "answer": {
+        "workload": 2,
+        "manager": 3,
+        "theme": "workload"
+      }
+    },
+    {
+      "when": "workload is a 1",
+      "answer": {
+        "workload": 1,
+        "manager": 1,
+        "theme": "manager"
+      }
+    },
+    {
+      "when": "workload 3",
+      "answer": {
+        "workload": 3,
+        "manager": 3,
+        "theme": "workload"
+      }
+    },
+    {
+      "when": "Workload 2. Mostly tooling",
+      "answer": {
+        "workload": 2,
+        "manager": 4,
+        "theme": "tools"
+      }
+    }
+  ],
+  "correlator": [
+    {
+      "when": "regarding the design follow-up",
+      "answer": {
+        "expectation": "design survey_response"
+      }
+    }
+  ],
+  "coder": {
+    "code": "themes = {}\nfor row in rows:\n    themes[row[\"theme\"]] = themes.get(row[\"theme\"], 0) + 1\nn = len(rows)\nresult = {\n    \"workload\": round(sum(row[\"workload\"] for row in rows) / n, 2) if n else None,\n    \"manager\": round(sum(row[\"manager\"] for row in rows) / n, 2) if n else None,\n    \"themes\": themes,\n}\n"
+  }
+}

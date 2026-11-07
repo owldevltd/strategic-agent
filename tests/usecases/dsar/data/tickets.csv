@@ -1,0 +1,5 @@
+ticket_id,customer_id,date,text
+T-501,cust-0077,2025-02-11,Parcel arrived damaged; replacement sent.
+T-502,cust-0077,2025-09-30,Asked to change the delivery address to his office. Same issue as Lisa Brandt (cust-3001) last week.
+T-503,cust-3001,2025-09-22,Delivery address could not be changed online.
+T-504,cust-0077,2026-01-15,Invoice 2025-118 resent; Omar Haddad from the warehouse confirmed the parcel was shipped.

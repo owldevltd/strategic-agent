@@ -1,0 +1,62 @@
+[
+  {
+    "id": "ask-the-client",
+    "serves": "@byPerson",
+    "class": "direct",
+    "price": 3,
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 8
+    },
+    "tSignalH": 4,
+    "describe": "no channel can prove this criterion; the client is the channel and confirms it (3.4, K4)",
+    "steps": [
+      {
+        "move": "person.confirm",
+        "params": {
+          "criterion": "{{byPerson}}",
+          "question": "{{byPersonQuestion}}"
+        }
+      }
+    ]
+  },
+  {
+    "id": "review-proposal",
+    "serves": "test_green",
+    "reaches": [
+      "confirmed_by",
+      "state_is"
+    ],
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 4
+    },
+    "tSignalH": 8,
+    "describe": "a proposal for the catalog: trusted code checks it, a person decides, trusted code registers exactly the approved version (6.1)",
+    "steps": [
+      {
+        "move": "meta.check",
+        "params": {
+          "version": "{{commit}}"
+        }
+      },
+      {
+        "move": "person.confirm",
+        "params": {
+          "question": "{{question}}",
+          "role": "{{role}}",
+          "recommendation": "no"
+        }
+      },
+      {
+        "move": "meta.register",
+        "params": {
+          "version": "{{commit}}"
+        }
+      }
+    ],
+    "kind": "meta"
+  }
+]

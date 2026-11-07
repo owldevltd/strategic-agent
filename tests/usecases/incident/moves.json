@@ -1,0 +1,220 @@
+{
+  "disk.inspect": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/inspect.py",
+    "labels": [
+      "own"
+    ],
+    "describe": "the alert and du of db-01, read-only"
+  },
+  "disk.diagnose": {
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "analyst",
+    "inherit": true,
+    "labels": [],
+    "describe": "the on-call engineer's reading of the disk report",
+    "instructions": "You are the on-call engineer for db-01. From the alert and disk report you are given, choose the single path whose cleanup brings the disk below 80 % with the least risk, and how: rotate (rotate and compress a log file, reversible) or delete (irreversible). Never touch live database files. path: one of the paths in the report. how: rotate or delete. why: one sentence.",
+    "contract": {
+      "fields": {
+        "path": {
+          "type": "enum",
+          "values": [
+            "/var/log/postgresql/debug.log",
+            "/var/log/syslog",
+            "/var/backups/db-01-full.tar",
+            "/var/lib/postgresql/16/main/old",
+            "/home/deploy/releases",
+            "/var/lib/postgresql/16/main"
+          ]
+        },
+        "how": {
+          "type": "enum",
+          "values": [
+            "rotate",
+            "delete"
+          ]
+        },
+        "why": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "logs.rotate": {
+    "price": 0.1,
+    "criticality": "internal",
+    "params": {
+      "path": {
+        "type": "string",
+        "optional": true
+      },
+      "how": {
+        "type": "string",
+        "optional": true
+      },
+      "why": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 24,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "action": "rotate_logs",
+    "humanMinutes": 0,
+    "describe": "rotates and compresses a log file on a server (reversible); the monitoring reports the disk usage afterwards",
+    "creates": {
+      "expectation": {
+        "key": "ref",
+        "prefix": "OPS",
+        "fact": "measured",
+        "need": 1,
+        "minutes": 10,
+        "extract": {
+          "quantity": {
+            "type": "enum",
+            "values": [
+              "disk:db-01"
+            ],
+            "describe": "always disk:db-01"
+          },
+          "value": {
+            "type": "integer",
+            "min": 0,
+            "max": 100,
+            "describe": "the disk usage of db-01 in percent",
+            "critical": true
+          }
+        },
+        "parser": {
+          "value": "(\\d{1,3})\\s*%"
+        }
+      }
+    }
+  },
+  "files.delete": {
+    "price": 0.1,
+    "criticality": "irreversible",
+    "params": {
+      "path": {
+        "type": "string",
+        "optional": true
+      },
+      "how": {
+        "type": "string",
+        "optional": true
+      },
+      "why": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 24,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "action": "delete_files",
+    "humanMinutes": 3,
+    "describe": "deletes files on a server (irreversible); the monitoring reports the disk usage afterwards",
+    "creates": {
+      "expectation": {
+        "key": "ref",
+        "prefix": "OPS",
+        "fact": "measured",
+        "need": 1,
+        "minutes": 10,
+        "extract": {
+          "quantity": {
+            "type": "enum",
+            "values": [
+              "disk:db-01"
+            ],
+            "describe": "always disk:db-01"
+          },
+          "value": {
+            "type": "integer",
+            "min": 0,
+            "max": 100,
+            "describe": "the disk usage of db-01 in percent",
+            "critical": true
+          }
+        },
+        "parser": {
+          "value": "(\\d{1,3})\\s*%"
+        }
+      }
+    }
+  },
+  "ops.wait": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "minutes": {
+        "type": "number",
+        "optional": true
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": 24,
+    "leaseMaxMin": null,
+    "reversible": true,
+    "commits": null,
+    "executor": "wait",
+    "describe": "waits for the monitoring's report"
+  },
+  "oncall.note": {
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "writer",
+    "inherit": true,
+    "labels": [],
+    "outbound": "report",
+    "describe": "writes the note for the on-call channel",
+    "instructions": "You write a short note for the on-call channel about the db-01 disk alert from what you are given: the cause, what was done, and what a person should follow up (for example the setting that caused it). Three sentences at most.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

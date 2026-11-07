@@ -1,0 +1,16 @@
+{
+  "deploy": {
+    "criticality": "outward",
+    "carries": [],
+    "sensitive": [],
+    "says": "deploys a version of a service to a share of its traffic",
+    "idempotencyH": 24
+  },
+  "rollback": {
+    "criticality": "outward",
+    "carries": [],
+    "sensitive": [],
+    "says": "puts the previous version of a service back",
+    "idempotencyH": 24
+  }
+}

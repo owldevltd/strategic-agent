@@ -1,0 +1,364 @@
+{
+  "survey.query": {
+    "executor": "code",
+    "tool": "./tools/aggregate.py",
+    "labels": [
+      "confidential"
+    ],
+    "price": 0.05,
+    "group": true,
+    "criticality": "read",
+    "params": {
+      "teams": {
+        "type": "list"
+      },
+      "exclude": {
+        "type": "list",
+        "optional": true
+      },
+      "excludePeople": {
+        "type": "list",
+        "optional": true
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  },
+  "survey.rows": {
+    "executor": "code",
+    "tool": "./tools/rows.py",
+    "labels": [
+      "confidential"
+    ],
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "teams": {
+        "type": "list"
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  },
+  "request.read": {
+    "executor": "ai",
+    "role": "planner",
+    "inherit": true,
+    "labels": [],
+    "instructions": "You read a question that came in from outside and turn it into a request about the employee survey. intent: identify_person if it asks who said or answered something, group_question if it asks about numbers for teams, other otherwise. teams: the teams it is about (design, product). excludePeople: names of people the question wants left out. A message with several concerns gives one entry per concern in concerns.",
+    "contract": {
+      "fields": {
+        "concerns": {
+          "type": "records",
+          "fields": {
+            "intent": "one of identify_person | group_question | other",
+            "teams": "a list",
+            "excludePeople": "a list"
+          }
+        }
+      }
+    },
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "concern": {
+      "intent": {
+        "type": "enum",
+        "values": [
+          "identify_person",
+          "group_question",
+          "other"
+        ]
+      },
+      "teams": {
+        "type": "list"
+      },
+      "excludePeople": {
+        "type": "list",
+        "required": false
+      }
+    }
+  },
+  "reply.draft": {
+    "executor": "ai",
+    "role": "replier",
+    "inherit": true,
+    "labels": [],
+    "instructions": "You answer a question from management using only the material you are given. Be short.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "outbound": "reply",
+    "price": 0.5,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null
+  },
+  "survey.coverage": {
+    "executor": "code",
+    "tool": "./tools/coverage.py",
+    "labels": [
+      "own"
+    ],
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "teams": {
+        "type": "list"
+      },
+      "min": {
+        "type": "integer",
+        "min": 1
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  },
+  "survey.count": {
+    "executor": "code",
+    "tool": "./tools/count.py",
+    "labels": [
+      "own"
+    ],
+    "fact": "measured",
+    "about": "quantity",
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "quantity": {
+        "type": "string"
+      }
+    },
+    "evidence": [
+      "measured"
+    ],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  },
+  "followup.invite": {
+    "executor": "code",
+    "action": "invite",
+    "humanMinutes": 1,
+    "criticality": "outward",
+    "describe": "invites a team to a short anonymous follow-up survey; the answers come back as their own processes",
+    "creates": {
+      "expectation": {
+        "key": "round",
+        "prefix": "FU",
+        "fact": "survey_response",
+        "need": 3,
+        "minutes": 1,
+        "extract": {
+          "workload": {
+            "type": "integer",
+            "min": 1,
+            "max": 5,
+            "describe": "workload score from 1 (unbearable) to 5 (fine)",
+            "critical": true
+          },
+          "manager": {
+            "type": "integer",
+            "min": 1,
+            "max": 5,
+            "describe": "score for the manager from 1 to 5, 3 if not mentioned",
+            "fixed": false
+          },
+          "theme": {
+            "type": "enum",
+            "values": [
+              "workload",
+              "manager",
+              "tools",
+              "pay",
+              "other"
+            ],
+            "describe": "the main reason, one of the list"
+          }
+        },
+        "parser": {
+          "workload": "workload\\D{0,12}([1-5])\\b"
+        },
+        "store": {
+          "identity": {
+            "file": "roster.csv",
+            "by": "name",
+            "id": "respondent",
+            "prefix": "r"
+          },
+          "rows": [
+            {
+              "file": "roster.csv",
+              "key": "name",
+              "row": {
+                "name": "{{from}}",
+                "respondent": "{{id}}",
+                "team": "{{team}}"
+              }
+            },
+            {
+              "file": "answers.csv",
+              "key": "respondent",
+              "row": {
+                "respondent": "{{id}}",
+                "team": "{{team}}",
+                "workload": "{{workload}}",
+                "manager": "{{manager}}",
+                "theme": "{{theme}}",
+                "comment": ""
+              }
+            }
+          ]
+        }
+      }
+    },
+    "price": 0.1,
+    "params": {
+      "questions": {
+        "type": "string"
+      },
+      "need": {
+        "type": "integer",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": 0.5,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null
+  },
+  "followup.wait": {
+    "executor": "wait",
+    "describe": "waits for the answers the invitation expects, or until its time is up",
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "minutes": {
+        "type": "number",
+        "optional": true
+      },
+      "node": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": null,
+    "reversible": true,
+    "commits": null
+  },
+  "analysis.write": {
+    "executor": "ai",
+    "role": "coder",
+    "labels": [],
+    "inherit": true,
+    "describe": "the agent writes its own analysis code for the answers of a group; it never sees the answers",
+    "instructions": "Write Python 3 code that analyses survey answers. The variable rows is a list of dicts with the keys team, workload (1 to 5), manager (1 to 5) and theme (a short category such as workload, manager, tools or growth). Set result to a dict with exactly these keys: workload (the mean workload, rounded to 2 decimals), manager (the mean manager score, rounded to 2 decimals) and themes (a dict from theme to the number of answers with it). Use no imports, no files and no printing. Answer with the code in the field code.",
+    "contract": {
+      "fields": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null
+  },
+  "analysis.run": {
+    "executor": "code",
+    "tool": "./tools/analysis.py",
+    "agentCode": "sandbox/tools/agent_code.py",
+    "labels": [
+      "confidential"
+    ],
+    "price": 0.05,
+    "group": true,
+    "criticality": "read",
+    "params": {
+      "teams": {
+        "type": "list"
+      },
+      "exclude": {
+        "type": "list",
+        "optional": true
+      },
+      "excludePeople": {
+        "type": "list",
+        "optional": true
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "describe": "runs the analysis code the agent wrote, inside the sandbox; a trusted frame chooses the group and checks the result schema"
+  },
+  "report.draft": {
+    "executor": "ai",
+    "role": "writer",
+    "inherit": true,
+    "labels": [],
+    "instructions": "You write a short report for HR from aggregated survey results. Use only the numbers and themes you are given. Never guess who said what.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "outbound": "report",
+    "price": 0.5,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null
+  }
+}

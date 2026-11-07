@@ -1,0 +1,60 @@
+{
+  "id": "invoices-week45",
+  "goal": "Prepare this week's supplier payments: every invoice paid exactly once to a known account, or handed to a person",
+  "deadline": "{{in:72h}}",
+  "budget": 40,
+  "value": 40,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "items_resolved",
+      "values": {
+        "collection": "invoices",
+        "items": [
+          "R-1184",
+          "R-1185",
+          "R-1186",
+          "R-1187",
+          "R-1188"
+        ],
+        "outcomes": [
+          "paid",
+          "escalated"
+        ]
+      }
+    },
+    {
+      "id": "k2",
+      "type": "exactly_once",
+      "values": {
+        "key": "invoiceId",
+        "action": "payment"
+      },
+      "immutable": true
+    },
+    {
+      "id": "k3",
+      "type": "account_from_master",
+      "values": { "param": "iban" },
+      "immutable": true
+    },
+    {
+      "id": "k4",
+      "type": "sum_max",
+      "values": {
+        "max": 48000
+      },
+      "immutable": true
+    },
+    {
+      "id": "k5",
+      "type": "human_approval",
+      "values": {
+        "actions": [
+          "payment"
+        ]
+      },
+      "immutable": true
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+[
+  {
+    "id": "shortlist-by-criteria",
+    "serves": "report_delivered",
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "the agent writes the shortlisting code, the frame checks it against the criteria, the hiring manager gets ids and reasons",
+    "steps": [
+      {
+        "move": "shortlist.write",
+        "as": "code"
+      },
+      {
+        "move": "shortlist.run",
+        "from": [
+          "code"
+        ],
+        "as": "result"
+      },
+      {
+        "move": "shortlist.report",
+        "from": [
+          "result"
+        ],
+        "as": "report"
+      },
+      {
+        "move": "report.send",
+        "from": "report",
+        "target": "hiring-manager"
+      }
+    ]
+  }
+]

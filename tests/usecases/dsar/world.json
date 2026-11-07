@@ -1,0 +1,18 @@
+{
+  "responders": [
+    {
+      "on": {
+        "action": "verify",
+        "target": "max.muster@example.org"
+      },
+      "replies": [
+        {
+          "after": 3,
+          "from": "max.muster@example.org",
+          "subject": "Re: your data request [{{ref}}]",
+          "text": "Yes, that was me, I wrote from my private address. Fine, send it here then. Max"
+        }
+      ]
+    }
+  ]
+}

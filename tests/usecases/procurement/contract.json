@@ -1,0 +1,45 @@
+{
+  "id": "laptops-2026-11",
+  "goal": "Order 20 laptops for delivery by 26 November from the cheapest of at least three suppliers that delivers in time, approved by a person",
+  "deadline": "{{in:168h}}",
+  "budget": 12,
+  "value": 20,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "report_delivered",
+      "values": {
+        "to": "purchasing",
+        "topic": "laptop order",
+        "action": "order"
+      }
+    },
+    {
+      "id": "k2",
+      "immutable": true,
+      "type": "human_approval",
+      "values": {
+        "actions": [
+          "order"
+        ]
+      }
+    },
+    {
+      "id": "k3",
+      "immutable": true,
+      "type": "account_from_master",
+      "values": {
+        "param": "supplier",
+        "kind": "supplier"
+      }
+    },
+    {
+      "id": "k4",
+      "type": "sum_max",
+      "values": {
+        "max": 25000
+      },
+      "immutable": true
+    }
+  ]
+}

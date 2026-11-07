@@ -1,0 +1,9 @@
+[
+  { "rule": "precondition", "move": "payment.send",
+    "criterion": { "type": "confirmed_by", "values": { "role": "purchasing",
+      "question": "Do you confirm this new supplier as verified, with its tax registration certificate and its bank confirmation letter in and checked? Supplier:{{supplier}}" } } },
+  { "rule": "precondition", "move": "tax.review",
+    "criterion": { "type": "items_resolved", "values": { "collection": "documents", "items": [ "tax:{{supplier}}" ], "outcomes": [ "checked" ] } } },
+  { "rule": "precondition", "move": "bank.review",
+    "criterion": { "type": "items_resolved", "values": { "collection": "documents", "items": [ "bank:{{supplier}}" ], "outcomes": [ "checked" ] } } }
+]

@@ -1,0 +1,356 @@
+[
+  {
+    "id": "one-child-per-first-invoice",
+    "serves": "items_resolved",
+    "kind": "supplier-onboarding",
+    "depth": 0,
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 48
+    },
+    "tSignalH": null,
+    "describe": "one child goal per new supplier's first invoice, one after another",
+    "steps": [
+      {
+        "move": "invoice.child",
+        "forEach": "{{items}}"
+      }
+    ]
+  },
+  {
+    "id": "pay-verified-supplier",
+    "serves": "items_resolved",
+    "kind": "supplier-onboarding",
+    "depth": 1,
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 24
+    },
+    "tSignalH": null,
+    "describe": "read the invoice, prepare the payment from our registration, pay it; the payment is gated on the supplier's verification",
+    "steps": [
+      {
+        "move": "invoice.read",
+        "params": {
+          "invoice": "{{item}}"
+        },
+        "as": "invoice"
+      },
+      {
+        "move": "payment.prepare",
+        "from": [
+          "invoice"
+        ],
+        "params": {
+          "supplier": "{{item|subject}}"
+        },
+        "as": "payment"
+      },
+      {
+        "move": "payment.send",
+        "from": "payment",
+        "params": {
+          "item": "{{item}}",
+          "supplier": "{{item|subject}}"
+        },
+        "target": "bank"
+      }
+    ]
+  },
+  {
+    "id": "hand-invoice-to-purchasing",
+    "serves": "items_resolved",
+    "kind": "supplier-onboarding",
+    "depth": 1,
+    "class": [
+      "direct",
+      "hand_over"
+    ],
+    "price": 2,
+    "startCurve": {
+      "p0": 0.2,
+      "tauH": 24
+    },
+    "tSignalH": null,
+    "describe": "the supplier could not be verified (its verification child failed) or the payment was refused: purchasing takes the invoice over, with the findings. Also of class direct, with a low start chance: a failed precondition child leaves its parent without a wall, and then only direct strategies are eligible",
+    "steps": [
+      {
+        "move": "supplier.status",
+        "params": {
+          "mode": "status",
+          "supplier": "{{item|subject}}"
+        },
+        "as": "findings"
+      },
+      {
+        "move": "invoice.escalate",
+        "from": [
+          "findings"
+        ],
+        "params": {
+          "item": "{{item}}",
+          "question": "The first invoice {{item}} is not paid this week: its supplier could not be verified, or the payment was refused. The findings are in the excerpt. What happens with it?",
+          "options": [
+            "purchasing takes it over",
+            "hold it until next week"
+          ],
+          "recommendation": "purchasing takes it over"
+        }
+      }
+    ]
+  },
+  {
+    "id": "review-documents-then-confirm",
+    "serves": "confirmed_by",
+    "kind": "supplier-onboarding",
+    "depth": 2,
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 24
+    },
+    "tSignalH": null,
+    "describe": "review each checked document (each review is gated on its document), then a person in purchasing confirms the verification",
+    "steps": [
+      {
+        "move": "tax.review",
+        "params": {
+          "mode": "review",
+          "kind": "tax",
+          "supplier": "{{question|subject}}"
+        },
+        "as": "tax"
+      },
+      {
+        "move": "bank.review",
+        "params": {
+          "mode": "review",
+          "kind": "bank",
+          "supplier": "{{question|subject}}"
+        },
+        "as": "bank"
+      },
+      {
+        "move": "verification.confirm",
+        "from": [
+          "tax",
+          "bank"
+        ],
+        "params": {
+          "question": "{{question}}",
+          "role": "{{role}}",
+          "recommendation": "yes"
+        }
+      }
+    ]
+  },
+  {
+    "id": "request-tax-certificate",
+    "serves": "items_resolved",
+    "kind": "supplier-onboarding",
+    "depth": 3,
+    "class": "direct",
+    "fits": {
+      "items": "^tax:"
+    },
+    "price": 0.5,
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 48
+    },
+    "tSignalH": null,
+    "describe": "ask the supplier for its tax registration certificate, wait for it, check it",
+    "steps": [
+      {
+        "move": "document.letter",
+        "params": {
+          "mode": "letter",
+          "document": "{{items|first}}",
+          "purpose": "request"
+        },
+        "as": "letter"
+      },
+      {
+        "move": "tax.request",
+        "from": "letter",
+        "params": {
+          "document": "{{items|first}}"
+        },
+        "target": "{{items|subject}}",
+        "as": "asked"
+      },
+      {
+        "move": "document.wait",
+        "for": "asked",
+        "params": {
+          "minutes": 2880
+        }
+      },
+      {
+        "move": "document.check",
+        "params": {
+          "mode": "check",
+          "document": "{{items|first}}"
+        }
+      }
+    ]
+  },
+  {
+    "id": "remind-tax-certificate",
+    "serves": "items_resolved",
+    "kind": "supplier-onboarding",
+    "depth": 3,
+    "class": "remind",
+    "fits": {
+      "items": "^tax:"
+    },
+    "price": 0.5,
+    "startCurve": {
+      "p0": 0.7,
+      "tauH": 48
+    },
+    "tSignalH": null,
+    "describe": "no answer: remind the supplier once, wait, check",
+    "steps": [
+      {
+        "move": "document.letter",
+        "params": {
+          "mode": "letter",
+          "document": "{{items|first}}",
+          "purpose": "reminder"
+        },
+        "as": "letter"
+      },
+      {
+        "move": "tax.remind",
+        "from": "letter",
+        "params": {
+          "document": "{{items|first}}"
+        },
+        "target": "{{items|subject}}",
+        "as": "reminded"
+      },
+      {
+        "move": "document.wait",
+        "for": "reminded",
+        "params": {
+          "minutes": 2880
+        }
+      },
+      {
+        "move": "document.check",
+        "params": {
+          "mode": "check",
+          "document": "{{items|first}}"
+        }
+      }
+    ]
+  },
+  {
+    "id": "request-bank-letter",
+    "serves": "items_resolved",
+    "kind": "supplier-onboarding",
+    "depth": 3,
+    "class": "direct",
+    "fits": {
+      "items": "^bank:"
+    },
+    "price": 0.5,
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 48
+    },
+    "tSignalH": null,
+    "describe": "ask the supplier for its bank confirmation letter, wait for it, check it",
+    "steps": [
+      {
+        "move": "document.letter",
+        "params": {
+          "mode": "letter",
+          "document": "{{items|first}}",
+          "purpose": "request"
+        },
+        "as": "letter"
+      },
+      {
+        "move": "bank.request",
+        "from": "letter",
+        "params": {
+          "document": "{{items|first}}"
+        },
+        "target": "{{items|subject}}",
+        "as": "asked"
+      },
+      {
+        "move": "document.wait",
+        "for": "asked",
+        "params": {
+          "minutes": 2880
+        }
+      },
+      {
+        "move": "document.check",
+        "params": {
+          "mode": "check",
+          "document": "{{items|first}}"
+        }
+      }
+    ]
+  },
+  {
+    "id": "remind-bank-letter",
+    "serves": "items_resolved",
+    "kind": "supplier-onboarding",
+    "depth": 3,
+    "class": "remind",
+    "fits": {
+      "items": "^bank:"
+    },
+    "price": 0.5,
+    "startCurve": {
+      "p0": 0.7,
+      "tauH": 48
+    },
+    "tSignalH": null,
+    "describe": "no answer: remind the supplier once, wait, check",
+    "steps": [
+      {
+        "move": "document.letter",
+        "params": {
+          "mode": "letter",
+          "document": "{{items|first}}",
+          "purpose": "reminder"
+        },
+        "as": "letter"
+      },
+      {
+        "move": "bank.remind",
+        "from": "letter",
+        "params": {
+          "document": "{{items|first}}"
+        },
+        "target": "{{items|subject}}",
+        "as": "reminded"
+      },
+      {
+        "move": "document.wait",
+        "for": "reminded",
+        "params": {
+          "minutes": 2880
+        }
+      },
+      {
+        "move": "document.check",
+        "params": {
+          "mode": "check",
+          "document": "{{items|first}}"
+        }
+      }
+    ]
+  }
+]

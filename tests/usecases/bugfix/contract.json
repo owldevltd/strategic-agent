@@ -1,0 +1,10 @@
+{
+  "id": "bugfix-4711",
+  "goal": "Fix the rounding bug of support ticket #4711 so that the frozen regression suite of the billing module passes",
+  "deadline": "{{in:24h}}",
+  "budget": 10,
+  "value": 20,
+  "criteria": [
+    { "id": "k1", "type": "test_green", "values": { "test": "billing-regression", "commit": "ded0dcdde195fd26" } }
+  ]
+}

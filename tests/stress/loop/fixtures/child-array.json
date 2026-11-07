@@ -1,0 +1,9 @@
+{
+  "goal": "One invoice paid exactly once",
+  "budget": 2,
+  "value": 2,
+  "serves": { "criterion": "k1" },
+  "criteria": [
+    { "id": "c1", "type": "items_resolved", "values": { "collection": "invoices", "items": [ "{{item}}" ], "outcomes": [ "paid", "escalated" ] } }
+  ]
+}

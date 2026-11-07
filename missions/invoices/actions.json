@@ -1,0 +1,14 @@
+{
+  "payment": {
+    "criticality": "money_or_law",
+    "carries": [
+      "money"
+    ],
+    "sensitive": [
+      "iban"
+    ],
+    "commits": "payment",
+    "says": "a bank transfer",
+    "idempotencyH": 168
+  }
+}

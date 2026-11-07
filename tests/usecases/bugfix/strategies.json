@@ -1,0 +1,311 @@
+[
+  {
+    "id": "read-fix-test",
+    "serves": "test_green",
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "read the module and the ticket, let the agent fix it, run the frozen regression suite",
+    "steps": [
+      {
+        "move": "source.read",
+        "as": "source"
+      },
+      {
+        "move": "code.fix",
+        "from": [
+          "source"
+        ],
+        "as": "code"
+      },
+      {
+        "move": "code.test",
+        "from": [
+          "code"
+        ],
+        "params": {
+          "suite": "billing-regression",
+          "cases": [
+            {
+              "call": "invoice_total",
+              "args": [
+                []
+              ],
+              "expect": "0.00"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    1000,
+                    1,
+                    19
+                  ]
+                ]
+              ],
+              "expect": "11.90"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    250,
+                    4,
+                    7
+                  ]
+                ]
+              ],
+              "expect": "10.70"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    1999,
+                    3,
+                    19
+                  ],
+                  [
+                    499,
+                    2,
+                    7
+                  ]
+                ]
+              ],
+              "expect": "82.04"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    1999,
+                    3,
+                    19
+                  ]
+                ]
+              ],
+              "expect": "71.36"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    105,
+                    1,
+                    19
+                  ]
+                ]
+              ],
+              "expect": "1.25"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    12345,
+                    7,
+                    19
+                  ],
+                  [
+                    1,
+                    1,
+                    19
+                  ],
+                  [
+                    995,
+                    3,
+                    7
+                  ]
+                ]
+              ],
+              "expect": "1060.29"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    333,
+                    3,
+                    19
+                  ],
+                  [
+                    333,
+                    3,
+                    19
+                  ],
+                  [
+                    333,
+                    3,
+                    19
+                  ]
+                ]
+              ],
+              "expect": "35.67"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    5,
+                    1,
+                    19
+                  ],
+                  [
+                    5,
+                    1,
+                    19
+                  ],
+                  [
+                    5,
+                    1,
+                    19
+                  ],
+                  [
+                    5,
+                    1,
+                    19
+                  ]
+                ]
+              ],
+              "expect": "0.24"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    1050,
+                    1,
+                    19
+                  ]
+                ]
+              ],
+              "expect": "12.50"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    2,
+                    13,
+                    19
+                  ]
+                ]
+              ],
+              "expect": "0.31"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    8999,
+                    1,
+                    7
+                  ],
+                  [
+                    8999,
+                    1,
+                    19
+                  ]
+                ]
+              ],
+              "expect": "203.38"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    125,
+                    1,
+                    0
+                  ]
+                ]
+              ],
+              "expect": "1.25"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    1,
+                    1,
+                    50
+                  ]
+                ]
+              ],
+              "expect": "0.02"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    10,
+                    1,
+                    25
+                  ]
+                ]
+              ],
+              "expect": "0.13"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    7,
+                    7,
+                    7
+                  ]
+                ]
+              ],
+              "expect": "0.52"
+            },
+            {
+              "call": "invoice_total",
+              "args": [
+                [
+                  [
+                    19900,
+                    2,
+                    19
+                  ],
+                  [
+                    350,
+                    10,
+                    7
+                  ],
+                  [
+                    99,
+                    3,
+                    19
+                  ]
+                ]
+              ],
+              "expect": "514.60"
+            }
+          ],
+          "modules": [
+            "decimal"
+          ]
+        }
+      }
+    ]
+  }
+]

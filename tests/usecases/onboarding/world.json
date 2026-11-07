@@ -1,0 +1,16 @@
+{
+  "responders": [
+    { "on": { "action": "doc_request", "target": "lindqvist-tools-ab", "params": { "document": "tax:lindqvist-tools-ab" } },
+      "replies": [ { "after": 30, "from": "ap@lindqvist-tools.example", "subject": "Re: tax registration certificate [{{ref}}]",
+        "text": "Hello, attached is our certificate of registration for VAT from Skatteverket. Registration number: SE556677889901. Best regards, Karin Lindqvist, Lindqvist Tools AB" } ] },
+    { "on": { "action": "doc_request", "target": "lindqvist-tools-ab", "params": { "document": "bank:lindqvist-tools-ab" } },
+      "replies": [ { "after": 30, "from": "ap@lindqvist-tools.example", "subject": "Re: bank confirmation [{{ref}}]",
+        "text": "Hello, please find our bank's confirmation letter attached. Account holder: Lindqvist Tools AB. IBAN: SE4550000000058398257466. Best regards, Karin Lindqvist" } ] },
+    { "on": { "action": "doc_request", "target": "okoro-metals-ltd", "params": { "document": "tax:okoro-metals-ltd" } },
+      "replies": [ { "after": 30, "from": "accounts@okoro-metals.example", "subject": "Re: tax registration certificate [{{ref}}]",
+        "text": "Dear Acme team, here is our VAT registration certificate from HMRC. VAT registration number: GB284769135. Kind regards, Chidi Okoro, Okoro Metals Ltd" } ] },
+    { "on": { "action": "doc_reminder", "target": "okoro-metals-ltd", "params": { "document": "bank:okoro-metals-ltd" } },
+      "replies": [ { "after": 60, "from": "accounts@okoro-metals.example", "subject": "Re: bank confirmation [{{ref}}]",
+        "text": "Dear Acme team, sorry for the delay. We have moved our account to a new bank this month, please use the account in the attached letter for all payments. Account holder: Okoro Metals Ltd. IBAN: GB60BARC20000055779911. Kind regards, Chidi Okoro" } ] }
+  ]
+}

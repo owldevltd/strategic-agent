@@ -1,0 +1,14 @@
+{
+  "no_reaction": [
+    {
+      "hypothesis": "the_cleanup_did_not_free_enough",
+      "class": "*"
+    }
+  ],
+  "unachievable": [
+    {
+      "hypothesis": "the_cleanup_did_not_free_enough",
+      "class": "*"
+    }
+  ]
+}

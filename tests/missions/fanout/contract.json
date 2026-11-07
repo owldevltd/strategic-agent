@@ -1,0 +1,49 @@
+{
+  "id": "notices",
+  "goal": "Every supplier gets exactly one notice about the new payment terms, or is handed to a person",
+  "deadline": "{{in:24h}}",
+  "budget": 60,
+  "value": 60,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "items_resolved",
+      "values": {
+        "collection": "suppliers",
+        "items": [
+          "S-01",
+          "S-02",
+          "S-03",
+          "S-04",
+          "S-05",
+          "S-06",
+          "S-07",
+          "S-08"
+        ],
+        "outcomes": [
+          "notified",
+          "escalated"
+        ]
+      }
+    },
+    {
+      "id": "k2",
+      "type": "exactly_once",
+      "values": {
+        "key": "supplier",
+        "action": "report"
+      },
+      "immutable": true
+    },
+    {
+      "id": "k3",
+      "type": "human_approval",
+      "values": {
+        "actions": [
+          "report"
+        ]
+      },
+      "immutable": true
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "ci.check": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/ci.py",
+    "labels": [
+      "own"
+    ],
+    "describe": "the CI result of the release commit; a wall unless green"
+  },
+  "deploy.canary": {
+    "price": 0.2,
+    "criticality": "outward",
+    "params": {
+      "version": {
+        "type": "string"
+      },
+      "percent": {
+        "type": "number"
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 24,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "action": "deploy",
+    "humanMinutes": 2,
+    "describe": "deploys the version to a share of the traffic; the monitoring reports its error rate",
+    "creates": {
+      "expectation": {
+        "key": "ref",
+        "prefix": "REL",
+        "fact": "canary_report",
+        "need": 2,
+        "minutes": 15,
+        "extract": {
+          "minute": {
+            "type": "integer",
+            "min": 0,
+            "max": 120,
+            "describe": "how many minutes after the start of the canary the report is",
+            "critical": true
+          },
+          "rate": {
+            "type": "number",
+            "min": 0,
+            "max": 100,
+            "describe": "the error rate of the canary in percent",
+            "fixed": false
+          }
+        },
+        "parser": {
+          "minute": "after (\\d+) minutes"
+        },
+        "store": {
+          "rows": [
+            {
+              "file": "metrics.csv",
+              "key": "minute",
+              "row": {
+                "minute": "{{minute}}",
+                "rate": "{{rate}}"
+              }
+            }
+          ]
+        },
+        "each": "minute"
+      }
+    }
+  },
+  "canary.wait": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "minutes": {
+        "type": "number",
+        "optional": true
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": 24,
+    "leaseMaxMin": null,
+    "reversible": true,
+    "commits": null,
+    "executor": "wait",
+    "describe": "waits for the monitoring's canary reports"
+  },
+  "canary.check": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "limit": {
+        "type": "number"
+      },
+      "need": {
+        "type": "number"
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/canary.py",
+    "labels": [
+      "own"
+    ],
+    "describe": "the canary's error rates; a wall above the limit"
+  },
+  "deploy.full": {
+    "price": 0.2,
+    "criticality": "outward",
+    "params": {
+      "version": {
+        "type": "string"
+      },
+      "percent": {
+        "type": "number"
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 24,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "action": "deploy",
+    "humanMinutes": 2,
+    "describe": "deploys the version to all traffic"
+  },
+  "deploy.rollback": {
+    "price": 0.2,
+    "criticality": "outward",
+    "params": {
+      "version": {
+        "type": "string"
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 24,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "action": "rollback",
+    "humanMinutes": 1,
+    "describe": "puts the previous version back on all traffic"
+  },
+  "incident.note": {
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "writer",
+    "inherit": true,
+    "labels": [],
+    "outbound": "report",
+    "describe": "writes the ticket about the failed canary",
+    "instructions": "You write a short ticket for the release team about a canary that failed, from the reports you are given: the version, the error rates over time, the limit, that it was rolled back, and what needs to be found out before the next attempt.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

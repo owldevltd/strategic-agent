@@ -1,0 +1,85 @@
+[
+  {
+    "id": "answer-the-sender",
+    "serves": "report_delivered",
+    "class": "direct",
+    "price": 0.8,
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "describe": "collect the data and send it to the address the request came from",
+    "steps": [
+      {
+        "move": "data.collect",
+        "params": {
+          "customer": "cust-0077"
+        },
+        "as": "data"
+      },
+      {
+        "move": "export.letter",
+        "from": [
+          "data"
+        ],
+        "as": "copy"
+      },
+      {
+        "move": "export.send",
+        "from": "copy",
+        "target": "m.muster.private@freemail.example"
+      }
+    ]
+  },
+  {
+    "id": "verify-then-send",
+    "serves": "report_delivered",
+    "class": "verify",
+    "price": 1.2,
+    "startCurve": {
+      "p0": 0.7,
+      "tauH": 24
+    },
+    "tSignalH": null,
+    "describe": "ask the person at the address on file first, then send the copy there",
+    "steps": [
+      {
+        "move": "verify.send",
+        "params": {
+          "body": "We received a request for a copy of the data we hold about you (reference in the subject). Please reply to this message if the request was yours; if it was not, reply no."
+        },
+        "labels": {
+          "body": [
+            "own"
+          ]
+        },
+        "target": "max.muster@example.org",
+        "as": "asked"
+      },
+      {
+        "move": "verify.wait",
+        "for": "asked"
+      },
+      {
+        "move": "data.collect",
+        "params": {
+          "customer": "cust-0077"
+        },
+        "as": "data"
+      },
+      {
+        "move": "export.letter",
+        "from": [
+          "data"
+        ],
+        "as": "copy"
+      },
+      {
+        "move": "export.send",
+        "from": "copy",
+        "target": "max.muster@example.org"
+      }
+    ]
+  }
+]

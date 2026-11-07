@@ -1,0 +1,92 @@
+{
+  "no_reaction": [
+    {
+      "hypothesis": "the_reply_window_closed_count_what_came_in",
+      "class": "count"
+    },
+    {
+      "hypothesis": "the_venue_did_not_answer_in_time",
+      "class": "other_venue"
+    },
+    {
+      "hypothesis": "the_reminder_round_did_not_bring_the_quorum_the_office_manager_decides",
+      "class": "hand_over"
+    }
+  ],
+  "precondition_missing": [
+    {
+      "hypothesis": "the_reminder_round_is_done_count_again",
+      "class": "count"
+    }
+  ],
+  "child_failed": [
+    {
+      "hypothesis": "still_too_few_answers_after_the_reminder_round",
+      "class": "hand_over"
+    }
+  ],
+  "move_failed": [
+    {
+      "hypothesis": "the_venue_declined_or_is_over_the_cap",
+      "class": "other_venue"
+    },
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "not_reached": [
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "plan_refused": [
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "lease_expired": [
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "rejected_by_person": [
+    {
+      "hypothesis": "the_person_does_not_want_this_step",
+      "class": "hand_over"
+    }
+  ],
+  "not_sent": [
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "soft_rule": [
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "already_done": [
+    {
+      "hypothesis": "it_was_sent_before_and_never_goes_twice",
+      "class": "hand_over"
+    }
+  ],
+  "budget_cap": [
+    {
+      "hypothesis": "over_the_cap_a_person_decides",
+      "class": "hand_over"
+    }
+  ],
+  "unknown_account": [
+    {
+      "hypothesis": "the_supplier_is_not_in_the_master_data",
+      "class": "hand_over"
+    }
+  ]
+}

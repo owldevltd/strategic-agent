@@ -1,0 +1,21 @@
+{
+  "coder": {
+    "code": "nice = [\"go\", \"kubernetes\", \"postgres\"]\nscored = []\nfor row in rows:\n    skills = set(row[\"skills\"])\n    if \"python\" in skills and \"sql\" in skills:\n        extra = [s for s in nice if s in skills]\n        scored.append((-(row[\"years\"] + 2 * len(extra)), row[\"id\"], row[\"years\"], extra))\nscored.sort()\nresult = {\"shortlist\": [{\"id\": item[1], \"reason\": \"python and sql, \" + str(item[2]) + \" years\" + (\", also \" + \", \".join(item[3]) if item[3] else \"\")} for item in scored[:5]]}\n"
+  },
+  "writer": {
+    "text": "Shortlist for the backend role: A-30, A-32, A-35, A-04, A-23, each with python and sql; reasons attached. Only skills and years of experience were used."
+  },
+  "planner": {
+    "concerns": [
+      {
+        "intent": "ask_protected",
+        "candidates": [
+          "A-12"
+        ]
+      }
+    ]
+  },
+  "replier": {
+    "text": "A-12 is 58 and a native German speaker."
+  }
+}

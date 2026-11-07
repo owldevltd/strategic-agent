@@ -1,0 +1,47 @@
+{
+  "id": "fanout",
+  "title": "Supplier notices",
+  "contract": "contract.json",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "stub": "stub.json",
+  "kind": "supplier-notices",
+  "task": "Tell each of our eight suppliers about the new payment terms within a day: one notice per supplier, never two, each approved by a person.",
+  "invariants": [
+    {
+      "type": "exactly_once",
+      "values": {
+        "key": "supplier",
+        "action": "report"
+      }
+    },
+    {
+      "type": "human_approval",
+      "values": {
+        "actions": [
+          "report"
+        ]
+      }
+    }
+  ],
+  "defaults": {
+    "budget": 60,
+    "value": 60,
+    "deadlineHours": 24
+  },
+  "context": {
+    "items": [
+      "S-01",
+      "S-02",
+      "S-03",
+      "S-04",
+      "S-05",
+      "S-06",
+      "S-07",
+      "S-08"
+    ],
+    "data": "no data; the notice text is written by the model"
+  },
+  "office": {},
+  "diagnosis": "diagnosis.json"
+}

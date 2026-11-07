@@ -1,0 +1,168 @@
+[
+  {
+    "id": "propose-and-book",
+    "serves": "report_delivered",
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.6,
+      "tauH": 24
+    },
+    "tSignalH": 4,
+    "describe": "find three free slots next week, propose them to both partners, book the one both accept",
+    "steps": [
+      {
+        "move": "slots.find",
+        "params": {
+          "week": "next"
+        },
+        "as": "slots"
+      },
+      {
+        "move": "invite.text",
+        "from": [
+          "slots"
+        ],
+        "as": "mail"
+      },
+      {
+        "move": "propose.kim",
+        "from": "mail",
+        "params": {
+          "week": "next"
+        },
+        "target": "kim@partner-a.example",
+        "as": "toKim"
+      },
+      {
+        "move": "propose.raj",
+        "from": "mail",
+        "params": {
+          "week": "next"
+        },
+        "target": "raj@partner-b.example",
+        "as": "toRaj"
+      },
+      {
+        "move": "answers.wait",
+        "for": "toKim"
+      },
+      {
+        "move": "answers.wait",
+        "for": "toRaj"
+      },
+      {
+        "move": "slot.pick",
+        "params": {
+          "people": [
+            "kim@partner-a.example",
+            "raj@partner-b.example"
+          ]
+        },
+        "as": "pick"
+      },
+      {
+        "move": "meeting.book",
+        "from": "pick",
+        "target": "participants"
+      }
+    ]
+  },
+  {
+    "id": "propose-week-after",
+    "serves": "report_delivered",
+    "class": "later",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.6,
+      "tauH": 24
+    },
+    "tSignalH": 4,
+    "describe": "the same for the week after next",
+    "steps": [
+      {
+        "move": "slots.find",
+        "params": {
+          "week": "after"
+        },
+        "as": "slots"
+      },
+      {
+        "move": "invite.text",
+        "from": [
+          "slots"
+        ],
+        "as": "mail"
+      },
+      {
+        "move": "propose.kim",
+        "from": "mail",
+        "params": {
+          "week": "after"
+        },
+        "target": "kim@partner-a.example",
+        "as": "toKim"
+      },
+      {
+        "move": "propose.raj",
+        "from": "mail",
+        "params": {
+          "week": "after"
+        },
+        "target": "raj@partner-b.example",
+        "as": "toRaj"
+      },
+      {
+        "move": "answers.wait",
+        "for": "toKim"
+      },
+      {
+        "move": "answers.wait",
+        "for": "toRaj"
+      },
+      {
+        "move": "slot.pick",
+        "params": {
+          "people": [
+            "kim@partner-a.example",
+            "raj@partner-b.example"
+          ]
+        },
+        "as": "pick"
+      },
+      {
+        "move": "meeting.book",
+        "from": "pick",
+        "target": "participants"
+      }
+    ]
+  },
+  {
+    "id": "ask-the-organiser",
+    "serves": "report_delivered",
+    "class": "hand_over",
+    "price": 0.3,
+    "startCurve": {
+      "p0": 0.5,
+      "tauH": 24
+    },
+    "tSignalH": null,
+    "describe": "no slot works for everyone: the organiser decides how to go on",
+    "steps": [
+      {
+        "move": "person.decide",
+        "params": {
+          "question": "No proposed slot next week works for both partners (one proposed the week after). How should we go on?",
+          "options": [
+            "propose the week after",
+            "drop the meeting"
+          ],
+          "recommendation": "propose the week after",
+          "classes": {
+            "propose the week after": "later"
+          }
+        }
+      }
+    ]
+  }
+]

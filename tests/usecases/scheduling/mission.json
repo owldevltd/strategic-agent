@@ -1,0 +1,23 @@
+{
+  "id": "scheduling",
+  "title": "Scheduling",
+  "contract": "contract.json",
+  "data": "data",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "stub": "stub.json",
+  "world": "world.json",
+  "diagnosis": "diagnosis.json",
+  "kind": "meeting",
+  "task": "Find a 60-minute meeting next week for Anna, Ben and the partners Kim and Raj, and send the invitation.",
+  "invariants": [],
+  "defaults": {
+    "budget": 10,
+    "value": 10,
+    "deadlineHours": 96
+  },
+  "context": {
+    "data": "two internal calendars; the partners only by mail"
+  },
+  "office": {}
+}

@@ -1,0 +1,106 @@
+[
+  {
+    "id": "canary-then-full",
+    "serves": "confirmed_by",
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.7,
+      "tauH": 1
+    },
+    "tSignalH": 0.5,
+    "describe": "green tests, canary at 10 %, two healthy reports, then everyone",
+    "steps": [
+      {
+        "move": "ci.check",
+        "as": "ci"
+      },
+      {
+        "move": "deploy.canary",
+        "params": {
+          "version": "2.4.0",
+          "percent": 10
+        },
+        "target": "web",
+        "as": "canary"
+      },
+      {
+        "move": "canary.wait",
+        "for": "canary"
+      },
+      {
+        "move": "canary.check",
+        "params": {
+          "limit": 2,
+          "need": 2
+        },
+        "as": "health"
+      },
+      {
+        "move": "deploy.full",
+        "params": {
+          "version": "2.4.0",
+          "percent": 100
+        },
+        "target": "web"
+      },
+      {
+        "move": "person.confirm",
+        "params": {
+          "criterion": "k1",
+          "role": "release manager",
+          "question": "Is v2.4.0 live for all users and healthy?"
+        }
+      }
+    ]
+  },
+  {
+    "id": "roll-back",
+    "serves": "confirmed_by",
+    "class": "rollback",
+    "price": 0.5,
+    "startCurve": {
+      "p0": 0.3,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "describe": "put the previous version back, open a ticket with the evidence, and let the release manager decide",
+    "steps": [
+      {
+        "move": "deploy.rollback",
+        "params": {
+          "version": "2.3.7"
+        },
+        "target": "web"
+      },
+      {
+        "move": "canary.check",
+        "params": {
+          "limit": 100,
+          "need": 0
+        },
+        "as": "health"
+      },
+      {
+        "move": "incident.note",
+        "from": [
+          "health"
+        ],
+        "as": "note"
+      },
+      {
+        "move": "report.send",
+        "from": "note",
+        "target": "release-team"
+      },
+      {
+        "move": "person.confirm",
+        "params": {
+          "criterion": "k1",
+          "role": "release manager",
+          "question": "Is v2.4.0 live for all users and healthy?"
+        }
+      }
+    ]
+  }
+]

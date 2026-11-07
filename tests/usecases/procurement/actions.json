@@ -1,0 +1,24 @@
+{
+  "rfq": {
+    "criticality": "outward",
+    "carries": [
+      "message"
+    ],
+    "sensitive": [],
+    "says": "asks a supplier for a quote",
+    "idempotencyH": 168
+  },
+  "order": {
+    "criticality": "money_or_law",
+    "carries": [
+      "money",
+      "message"
+    ],
+    "sensitive": [
+      "supplier"
+    ],
+    "commits": "purchase",
+    "says": "places an order with a supplier",
+    "idempotencyH": 168
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "planner": [
+    { "when": "we dispute invoice AR-2026-0391",
+      "answer": { "concerns": [ { "intent": "dispute", "invoices": [ "AR-2026-0391" ], "reason": "second spindle unit never delivered" } ] } },
+    { "when": "we paid invoice AR-2026-0405",
+      "answer": { "concerns": [ { "intent": "paid_claim", "invoices": [ "AR-2026-0405" ] } ] } },
+    { "when": "my private address",
+      "answer": { "concerns": [ { "intent": "address_change", "invoices": [] } ] } },
+    { "when": "invoice AR-2026-0411 was paid",
+      "answer": { "concerns": [ { "intent": "paid_claim", "invoices": [ "AR-2026-0411" ] } ] } }
+  ]
+}

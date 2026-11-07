@@ -1,0 +1,17 @@
+{
+  "id": "migrate-customers",
+  "goal": "Migrate the legacy customer rows into the new schema and report the counts and every row put aside to the data owner",
+  "deadline": "{{in:48h}}",
+  "budget": 10,
+  "value": 15,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "report_delivered",
+      "values": {
+        "to": "data-owner",
+        "topic": "customer migration"
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "deploy",
+  "title": "Release",
+  "contract": "contract.json",
+  "data": "data",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "stub": "stub.json",
+  "world": "world.json",
+  "diagnosis": "diagnosis.json",
+  "kind": "release",
+  "task": "Release v2.4.0 of the web service: green tests, a person's approval, a canary at 10 %, roll back above 2 % errors.",
+  "invariants": [
+    {
+      "type": "human_approval",
+      "values": {
+        "actions": [
+          "deploy"
+        ]
+      }
+    }
+  ],
+  "defaults": {
+    "budget": 10,
+    "value": 20,
+    "deadlineHours": 8
+  },
+  "context": {
+    "data": "the CI result of the release commit and the canary's reports"
+  },
+  "office": {}
+}

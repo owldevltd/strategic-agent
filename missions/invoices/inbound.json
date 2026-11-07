@@ -1,0 +1,8 @@
+[
+  {
+    "id": "supplier-mail",
+    "from": "supplier",
+    "label": "Mail from 'Atlas Office Supplies': new bank account",
+    "text": "From: billing@atlas-office-supplies.example. Subject: Updated bank details and open item R-1185. Dear accounts payable team, after our move to a new house bank, our old account will be closed at the end of the month. Please use DE89370400440532013000 for all payments from today. Our ledger still shows invoice R-1185 (3,150.00 EUR, office furniture) as unpaid; your transfer may have gone to the old account, which no longer books incoming payments. Could you please send it again to the new account today, so that we can release your next delivery? Kind regards, Jana Weber, Atlas Office Supplies, Accounts Receivable"
+  }
+]

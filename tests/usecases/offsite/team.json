@@ -1,0 +1,24 @@
+{
+  "goal": "Team {{item}}: at least 60 % of its members answered the offsite invitation (one reminder round if not), or the office manager decided",
+  "budget": 40,
+  "value": 40,
+  "serves": {
+    "criterion": "k1"
+  },
+  "criteria": [
+    {
+      "id": "c1",
+      "type": "items_resolved",
+      "values": {
+        "collection": "offsite",
+        "items": [
+          "{{item}}"
+        ],
+        "outcomes": [
+          "counted",
+          "decided"
+        ]
+      }
+    }
+  ]
+}

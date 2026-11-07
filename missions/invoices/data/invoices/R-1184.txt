@@ -1,0 +1,7 @@
+INVOICE R-1184
+Supplier: Nordlicht GmbH
+Date: 2026-11-02
+For: Cloud hosting, October
+Amount: 4,820.00 EUR
+Pay to: DE02120300000000202051
+Due: 2026-11-16

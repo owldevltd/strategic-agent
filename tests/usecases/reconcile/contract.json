@@ -1,0 +1,17 @@
+{
+  "id": "close-2026-10",
+  "goal": "Reconcile the October bank statement with the ledger and report every difference, explained to the cent, to the finance lead",
+  "deadline": "{{in:48h}}",
+  "budget": 10,
+  "value": 15,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "report_delivered",
+      "values": {
+        "to": "finance-lead",
+        "topic": "October bank reconciliation"
+      }
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "rule": "precondition",
+    "move": "venue.child",
+    "criterion": {
+      "type": "items_resolved",
+      "values": {
+        "collection": "offsite",
+        "items": [
+          "rsvp:design",
+          "rsvp:engineering",
+          "rsvp:sales"
+        ],
+        "outcomes": [
+          "counted",
+          "decided"
+        ]
+      }
+    }
+  },
+  {
+    "rule": "precondition",
+    "move": "catering.child",
+    "criterion": {
+      "type": "items_resolved",
+      "values": {
+        "collection": "offsite",
+        "items": [
+          "rsvp:design",
+          "rsvp:engineering",
+          "rsvp:sales"
+        ],
+        "outcomes": [
+          "counted",
+          "decided"
+        ]
+      }
+    }
+  },
+  {
+    "rule": "precondition",
+    "move": "details.child",
+    "criterion": {
+      "type": "items_resolved",
+      "values": {
+        "collection": "offsite",
+        "items": [
+          "venue:offsite",
+          "catering:offsite"
+        ],
+        "outcomes": [
+          "booked",
+          "ordered"
+        ]
+      }
+    }
+  }
+]

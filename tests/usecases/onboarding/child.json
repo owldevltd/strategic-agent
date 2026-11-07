@@ -1,0 +1,9 @@
+{
+  "goal": "First invoice {{item}}: paid once to the supplier's account in the master data after the supplier is verified, or handed to purchasing with the findings",
+  "budget": 40,
+  "value": 40,
+  "serves": { "criterion": "k1" },
+  "criteria": [
+    { "id": "c1", "type": "items_resolved", "values": { "collection": "invoices", "items": [ "{{item}}" ], "outcomes": [ "paid", "escalated" ] } }
+  ]
+}

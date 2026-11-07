@@ -1,0 +1,23 @@
+{
+  "goal": "{{item}}: catering ordered for the confirmed headcount at at most 25 EUR per person, approved by a person",
+  "budget": 15,
+  "value": 15,
+  "serves": {
+    "criterion": "k1"
+  },
+  "criteria": [
+    {
+      "id": "c1",
+      "type": "items_resolved",
+      "values": {
+        "collection": "offsite",
+        "items": [
+          "{{item}}"
+        ],
+        "outcomes": [
+          "ordered"
+        ]
+      }
+    }
+  ]
+}

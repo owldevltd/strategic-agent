@@ -1,0 +1,132 @@
+{
+  "invoice.child": {
+    "executor": "child", "template": "child.json", "criticality": "internal", "price": 1,
+    "evidence": [ "item_resolved" ],
+    "describe": "one child goal per new supplier's first invoice"
+  },
+  "invoice.read": {
+    "executor": "code", "tool": "./tools/invoice.py", "labels": [ "foreign" ], "criticality": "read", "price": 0.05,
+    "params": { "invoice": { "type": "string" } },
+    "describe": "trusted code: the invoice document as fields; its account is never used"
+  },
+  "payment.prepare": {
+    "executor": "code", "tool": "./tools/prepare.py", "labels": [], "criticality": "internal", "price": 0.05,
+    "fieldLabels": { "invoiceId": [ "foreign" ], "supplier": [ "own" ], "amount": [ "foreign" ], "iban": [ "own" ] },
+    "params": { "supplier": { "type": "string" } },
+    "describe": "trusted code: the payment with the account from our own registration of the supplier, never from a document"
+  },
+  "payment.send": {
+    "executor": "code", "action": "supplier_payment", "commits": "payment", "criticality": "money_or_law", "price": 0.1, "humanMinutes": 2,
+    "resolves": { "item": "item", "outcome": "paid" },
+    "params": {
+      "item": { "type": "string", "optional": true },
+      "invoiceId": { "type": "string", "optional": true },
+      "supplier": { "type": "string", "optional": true },
+      "amount": { "type": "number", "optional": true },
+      "iban": { "type": "string", "optional": true }
+    },
+    "evidence": [ "delivered", "item_resolved" ], "horizonH": 168, "leaseMaxMin": 5,
+    "describe": "hands the payment to the gate; a person approves exactly it, with a reason"
+  },
+  "supplier.status": {
+    "executor": "code", "tool": "./tools/documents.py", "labels": [ "foreign" ], "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "supplier": { "type": "string" } },
+    "describe": "trusted code: what came in for each onboarding document and what the check found"
+  },
+  "invoice.escalate": {
+    "executor": "human", "resolves": { "item": "item", "outcome": "escalated" }, "criticality": "internal", "humanMinutes": 3, "price": 0,
+    "params": {
+      "item": { "type": "string", "optional": true },
+      "question": { "type": "string" }, "options": { "type": "list" }, "recommendation": { "type": "string", "optional": true }
+    },
+    "evidence": [ "item_resolved", "confirmation" ],
+    "describe": "purchasing takes over a first invoice whose supplier could not be verified this week"
+  },
+  "tax.review": {
+    "executor": "code", "tool": "./tools/documents.py", "labels": [ "foreign" ], "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "kind": { "type": "string" }, "supplier": { "type": "string" } },
+    "describe": "trusted code: the checked tax registration certificate, as the person sees it before confirming"
+  },
+  "bank.review": {
+    "executor": "code", "tool": "./tools/documents.py", "labels": [ "foreign" ], "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "kind": { "type": "string" }, "supplier": { "type": "string" } },
+    "describe": "trusted code: the checked bank confirmation letter, as the person sees it before confirming"
+  },
+  "verification.confirm": {
+    "executor": "human", "confirms": true, "options": [ "yes", "no" ], "criticality": "internal", "humanMinutes": 2, "price": 0,
+    "params": {
+      "question": { "type": "string" }, "role": { "type": "string", "optional": true },
+      "criterion": { "type": "string", "optional": true }, "recommendation": { "type": "string", "optional": true }
+    },
+    "evidence": [ "confirmation" ], "reversible": true,
+    "describe": "a person in purchasing confirms the supplier as verified, with both checked documents in front of them"
+  },
+  "document.letter": {
+    "executor": "code", "tool": "./tools/documents.py", "labels": [ "own" ], "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "document": { "type": "string" }, "purpose": { "type": "string" } },
+    "describe": "trusted code: the request or the reminder for one document, from a fixed template"
+  },
+  "tax.request": {
+    "executor": "code", "action": "doc_request", "param": "body", "criticality": "outward", "price": 0.1, "humanMinutes": 1,
+    "params": { "document": { "type": "string", "optional": true }, "body": { "type": "string", "optional": true } },
+    "evidence": [ "delivered" ], "horizonH": 168, "leaseMaxMin": 5,
+    "creates": { "expectation": {
+      "key": "ref", "prefix": "TAX", "fact": "tax_certificate", "need": 1, "minutes": 2880,
+      "extract": { "taxNumber": { "type": "string", "fixed": true, "critical": true,
+        "describe": "the tax registration (VAT) number printed on the certificate, without blanks" } },
+      "parser": { "taxNumber": "registration number:?\\s*([A-Z]{2}[0-9]{9,12}(?:B[0-9]{2})?)\\b" },
+      "store": { "rows": [ { "file": "tax_certificates.csv", "key": "supplier", "row": { "supplier": "{{team}}", "taxNumber": "{{taxNumber}}", "from": "{{from}}" } } ] }
+    } },
+    "describe": "asks the supplier for its tax registration certificate; the answer is matched by its reference"
+  },
+  "tax.remind": {
+    "executor": "code", "action": "doc_reminder", "param": "body", "criticality": "outward", "price": 0.1, "humanMinutes": 1,
+    "params": { "document": { "type": "string", "optional": true }, "body": { "type": "string", "optional": true } },
+    "evidence": [ "delivered" ], "horizonH": 168, "leaseMaxMin": 5,
+    "creates": { "expectation": {
+      "key": "ref", "prefix": "TAXR", "fact": "tax_certificate", "need": 1, "minutes": 2880,
+      "extract": { "taxNumber": { "type": "string", "fixed": true, "critical": true,
+        "describe": "the tax registration (VAT) number printed on the certificate, without blanks" } },
+      "parser": { "taxNumber": "registration number:?\\s*([A-Z]{2}[0-9]{9,12}(?:B[0-9]{2})?)\\b" },
+      "store": { "rows": [ { "file": "tax_certificates.csv", "key": "supplier", "row": { "supplier": "{{team}}", "taxNumber": "{{taxNumber}}", "from": "{{from}}" } } ] }
+    } },
+    "describe": "reminds the supplier once of the tax registration certificate"
+  },
+  "bank.request": {
+    "executor": "code", "action": "doc_request", "param": "body", "criticality": "outward", "price": 0.1, "humanMinutes": 1,
+    "params": { "document": { "type": "string", "optional": true }, "body": { "type": "string", "optional": true } },
+    "evidence": [ "delivered" ], "horizonH": 168, "leaseMaxMin": 5,
+    "creates": { "expectation": {
+      "key": "ref", "prefix": "BANK", "fact": "bank_letter", "need": 1, "minutes": 2880,
+      "extract": { "iban": { "type": "string", "fixed": true, "critical": true,
+        "describe": "the IBAN the bank confirms in the letter, without blanks" } },
+      "parser": { "iban": "IBAN:?\\s*([A-Z]{2}[0-9]{2}[A-Z0-9]{10,30})\\b" },
+      "store": { "rows": [ { "file": "bank_letters.csv", "key": "supplier", "row": { "supplier": "{{team}}", "iban": "{{iban}}", "from": "{{from}}" } } ] }
+    } },
+    "describe": "asks the supplier for its bank confirmation letter; the answer is matched by its reference"
+  },
+  "bank.remind": {
+    "executor": "code", "action": "doc_reminder", "param": "body", "criticality": "outward", "price": 0.1, "humanMinutes": 1,
+    "params": { "document": { "type": "string", "optional": true }, "body": { "type": "string", "optional": true } },
+    "evidence": [ "delivered" ], "horizonH": 168, "leaseMaxMin": 5,
+    "creates": { "expectation": {
+      "key": "ref", "prefix": "BANKR", "fact": "bank_letter", "need": 1, "minutes": 2880,
+      "extract": { "iban": { "type": "string", "fixed": true, "critical": true,
+        "describe": "the IBAN the bank confirms in the letter, without blanks" } },
+      "parser": { "iban": "IBAN:?\\s*([A-Z]{2}[0-9]{2}[A-Z0-9]{10,30})\\b" },
+      "store": { "rows": [ { "file": "bank_letters.csv", "key": "supplier", "row": { "supplier": "{{team}}", "iban": "{{iban}}", "from": "{{from}}" } } ] }
+    } },
+    "describe": "reminds the supplier once of the bank confirmation letter"
+  },
+  "document.wait": {
+    "executor": "wait", "criticality": "read", "price": 0.05, "reversible": true, "horizonH": 168,
+    "params": { "minutes": { "type": "number", "optional": true } },
+    "describe": "waits for the supplier's answer to the request or the reminder"
+  },
+  "document.check": {
+    "executor": "code", "tool": "./tools/documents.py", "labels": [ "own" ], "fact": "item_resolved", "criticality": "read", "price": 0.05,
+    "params": { "mode": { "type": "string" }, "document": { "type": "string" } },
+    "evidence": [ "item_resolved" ],
+    "describe": "trusted code: the stored document against the registration; checked settles the document, anything else is a wall"
+  }
+}

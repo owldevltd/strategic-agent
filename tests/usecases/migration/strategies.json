@@ -1,0 +1,39 @@
+[
+  {
+    "id": "convert-check-report",
+    "serves": "report_delivered",
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "the agent writes the conversion, the frame checks it row by row, the data owner gets the counts and the rows put aside",
+    "steps": [
+      {
+        "move": "migration.write",
+        "as": "code"
+      },
+      {
+        "move": "migration.run",
+        "from": [
+          "code"
+        ],
+        "as": "result"
+      },
+      {
+        "move": "migration.report",
+        "from": [
+          "result"
+        ],
+        "as": "report"
+      },
+      {
+        "move": "report.send",
+        "from": "report",
+        "target": "data-owner"
+      }
+    ]
+  }
+]

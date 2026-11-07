@@ -1,0 +1,7 @@
+INVOICE R-1188
+Supplier: Nova Print Studio
+Date: 2026-11-03
+For: Trade fair banners
+Amount: 1,980.00 EUR
+Pay to: DE27100777770209299700
+Due: 2026-11-17

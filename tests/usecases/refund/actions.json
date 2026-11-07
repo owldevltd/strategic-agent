@@ -1,0 +1,13 @@
+{
+  "refund": {
+    "criticality": "money_or_law",
+    "carries": [
+      "money"
+    ],
+    "sensitive": [
+      "method"
+    ],
+    "says": "a refund of a card charge to the payment method it was taken from",
+    "idempotencyH": 168
+  }
+}

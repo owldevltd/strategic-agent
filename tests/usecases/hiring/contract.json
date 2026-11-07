@@ -1,0 +1,17 @@
+{
+  "id": "backend-shortlist",
+  "goal": "Shortlist five applicants for the backend role by skills and years of experience and give the hiring manager the shortlist with reasons",
+  "deadline": "{{in:72h}}",
+  "budget": 10,
+  "value": 15,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "report_delivered",
+      "values": {
+        "to": "hiring-manager",
+        "topic": "backend shortlist"
+      }
+    }
+  ]
+}

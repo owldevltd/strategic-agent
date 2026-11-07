@@ -1,0 +1,29 @@
+{
+  "id": "dsar",
+  "title": "Data access request",
+  "contract": "contract.json",
+  "data": "data",
+  "master": "master.json",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "stub": "stub.json",
+  "diagnosis": "diagnosis.json",
+  "world": "world.json",
+  "kind": "data-access-request",
+  "task": "Answer the data access request of customer Max Muster (cust-0077) within 30 days.",
+  "invariants": [
+    {
+      "type": "to_data_subject",
+      "values": {}
+    }
+  ],
+  "defaults": {
+    "budget": 10,
+    "value": 15,
+    "deadlineHours": 720
+  },
+  "context": {
+    "data": "customer records, support tickets and the newsletter list; the request came from an address that is not on file"
+  },
+  "office": {}
+}

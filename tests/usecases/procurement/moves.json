@@ -1,0 +1,153 @@
+{
+  "rfq.send": {
+    "price": 0.1,
+    "criticality": "outward",
+    "params": {
+      "body": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "action": "rfq",
+    "param": "body",
+    "humanMinutes": 0,
+    "describe": "asks a supplier for a quote; the answer comes back as its own process",
+    "creates": {
+      "expectation": {
+        "key": "ref",
+        "prefix": "RFQ",
+        "fact": "quote",
+        "need": 1,
+        "minutes": 120,
+        "extract": {
+          "total": {
+            "type": "number",
+            "min": 0,
+            "max": 1000000,
+            "describe": "the total price for all 20 laptops in EUR, without VAT",
+            "critical": true
+          },
+          "delivery": {
+            "type": "date",
+            "describe": "the date the supplier promises delivery, as YYYY-MM-DD",
+            "critical": true
+          }
+        },
+        "store": {
+          "rows": [
+            {
+              "file": "quotes.csv",
+              "key": "supplier",
+              "row": {
+                "supplier": "{{team}}",
+                "total": "{{total}}",
+                "delivery": "{{delivery}}"
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+  "quotes.wait": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "minutes": {
+        "type": "number",
+        "optional": true
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": null,
+    "reversible": true,
+    "commits": null,
+    "executor": "wait",
+    "describe": "waits for the quotes"
+  },
+  "quotes.compare": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "needBy": {
+        "type": "string"
+      },
+      "framework": {
+        "type": "string"
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/compare.py",
+    "labels": [
+      "own"
+    ],
+    "fieldLabels": {
+      "amount": [
+        "foreign"
+      ],
+      "delivery": [
+        "foreign"
+      ]
+    },
+    "describe": "the cheapest quote that delivers in time, from at least three"
+  },
+  "order.send": {
+    "price": 0.1,
+    "criticality": "money_or_law",
+    "params": {
+      "supplier": {
+        "type": "string",
+        "optional": true
+      },
+      "amount": {
+        "type": "number",
+        "optional": true
+      },
+      "delivery": {
+        "type": "string",
+        "optional": true
+      },
+      "quotes": {
+        "type": "list",
+        "optional": true
+      },
+      "valid": {
+        "type": "number",
+        "optional": true
+      },
+      "needBy": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": "purchase",
+    "executor": "code",
+    "action": "order",
+    "humanMinutes": 3,
+    "describe": "places the order with the supplier"
+  }
+}

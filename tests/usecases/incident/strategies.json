@@ -1,0 +1,142 @@
+[
+  {
+    "id": "rotate-the-log",
+    "serves": "confirmed_by",
+    "class": [
+      "direct",
+      "reversible"
+    ],
+    "price": 0.6,
+    "startCurve": {
+      "p0": 0.7,
+      "tauH": 0.5
+    },
+    "tSignalH": 0.2,
+    "describe": "look at the disk, rotate and compress the log that fills it, wait for the monitoring, tell on-call",
+    "steps": [
+      {
+        "move": "disk.inspect",
+        "as": "disk"
+      },
+      {
+        "move": "disk.diagnose",
+        "from": [
+          "disk"
+        ],
+        "as": "plan"
+      },
+      {
+        "move": "logs.rotate",
+        "from": "plan",
+        "target": "db-01",
+        "as": "rotated"
+      },
+      {
+        "move": "ops.wait",
+        "for": "rotated"
+      },
+      {
+        "move": "oncall.note",
+        "from": [
+          "disk",
+          "plan"
+        ],
+        "as": "note"
+      },
+      {
+        "move": "report.send",
+        "from": "note",
+        "target": "oncall"
+      },
+      {
+        "move": "person.confirm",
+        "params": {
+          "criterion": "k1",
+          "role": "on-call",
+          "question": "Is the disk of db-01 below 80 % and is the database up?"
+        }
+      }
+    ]
+  },
+  {
+    "id": "free-space",
+    "serves": "confirmed_by",
+    "class": "irreversible",
+    "price": 0.5,
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 0.5
+    },
+    "tSignalH": 0.2,
+    "describe": "look at the disk, delete what takes the most space and can go, wait for the monitoring, tell on-call",
+    "steps": [
+      {
+        "move": "disk.inspect",
+        "as": "disk"
+      },
+      {
+        "move": "disk.diagnose",
+        "from": [
+          "disk"
+        ],
+        "as": "plan"
+      },
+      {
+        "move": "files.delete",
+        "from": "plan",
+        "target": "db-01",
+        "as": "deleted"
+      },
+      {
+        "move": "ops.wait",
+        "for": "deleted"
+      },
+      {
+        "move": "oncall.note",
+        "from": [
+          "disk",
+          "plan"
+        ],
+        "as": "note"
+      },
+      {
+        "move": "report.send",
+        "from": "note",
+        "target": "oncall"
+      },
+      {
+        "move": "person.confirm",
+        "params": {
+          "criterion": "k1",
+          "role": "on-call",
+          "question": "Is the disk of db-01 below 80 % and is the database up?"
+        }
+      }
+    ]
+  },
+  {
+    "id": "hand-to-on-call",
+    "serves": "confirmed_by",
+    "class": "hand_over",
+    "price": 0.3,
+    "startCurve": {
+      "p0": 0.4,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "describe": "ask the on-call person to decide",
+    "steps": [
+      {
+        "move": "person.decide",
+        "params": {
+          "question": "db-01 disk is at 95 % and nothing safe brought it below 80 %. What should be done?",
+          "options": [
+            "I take over",
+            "leave it"
+          ],
+          "recommendation": "I take over"
+        }
+      }
+    ]
+  }
+]

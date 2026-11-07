@@ -1,0 +1,18 @@
+{
+  "id": "iban-normaliser",
+  "goal": "Implement a function that normalises supplier IBANs; it must pass the frozen acceptance tests",
+  "deadline": "{{in:24h}}",
+  "budget": 10,
+  "value": 20,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "test_green",
+      "values": {
+        "test": "iban_acceptance",
+        "commit": "410932dcbc9a4c87"
+      },
+      "immutable": true
+    }
+  ]
+}

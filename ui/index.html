@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Control Room</title>
+	<link rel="stylesheet" href="/ui/style.css">
+	<script src="/lib/app.js"></script>
+</head>
+<body>
+	<header>
+		<h1>Control Room</h1>
+		<div id="system"></div>
+		<label class="pin">Board pin <input id="board-pin" type="password" autocomplete="off"></label>
+		<div id="notice" class="warn"></div>
+	</header>
+	<main>
+		<section id="left">
+			<h2>Missions</h2>
+			<div id="missions"></div>
+			<h2>Questions for a person</h2>
+			<div id="tickets"></div>
+			<h2>At the gate</h2>
+			<label class="pin">Operator pin (gate) <input id="pin" type="password" autocomplete="off"></label>
+			<div id="gate"></div>
+		</section>
+		<section id="right">
+			<div id="counters">
+				<div class="counter ours"><span>Our office</span><b id="ours">0</b><small>people recognisable outside</small></div>
+				<div class="counter theirs"><span>Neighbour office (no gate)</span><b id="theirs">0</b><small>people recognisable outside</small></div>
+			</div>
+			<h2>Live log</h2>
+			<ol id="log"></ol>
+		</section>
+	</main>
+	<script>
+		app.config.root = '/';
+		app.use( [ 'Ui.Main' ], Main => new Main( document.body ).start() );
+	</script>
+</body>
+</html>

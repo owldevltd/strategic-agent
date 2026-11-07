@@ -1,0 +1,18 @@
+{
+  "id": "calculator-php",
+  "goal": "Write the web team's PHP calculator library so that the frozen hidden acceptance suite passes in the sandbox",
+  "deadline": "{{in:24h}}",
+  "budget": 10,
+  "value": 20,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "test_green",
+      "values": {
+        "test": "calculator-hidden",
+        "commit": "501f0df1e2bdcaa2"
+      },
+      "immutable": true
+    }
+  ]
+}

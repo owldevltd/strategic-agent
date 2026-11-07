@@ -1,0 +1,8 @@
+{
+  "writer": {
+    "text": "Dear Mr Muster, this is the data we hold about you. Customer record: Max Muster, max.muster@example.org, +49 30 1234567, Berlin, customer since 2021-03-04. Support tickets: T-501 (2025-02-11) parcel arrived damaged, replacement sent; T-502 (2025-09-30) delivery address changed to your office, same issue as [someone else] ([someone else]) last week; T-504 (2026-01-15) invoice 2025-118 resent, [someone else] from the warehouse confirmed shipping. Newsletter: subscribed since 2021-03-04."
+  },
+  "extractor": {
+    "confirmed": "yes"
+  }
+}

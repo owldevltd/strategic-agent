@@ -1,0 +1,19 @@
+{
+  "about": "Simulated people of the company. They only see what actually arrived in their inbox at the gate, and answer like people do: some at once, one without the reference in the subject, one twice, one late, one never.",
+  "invitations": [ "invite" ],
+  "keySubject": "Re: Follow-up survey [{{round}}]",
+  "subject": "Re: survey",
+  "people": [
+    { "name": "Mira", "team": "design", "replies": [
+      { "after": 4, "key": true, "text": "Workload: 2 of 5. Two people for four product lines, nobody plans with us." },
+      { "after": 12, "key": true, "text": "Small correction to my answer: workload 3, it got a bit better this week." }
+    ] },
+    { "name": "Jakob", "team": "design", "replies": [
+      { "after": 8, "key": false, "subject": "survey", "text": "Hi, regarding the design follow-up: workload is a 1 for me, and the reviews with our manager are the worst part." }
+    ] },
+    { "name": "Emil", "team": "design", "replies": [
+      { "after": 75, "key": true, "text": "Sorry for the delay. Workload 2. Mostly tooling, the design system is broken." }
+    ] },
+    { "name": "Greta", "team": "design", "replies": [] }
+  ]
+}

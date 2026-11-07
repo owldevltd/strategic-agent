@@ -1,0 +1,43 @@
+{
+  "spec.read": {
+    "executor": "code",
+    "tool": "./tools/read_spec.py",
+    "describe": "reads the web team's specification of the calculator from the vault",
+    "labels": [ "own" ],
+    "price": 0.02,
+    "criticality": "read",
+    "params": {},
+    "evidence": [],
+    "leaseMaxMin": 1
+  },
+  "calc.write": {
+    "executor": "ai",
+    "role": "coder",
+    "labels": [],
+    "describe": "the agent writes the calculator in PHP from the specification; it never sees the acceptance cases",
+    "instructions": "You are a careful PHP developer. Implement the specification you are given as one PHP 8.2 file: a small tokenizer and a recursive-descent parser behind the global function calculate(string $expression): int|float. Handle every error case of the specification. Respect every red line of the specification: no eval, no assert, nothing that runs code or reaches the shell, no include or require, no files, no network. Use only ordinary string, math, array, ctype, mbstring and preg functions; print nothing. Answer with the whole file in the field code, starting with <?php, without Markdown. If your code is refused you hear only a short report in Python's words: SyntaxError (a parse error) or PermissionError (a forbidden construct) in a line; NameError (a function that is not available), ZeroDivisionError (DivisionByZeroError), ValueError (InvalidArgumentException), TypeError or RuntimeError (another Error) thrown in a line where the hidden tests did not expect it; how many hidden cases failed; or that it ran too long, printed too much or returned nothing. Then write the whole file again, correct.",
+    "contract": { "fields": { "code": { "type": "string" } } },
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "leaseMaxMin": 3,
+    "inherit": true
+  },
+  "calc.test": {
+    "executor": "code",
+    "tool": "./tools/php_frame.py",
+    "describe": "a trusted frame checks the agent's PHP for the red lines, runs it locked down against the frozen hidden suite and compares the results itself; green is an observation",
+    "labels": [ "own" ],
+    "fact": "test_run",
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "suite": { "type": "string", "required": true },
+      "cases": { "type": "list", "required": true },
+      "seconds": { "type": "number", "optional": true, "min": 0.5 }
+    },
+    "evidence": [ "test_run" ],
+    "leaseMaxMin": 2
+  }
+}

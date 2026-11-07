@@ -1,0 +1,12 @@
+{
+  "invite": {
+    "criticality": "outward",
+    "carries": [
+      "message"
+    ],
+    "sensitive": [],
+    "says": "an invitation to a short survey",
+    "inside": true,
+    "idempotencyH": 72
+  }
+}

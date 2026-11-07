@@ -1,0 +1,183 @@
+[
+  {
+    "id": "one-child-per-invoice-then-summary",
+    "serves": "items_resolved",
+    "kind": "ar-dunning",
+    "depth": 0,
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 24
+    },
+    "tSignalH": null,
+    "describe": "one child per open invoice, one after another; then the summary for the AR team lead from the vault",
+    "steps": [
+      {
+        "move": "invoice.child",
+        "forEach": "{{items}}"
+      },
+      {
+        "move": "summary.build",
+        "params": {
+          "items": "{{items}}",
+          "asOf": "{{asOf}}",
+          "bankCutoff": "{{bankCutoff}}",
+          "graceDays": "{{graceDays}}"
+        },
+        "as": "summary"
+      },
+      {
+        "move": "report.send",
+        "from": "summary",
+        "target": "ar-lead"
+      }
+    ]
+  },
+  {
+    "id": "summary-only",
+    "serves": "report_delivered",
+    "kind": "ar-dunning",
+    "depth": 0,
+    "class": [
+      "direct",
+      "retry"
+    ],
+    "price": 1,
+    "startCurve": {
+      "p0": 0.3,
+      "tauH": 24
+    },
+    "tSignalH": null,
+    "describe": "fallback when the summary is still missing: the summary for the AR team lead from the vault",
+    "steps": [
+      {
+        "move": "summary.build",
+        "params": {
+          "items": "{{items}}",
+          "asOf": "{{asOf}}",
+          "bankCutoff": "{{bankCutoff}}",
+          "graceDays": "{{graceDays}}"
+        },
+        "as": "summary"
+      },
+      {
+        "move": "report.send",
+        "from": "summary",
+        "target": "ar-lead"
+      }
+    ]
+  },
+  {
+    "id": "check-bank-first",
+    "serves": "items_resolved",
+    "kind": "ar-dunning",
+    "depth": 1,
+    "class": "direct",
+    "price": 0.1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "trusted code settles the invoice when it is paid per the bank export or not more than 14 days past due",
+    "steps": [
+      {
+        "move": "invoice.settle",
+        "params": {
+          "invoice": "{{item}}",
+          "asOf": "{{asOf}}",
+          "bankCutoff": "{{bankCutoff}}",
+          "graceDays": "{{graceDays}}",
+          "purpose": "settle"
+        }
+      }
+    ]
+  },
+  {
+    "id": "check-bank-again",
+    "serves": "items_resolved",
+    "kind": "ar-dunning",
+    "depth": 1,
+    "class": "retry",
+    "price": 0.15,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "the bank check did not finish (its lease ran out): look again, as a clerk would",
+    "steps": [
+      {
+        "move": "invoice.settle",
+        "params": {
+          "invoice": "{{item}}",
+          "asOf": "{{asOf}}",
+          "bankCutoff": "{{bankCutoff}}",
+          "graceDays": "{{graceDays}}",
+          "purpose": "settle"
+        }
+      }
+    ]
+  },
+  {
+    "id": "friendly-reminder",
+    "serves": "items_resolved",
+    "kind": "ar-dunning",
+    "depth": 1,
+    "class": "remind",
+    "price": 0.3,
+    "startCurve": {
+      "p0": 0.85,
+      "tauH": 4
+    },
+    "tSignalH": null,
+    "describe": "the reminder from the fixed template, checked again by trusted code, to the customer's contact on file",
+    "steps": [
+      {
+        "move": "reminder.prepare",
+        "params": {
+          "invoice": "{{item}}",
+          "asOf": "{{asOf}}",
+          "bankCutoff": "{{bankCutoff}}",
+          "graceDays": "{{graceDays}}",
+          "purpose": "remind"
+        },
+        "as": "reminder"
+      },
+      {
+        "move": "reminder.send",
+        "from": "reminder",
+        "target": "{{item|subject}}"
+      }
+    ]
+  },
+  {
+    "id": "hand-invoice-to-person",
+    "serves": "items_resolved",
+    "kind": "ar-dunning",
+    "depth": 1,
+    "class": "hand_over",
+    "price": 2,
+    "startCurve": {
+      "p0": 0.95,
+      "tauH": 24
+    },
+    "tSignalH": 8,
+    "describe": "a person decides about an invoice the friendly way does not settle",
+    "steps": [
+      {
+        "move": "invoice.escalate",
+        "params": {
+          "item": "{{item}}",
+          "question": "Invoice {{item}} could not be settled by a friendly reminder this week. Anything beyond a friendly reminder is your decision. What happens with it?",
+          "options": [
+            "I take it over",
+            "leave it until next week"
+          ],
+          "recommendation": "I take it over"
+        }
+      }
+    ]
+  }
+]

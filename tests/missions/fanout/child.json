@@ -1,0 +1,24 @@
+{
+  "goal": "Supplier {{item}}: one notice about the new payment terms, or handed to a person",
+  "budget": 6,
+  "value": 6,
+  "serves": {
+    "criterion": "k1"
+  },
+  "criteria": [
+    {
+      "id": "c1",
+      "type": "items_resolved",
+      "values": {
+        "collection": "suppliers",
+        "items": [
+          "{{item}}"
+        ],
+        "outcomes": [
+          "notified",
+          "escalated"
+        ]
+      }
+    }
+  ]
+}

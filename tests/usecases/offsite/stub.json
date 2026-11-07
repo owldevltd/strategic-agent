@@ -1,0 +1,90 @@
+{
+  "extractor": [
+    {
+      "when": "count me in",
+      "answer": {
+        "answer": "yes"
+      }
+    },
+    {
+      "when": "cannot make it",
+      "answer": {
+        "answer": "no"
+      }
+    },
+    {
+      "when": "fully booked",
+      "answer": {
+        "available": "no"
+      }
+    },
+    {
+      "when": "The loft is free",
+      "answer": {
+        "available": "yes",
+        "price": 4800
+      }
+    }
+  ],
+  "correlator": {
+    "expectation": "none"
+  },
+  "contract": {
+    "goal": "The company offsite on 4 December 2026 is planned: every team counted (or decided by the office manager), one venue booked and catering ordered within their limits, and every team told the date, venue and time",
+    "deadlineHours": 336,
+    "outcomes": [
+      {
+        "type": "items_resolved",
+        "values": {
+          "collection": "offsite",
+          "items": [
+            "rsvp:design",
+            "rsvp:engineering",
+            "rsvp:sales",
+            "venue:offsite",
+            "catering:offsite",
+            "details:design",
+            "details:engineering",
+            "details:sales"
+          ],
+          "outcomes": [
+            "counted",
+            "decided",
+            "booked",
+            "ordered",
+            "informed"
+          ]
+        }
+      }
+    ],
+    "rules": [
+      {
+        "type": "sum_max",
+        "values": {
+          "max": 6475
+        }
+      }
+    ],
+    "strategyGates": [],
+    "backTranslation": "You want the offsite on 4 December planned within two weeks: each team invited once (one reminder for a slow team, then the office manager decides), one venue booked for at most 6,000 EUR, catering for the confirmed headcount at at most 25 EUR per person, both approved by a person, and every team told the date, venue and time.",
+    "notCovered": [
+      "The programme of the day is not planned.",
+      "Travel is not booked."
+    ],
+    "coverage": [
+      {
+        "sentence": "Plan the one-day company offsite",
+        "criteria": [
+          "k1"
+        ]
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "escalate",
+    "reason": "the stub proposes nothing of its own; the rules U1 to U4 decide"
+  },
+  "learner": {
+    "proposals": []
+  }
+}

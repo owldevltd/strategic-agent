@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Pixel Office</title>
+	<link rel="stylesheet" href="/ui/office/office.css">
+	<script src="/lib/app.js"></script>
+</head>
+<body>
+	<header>
+		<div class="brand">
+			<b>Strategic Agency</b>
+			<span>the person approves a goal; the rules follow from it, and no model can talk its way past them</span>
+		</div>
+		<nav id="tabs"></nav>
+		<a class="small" href="/ui/">control room</a>
+	</header>
+	<main>
+		<section class="stage">
+			<canvas id="stage"></canvas>
+			<div class="task">
+				<textarea id="task" rows="2" aria-label="Task"></textarea>
+				<div id="actions"></div>
+				<div id="notice"></div>
+			</div>
+			<div id="system"></div>
+		</section>
+		<aside>
+			<h2>A person decides</h2>
+			<label class="pin">Operator pin (gate) <input id="pin" type="password" autocomplete="off"></label>
+			<label class="pin">Board pin <input id="board-pin" type="password" autocomplete="off"></label>
+			<div id="person"></div>
+			<h2>Live log</h2>
+			<ol id="log"></ol>
+		</aside>
+	</main>
+	<script>
+		app.config.root = '/';
+		app.use( [ 'Ui.Office.Office' ], Office => new Office( document.body ).start() );
+	</script>
+</body>
+</html>

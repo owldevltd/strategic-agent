@@ -1,0 +1,256 @@
+[
+  {
+    "id": "confirm-found-payment",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "paid_claim"
+    ],
+    "class": [
+      "direct"
+    ],
+    "price": 0.3,
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "trusted code checks the claimed payment against the bank statement; found, the customer is thanked and the invoice counts as paid",
+    "steps": [
+      {
+        "move": "claim.check",
+        "params": {
+          "invoice": "{{invoices|first}}",
+          "customer": "{{from}}"
+        },
+        "as": "claim"
+      },
+      {
+        "move": "reply.compose",
+        "from": [
+          "claim"
+        ],
+        "params": {
+          "kind": "payment_found",
+          "customer": "{{from}}",
+          "invoice": "{{invoices|first}}"
+        },
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "{{from}}"
+      }
+    ]
+  },
+  {
+    "id": "ask-for-remittance-advice",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "paid_claim"
+    ],
+    "class": [
+      "ask_remittance"
+    ],
+    "price": 0.2,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "the payment is not in the bank statement: a polite answer asking for the remittance advice",
+    "steps": [
+      {
+        "move": "reply.compose",
+        "params": {
+          "kind": "ask_remittance",
+          "customer": "{{from}}",
+          "invoice": "{{invoices|first}}"
+        },
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "{{from}}"
+      }
+    ]
+  },
+  {
+    "id": "dispute-to-colleague",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "dispute"
+    ],
+    "class": [
+      "direct"
+    ],
+    "price": 0.3,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 8
+    },
+    "tSignalH": null,
+    "describe": "a colleague takes the dispute over with the customer's mail; the customer hears it is being looked at",
+    "steps": [
+      {
+        "move": "dispute.hand_over",
+        "from": [
+          "message"
+        ],
+        "params": {
+          "question": "Customer {{from}} disputes invoice {{invoices|first}}. Their reason is in the excerpt of their mail. Please take the dispute over; any further step on this invoice is your decision.",
+          "options": [
+            "I take the dispute over"
+          ],
+          "recommendation": "I take the dispute over"
+        }
+      },
+      {
+        "move": "reply.compose",
+        "params": {
+          "kind": "dispute",
+          "customer": "{{from}}",
+          "invoice": "{{invoices|first}}"
+        },
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "{{from}}"
+      }
+    ]
+  },
+  {
+    "id": "keep-billing-address",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "address_change"
+    ],
+    "class": [
+      "direct"
+    ],
+    "price": 0.2,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 2
+    },
+    "tSignalH": null,
+    "describe": "we keep the billing address on file; nothing changes, the customer is told so",
+    "steps": [
+      {
+        "move": "reply.compose",
+        "params": {
+          "kind": "billing_address",
+          "customer": "{{from}}"
+        },
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "{{from}}"
+      }
+    ]
+  },
+  {
+    "id": "other-to-colleague",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "other"
+    ],
+    "class": [
+      "direct"
+    ],
+    "price": 0.3,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 8
+    },
+    "tSignalH": null,
+    "describe": "anything else goes to a colleague; the customer hears that someone will get back to them",
+    "steps": [
+      {
+        "move": "dispute.hand_over",
+        "from": [
+          "message"
+        ],
+        "params": {
+          "question": "Customer {{from}} wrote something about a payment reminder that is neither a claim of payment nor a dispute. Please take it over.",
+          "options": [
+            "I take it over"
+          ],
+          "recommendation": "I take it over"
+        }
+      },
+      {
+        "move": "reply.compose",
+        "params": {
+          "kind": "other",
+          "customer": "{{from}}"
+        },
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "{{from}}"
+      }
+    ]
+  },
+  {
+    "id": "case-to-colleague",
+    "kind": "request",
+    "serves": "report_delivered",
+    "intents": [
+      "paid_claim",
+      "dispute",
+      "address_change",
+      "other"
+    ],
+    "class": [
+      "hand_over"
+    ],
+    "price": 0.5,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 8
+    },
+    "tSignalH": null,
+    "describe": "when the answer cannot be given the planned way, a colleague takes the customer's mail over",
+    "steps": [
+      {
+        "move": "dispute.hand_over",
+        "from": [
+          "message"
+        ],
+        "params": {
+          "question": "The answer to customer {{from}} could not be given the planned way. Please take their mail over.",
+          "options": [
+            "I take it over"
+          ],
+          "recommendation": "I take it over"
+        }
+      },
+      {
+        "move": "reply.compose",
+        "params": {
+          "kind": "other",
+          "customer": "{{from}}"
+        },
+        "as": "answer"
+      },
+      {
+        "move": "reply.send",
+        "from": "answer",
+        "target": "{{from}}"
+      }
+    ]
+  }
+]

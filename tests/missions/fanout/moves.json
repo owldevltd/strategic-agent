@@ -1,0 +1,102 @@
+{
+  "notice.child": {
+    "executor": "child",
+    "template": "child.json",
+    "price": 1,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [
+      "item_resolved"
+    ],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": null,
+    "reversible": false,
+    "commits": null
+  },
+  "notice.write": {
+    "executor": "ai",
+    "role": "noticer",
+    "labels": [],
+    "outbound": "report",
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "instructions": "Write a short, friendly notice to a supplier: from 1 December our payment terms are 30 days net. No names, no amounts.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null
+  },
+  "notice.send": {
+    "executor": "code",
+    "action": "report",
+    "param": "body",
+    "resolves": {
+      "item": "supplier",
+      "outcome": "notified"
+    },
+    "humanMinutes": 1,
+    "criticality": "outward",
+    "price": 0.1,
+    "params": {
+      "supplier": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered",
+      "item_resolved"
+    ],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null
+  },
+  "person.decide": {
+    "executor": "human",
+    "resolves": {
+      "item": "supplier",
+      "outcome": "escalated"
+    },
+    "humanMinutes": 2,
+    "price": 0,
+    "criticality": "internal",
+    "params": {
+      "question": {
+        "type": "string"
+      },
+      "options": {
+        "type": "list"
+      },
+      "recommendation": {
+        "type": "string",
+        "optional": true
+      },
+      "supplier": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "item_resolved",
+      "confirmation"
+    ],
+    "reversible": true,
+    "tSignalH": 4,
+    "horizonH": 168,
+    "leaseMaxMin": null,
+    "commits": null
+  }
+}

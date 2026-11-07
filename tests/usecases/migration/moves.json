@@ -1,0 +1,72 @@
+{
+  "migration.write": {
+    "price": 0.3,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "coder",
+    "labels": [],
+    "describe": "the agent writes the conversion code; it never sees a customer, only the form of the rows",
+    "instructions": "Write Python 3 code that converts legacy customer rows into the new schema. The variable rows is a list of dicts with the text keys kdnr, name, mail, geburtsdatum (DD.MM.YYYY), anmeldung (DD.MM.YYYY). A migrated record is {'customer_id': 'C-' + kdnr, 'name': the name, 'email': the address in lower case, 'birth_date': YYYY-MM-DD, 'since': YYYY-MM-DD}. Some rows are bad: an empty name, an email without a domain, a date that does not exist, the same email (in any case) on more than one row, a name with mangled encoding (UTF-8 read as Latin-1, e.g. 'MÃ¼ller'). Repair only what can be repaired without guessing (the encoding); put every other bad row aside as {'kdnr': kdnr, 'reason': one of 'missing_name', 'invalid_email', 'invalid_date', 'duplicate_email', 'bad_encoding'}. Never drop a row and never invent a value. Set result to {'migrated': [...], 'quarantined': [...]}. Use no imports, no files and no printing. Answer with the code in the field code.",
+    "contract": {
+      "fields": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "inherit": true
+  },
+  "migration.run": {
+    "price": 0.1,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [
+      "migrated"
+    ],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/frame.py",
+    "agentCode": "sandbox/tools/agent_code.py",
+    "labels": [
+      "own"
+    ],
+    "describe": "runs the agent's code on the legacy rows in its own sandbox; the frame checks every row to the row and lets only counts, ids and reasons out",
+    "fact": "migrated"
+  },
+  "migration.report": {
+    "price": 0.4,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "writer",
+    "inherit": true,
+    "labels": [],
+    "outbound": "report",
+    "describe": "writes the migration report for the data owner",
+    "instructions": "You write the report of a customer data migration for the data owner, from the checked result you are given: how many rows came in, how many were migrated, and every row put aside with its id and reason, grouped by reason. Ask the data owner to decide about the rows put aside; nothing about them has been changed. Use only ids, counts and reasons. Be short.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

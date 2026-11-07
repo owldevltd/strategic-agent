@@ -1,0 +1,32 @@
+{
+  "coder": {
+    "code": "def normalise_iban(text):\n    if not isinstance(text, str):\n        return None\n    compact = \"\".join(text.split()).replace(\"-\", \"\").upper()\n    letters = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"\n    digits = \"0123456789\"\n    if len(compact) < 15 or len(compact) > 34:\n        return None\n    if compact[0] not in letters or compact[1] not in letters or compact[2] not in digits or compact[3] not in digits:\n        return None\n    if any(char not in letters and char not in digits for char in compact):\n        return None\n    rotated = compact[4:] + compact[:4]\n    number = \"\".join(char if char in digits else str(letters.index(char) + 10) for char in rotated)\n    return compact if int(number) % 97 == 1 else None\n"
+  },
+  "contract": {
+    "goal": "Implement a function that normalises supplier IBANs; it must pass the frozen acceptance tests",
+    "deadlineHours": 24,
+    "outcomes": [
+      {
+        "type": "test_green",
+        "values": {
+          "test": "iban_acceptance",
+          "commit": "410932dcbc9a4c87"
+        }
+      }
+    ],
+    "rules": [],
+    "strategyGates": [],
+    "backTranslation": "You want a function that normalises supplier IBANs and passes the frozen acceptance tests, within 24 hours.",
+    "notCovered": [
+      "The function is not deployed anywhere; it only has to pass the tests."
+    ],
+    "coverage": [
+      {
+        "sentence": "Implement a function that normalises supplier IBANs; it must pass the frozen acceptance tests",
+        "criteria": [
+          "k1"
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "report": {
+    "criticality": "outward",
+    "carries": [
+      "data",
+      "message"
+    ],
+    "sensitive": [],
+    "says": "a report to a person or team inside the company",
+    "inside": true,
+    "idempotencyH": 72
+  },
+  "reply": {
+    "criticality": "outward",
+    "carries": [
+      "data",
+      "message"
+    ],
+    "sensitive": [],
+    "says": "an answer to whoever sent a message",
+    "idempotencyH": 72
+  }
+}

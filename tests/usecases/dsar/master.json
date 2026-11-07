@@ -1,0 +1,12 @@
+{
+  "recipient": [
+    "max.muster@example.org",
+    "lisa.brandt@example.com",
+    "omar.h@example.net"
+  ],
+  "contact": [
+    "cust-0077 max.muster@example.org",
+    "cust-3001 lisa.brandt@example.com",
+    "cust-3002 omar.h@example.net"
+  ]
+}

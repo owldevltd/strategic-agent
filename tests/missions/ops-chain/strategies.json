@@ -1,0 +1,130 @@
+[
+  {
+    "id": "restart-checkout",
+    "serves": "items_resolved",
+    "fits": {
+      "items": "^checkout$"
+    },
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "describe": "inspect checkout, then have it restarted",
+    "steps": [
+      {
+        "move": "ops.inspect",
+        "params": {
+          "service": "checkout"
+        },
+        "as": "state"
+      },
+      {
+        "move": "restart.checkout",
+        "from": "state",
+        "params": {
+          "service": "checkout"
+        },
+        "target": "ops"
+      }
+    ]
+  },
+  {
+    "id": "restart-payments",
+    "serves": "items_resolved",
+    "fits": {
+      "items": "^payments$"
+    },
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "describe": "inspect payments, then have it restarted",
+    "steps": [
+      {
+        "move": "ops.inspect",
+        "params": {
+          "service": "payments"
+        },
+        "as": "state"
+      },
+      {
+        "move": "restart.payments",
+        "from": "state",
+        "params": {
+          "service": "payments"
+        },
+        "target": "ops"
+      }
+    ]
+  },
+  {
+    "id": "restart-ledger",
+    "serves": "items_resolved",
+    "fits": {
+      "items": "^ledger$"
+    },
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "describe": "inspect ledger, then have it restarted",
+    "steps": [
+      {
+        "move": "ops.inspect",
+        "params": {
+          "service": "ledger"
+        },
+        "as": "state"
+      },
+      {
+        "move": "restart.ledger",
+        "from": "state",
+        "params": {
+          "service": "ledger"
+        },
+        "target": "ops"
+      }
+    ]
+  },
+  {
+    "id": "restart-database",
+    "serves": "items_resolved",
+    "fits": {
+      "items": "^database$"
+    },
+    "class": "direct",
+    "price": 1,
+    "startCurve": {
+      "p0": 0.9,
+      "tauH": 1
+    },
+    "tSignalH": null,
+    "describe": "inspect database, then have it restarted",
+    "steps": [
+      {
+        "move": "ops.inspect",
+        "params": {
+          "service": "database"
+        },
+        "as": "state"
+      },
+      {
+        "move": "restart.database",
+        "from": "state",
+        "params": {
+          "service": "database"
+        },
+        "target": "ops"
+      }
+    ]
+  }
+]

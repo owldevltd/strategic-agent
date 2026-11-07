@@ -1,0 +1,32 @@
+{
+  "id": "calculator",
+  "title": "PHP calculator",
+  "contract": "contract.json",
+  "data": "data",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "diagnosis": "diagnosis.json",
+  "gates": "gates.json",
+  "stub": "stub.json",
+  "kind": "code-new-php",
+  "task": "Write the web team's PHP 8.2 calculator library to its specification; it is done when the frozen hidden acceptance suite passes in the sandbox.",
+  "invariants": [
+    {
+      "type": "test_green",
+      "values": {
+        "test": "calculator-hidden",
+        "commit": "501f0df1e2bdcaa2"
+      }
+    }
+  ],
+  "defaults": {
+    "budget": 10,
+    "value": 20,
+    "deadlineHours": 24
+  },
+  "context": {
+    "data": "the web team's specification; the acceptance suite is frozen in the goal and never shown to the model",
+    "goal": "the goal carries test_green on the frozen suite calculator-hidden at commit 501f0df1e2bdcaa2, prescribed for this kind of task (K7): nothing else closes it"
+  },
+  "office": {}
+}

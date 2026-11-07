@@ -1,0 +1,9 @@
+Alert: db-01 /dev/sda1 95 % used (376G of 400G), growing about 4G per hour.
+
+du -sh (largest first):
+212G  /var/lib/postgresql/16/main           PostgreSQL data directory (live)
+ 61G  /var/log/postgresql/debug.log         PostgreSQL log; log_min_messages = debug5 since yesterday's change CHG-2231
+ 45G  /var/backups/db-01-full.tar           full backup of 3 Nov; the offsite copy of it failed (ticket OPS-881)
+ 38G  /var/lib/postgresql/16/main/old       inside the data directory; tablespace "old" (archive tables, still attached)
+ 12G  /home/deploy/releases                 last five releases of the application
+  2G  /var/log/syslog                       system log

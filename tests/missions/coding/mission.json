@@ -1,0 +1,14 @@
+{
+  "id": "coding",
+  "title": "Coding",
+  "contract": "contract.json",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "stub": "stub.json",
+  "kind": "code-change",
+  "task": "Implement a function that normalises supplier IBANs; it must pass the frozen acceptance tests within a day.",
+  "invariants": [],
+  "defaults": { "budget": 10, "value": 20, "deadlineHours": 24 },
+  "context": { "data": "no data; the acceptance tests are frozen in the mission and never shown to the model" },
+  "office": {}
+}

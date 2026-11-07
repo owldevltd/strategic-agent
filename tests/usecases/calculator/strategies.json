@@ -1,0 +1,606 @@
+[
+ {
+  "id": "write-and-test",
+  "serves": "test_green",
+  "class": "direct",
+  "price": 1,
+  "startCurve": {
+   "p0": 0.8,
+   "tauH": 2
+  },
+  "describe": "read the specification, let the agent write the calculator, run the frozen hidden suite in the trusted PHP frame",
+  "steps": [
+   {
+    "move": "spec.read",
+    "as": "spec"
+   },
+   {
+    "move": "calc.write",
+    "from": [
+     "spec"
+    ],
+    "as": "code"
+   },
+   {
+    "move": "calc.test",
+    "from": [
+     "code"
+    ],
+    "params": {
+     "suite": "calculator-hidden",
+     "cases": [
+      {
+       "input": "1+2",
+       "expect": 3
+      },
+      {
+       "input": "2+3*4",
+       "expect": 14
+      },
+      {
+       "input": "(2+3)*4",
+       "expect": 20
+      },
+      {
+       "input": "10/4",
+       "expect": 2.5
+      },
+      {
+       "input": "8/2/2",
+       "expect": 2
+      },
+      {
+       "input": "10-3-2",
+       "expect": 5
+      },
+      {
+       "input": "2*3^2",
+       "expect": 18
+      },
+      {
+       "input": "-2^2",
+       "expect": -4
+      },
+      {
+       "input": "(-2)^2",
+       "expect": 4
+      },
+      {
+       "input": "2^3^2",
+       "expect": 512
+      },
+      {
+       "input": "2^2^3",
+       "expect": 256
+      },
+      {
+       "input": "-3^2",
+       "expect": -9
+      },
+      {
+       "input": "2^0.5",
+       "expect": 1.4142135623730951
+      },
+      {
+       "input": "1.5*2",
+       "expect": 3
+      },
+      {
+       "input": "0.1+0.2",
+       "expect": 0.3
+      },
+      {
+       "input": " 7 ",
+       "expect": 7
+      },
+      {
+       "input": "  1 +  2 * ( 3 - 1 ) ",
+       "expect": 5
+      },
+      {
+       "input": "((1))",
+       "expect": 1
+      },
+      {
+       "input": "-(2+3)*2",
+       "expect": -10
+      },
+      {
+       "input": "2*(3+4)^2",
+       "expect": 98
+      },
+      {
+       "input": "1/3",
+       "expect": 0.3333333333333333
+      },
+      {
+       "input": "2*-3",
+       "expect": -6
+      },
+      {
+       "input": "- 4",
+       "expect": -4
+      },
+      {
+       "input": "3.25",
+       "expect": 3.25
+      },
+      {
+       "input": "100",
+       "expect": 100
+      },
+      {
+       "input": "2^10",
+       "expect": 1024
+      },
+      {
+       "input": "4^0.5",
+       "expect": 2
+      },
+      {
+       "input": "7-10",
+       "expect": -3
+      },
+      {
+       "input": "6/4*2",
+       "expect": 3
+      },
+      {
+       "input": "(1+2)^(1+1)",
+       "expect": 9
+      },
+      {
+       "input": "2-(-3)",
+       "expect": 5
+      },
+      {
+       "input": "12.5/2.5",
+       "expect": 5
+      },
+      {
+       "input": "1-2*3+4/2",
+       "expect": -3
+      },
+      {
+       "input": "-(-(2))",
+       "expect": 2
+      },
+      {
+       "input": "1/0",
+       "expect": {
+        "raises": "DivisionByZeroError"
+       }
+      },
+      {
+       "input": "5/(2-2)",
+       "expect": {
+        "raises": "DivisionByZeroError"
+       }
+      },
+      {
+       "input": "0/0",
+       "expect": {
+        "raises": "DivisionByZeroError"
+       }
+      },
+      {
+       "input": "1/(0.5-0.5)",
+       "expect": {
+        "raises": "DivisionByZeroError"
+       }
+      },
+      {
+       "input": "",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "   ",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "2+",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "(1",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "1)",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "2**3",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "abc",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "2+x",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "1e3",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "()",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "*3",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "1.2.3",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "2^",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "2(3)",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": ")(",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "3+*4",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "1,5",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      }
+     ],
+     "seconds": 2
+    }
+   }
+  ],
+  "fits": {
+   "test": "^calculator-hidden$",
+   "commit": "^501f0df1e2bdcaa2$"
+  }
+ },
+ {
+  "id": "rewrite-and-test",
+  "serves": "test_green",
+  "class": "rewrite",
+  "price": 1,
+  "startCurve": {
+   "p0": 0.5,
+   "tauH": 2
+  },
+  "describe": "after a refused attempt: the agent writes the calculator again from the specification, the same frozen suite decides",
+  "steps": [
+   {
+    "move": "spec.read",
+    "as": "spec"
+   },
+   {
+    "move": "calc.write",
+    "from": [
+     "spec"
+    ],
+    "as": "code"
+   },
+   {
+    "move": "calc.test",
+    "from": [
+     "code"
+    ],
+    "params": {
+     "suite": "calculator-hidden",
+     "cases": [
+      {
+       "input": "1+2",
+       "expect": 3
+      },
+      {
+       "input": "2+3*4",
+       "expect": 14
+      },
+      {
+       "input": "(2+3)*4",
+       "expect": 20
+      },
+      {
+       "input": "10/4",
+       "expect": 2.5
+      },
+      {
+       "input": "8/2/2",
+       "expect": 2
+      },
+      {
+       "input": "10-3-2",
+       "expect": 5
+      },
+      {
+       "input": "2*3^2",
+       "expect": 18
+      },
+      {
+       "input": "-2^2",
+       "expect": -4
+      },
+      {
+       "input": "(-2)^2",
+       "expect": 4
+      },
+      {
+       "input": "2^3^2",
+       "expect": 512
+      },
+      {
+       "input": "2^2^3",
+       "expect": 256
+      },
+      {
+       "input": "-3^2",
+       "expect": -9
+      },
+      {
+       "input": "2^0.5",
+       "expect": 1.4142135623730951
+      },
+      {
+       "input": "1.5*2",
+       "expect": 3
+      },
+      {
+       "input": "0.1+0.2",
+       "expect": 0.3
+      },
+      {
+       "input": " 7 ",
+       "expect": 7
+      },
+      {
+       "input": "  1 +  2 * ( 3 - 1 ) ",
+       "expect": 5
+      },
+      {
+       "input": "((1))",
+       "expect": 1
+      },
+      {
+       "input": "-(2+3)*2",
+       "expect": -10
+      },
+      {
+       "input": "2*(3+4)^2",
+       "expect": 98
+      },
+      {
+       "input": "1/3",
+       "expect": 0.3333333333333333
+      },
+      {
+       "input": "2*-3",
+       "expect": -6
+      },
+      {
+       "input": "- 4",
+       "expect": -4
+      },
+      {
+       "input": "3.25",
+       "expect": 3.25
+      },
+      {
+       "input": "100",
+       "expect": 100
+      },
+      {
+       "input": "2^10",
+       "expect": 1024
+      },
+      {
+       "input": "4^0.5",
+       "expect": 2
+      },
+      {
+       "input": "7-10",
+       "expect": -3
+      },
+      {
+       "input": "6/4*2",
+       "expect": 3
+      },
+      {
+       "input": "(1+2)^(1+1)",
+       "expect": 9
+      },
+      {
+       "input": "2-(-3)",
+       "expect": 5
+      },
+      {
+       "input": "12.5/2.5",
+       "expect": 5
+      },
+      {
+       "input": "1-2*3+4/2",
+       "expect": -3
+      },
+      {
+       "input": "-(-(2))",
+       "expect": 2
+      },
+      {
+       "input": "1/0",
+       "expect": {
+        "raises": "DivisionByZeroError"
+       }
+      },
+      {
+       "input": "5/(2-2)",
+       "expect": {
+        "raises": "DivisionByZeroError"
+       }
+      },
+      {
+       "input": "0/0",
+       "expect": {
+        "raises": "DivisionByZeroError"
+       }
+      },
+      {
+       "input": "1/(0.5-0.5)",
+       "expect": {
+        "raises": "DivisionByZeroError"
+       }
+      },
+      {
+       "input": "",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "   ",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "2+",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "(1",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "1)",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "2**3",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "abc",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "2+x",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "1e3",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "()",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "*3",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "1.2.3",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "2^",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "2(3)",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": ")(",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "3+*4",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      },
+      {
+       "input": "1,5",
+       "expect": {
+        "raises": "InvalidArgumentException"
+       }
+      }
+     ],
+     "seconds": 2
+    }
+   }
+  ],
+  "fits": {
+   "test": "^calculator-hidden$",
+   "commit": "^501f0df1e2bdcaa2$"
+  }
+ }
+]

@@ -1,0 +1,27 @@
+{
+  "id": "release-2.4.0",
+  "goal": "Release v2.4.0 of the web service to all users, but only with green tests and a healthy canary (at most 2 % errors); otherwise roll back",
+  "deadline": "{{in:8h}}",
+  "budget": 10,
+  "value": 20,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "confirmed_by",
+      "values": {
+        "role": "release manager",
+        "question": "Is v2.4.0 live for all users and healthy?"
+      }
+    },
+    {
+      "id": "k2",
+      "type": "human_approval",
+      "values": {
+        "actions": [
+          "deploy"
+        ]
+      },
+      "immutable": true
+    }
+  ]
+}

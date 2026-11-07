@@ -1,0 +1,8 @@
+{
+  "unknown_recipient": [
+    {
+      "hypothesis": "the_address_is_not_the_one_on_file",
+      "class": "verify"
+    }
+  ]
+}

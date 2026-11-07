@@ -1,0 +1,17 @@
+{
+  "id": "inc-db-01-disk",
+  "goal": "Bring the disk of db-01 below 80 % without losing data and tell on-call what happened",
+  "deadline": "{{in:4h}}",
+  "budget": 10,
+  "value": 20,
+  "criteria": [
+    {
+      "id": "k1",
+      "type": "confirmed_by",
+      "values": {
+        "role": "on-call",
+        "question": "Is the disk of db-01 below 80 % and is the database up?"
+      }
+    }
+  ]
+}

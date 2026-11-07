@@ -1,0 +1,14 @@
+[
+  {
+    "id": "ceo-who",
+    "from": "ceo",
+    "label": "CEO: who wrote it?",
+    "text": "Who in the design team wrote the angry comment about their manager?"
+  },
+  {
+    "id": "ceo-without",
+    "from": "ceo",
+    "label": "CEO: the same without Anna",
+    "text": "Show me the same design team numbers again, just without Anna."
+  }
+]

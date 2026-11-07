@@ -1,0 +1,213 @@
+[
+  {
+    "id": "team-report",
+    "serves": "report_delivered",
+    "startCurve": {
+      "p0": 0.8,
+      "tauH": 2
+    },
+    "tSignalH": 1,
+    "steps": [
+      {
+        "move": "analysis.write",
+        "as": "script"
+      },
+      {
+        "move": "analysis.run",
+        "params": {
+          "teams": "{{teams}}"
+        },
+        "as": "stats",
+        "from": [
+          "script"
+        ]
+      },
+      {
+        "move": "report.draft",
+        "from": [
+          "stats"
+        ],
+        "as": "report"
+      },
+      {
+        "move": "report.send",
+        "from": "report",
+        "target": "{{to}}"
+      }
+    ],
+    "describe": "a report about the team the goal names",
+    "slots": {
+      "teams": {
+        "type": "list",
+        "values": "{{teams}}",
+        "describe": "the team or teams the report is about",
+        "default": "{{focus}}"
+      }
+    },
+    "price": 1,
+    "class": "direct"
+  },
+  {
+    "id": "widen-group",
+    "serves": "report_delivered",
+    "startCurve": {
+      "p0": 0.6,
+      "tauH": 2
+    },
+    "tSignalH": 1,
+    "steps": [
+      {
+        "move": "analysis.write",
+        "as": "script"
+      },
+      {
+        "move": "analysis.run",
+        "params": {
+          "teams": "{{teams}}"
+        },
+        "as": "stats",
+        "from": [
+          "script"
+        ]
+      },
+      {
+        "move": "report.draft",
+        "from": [
+          "stats"
+        ],
+        "as": "report"
+      },
+      {
+        "move": "report.send",
+        "from": "report",
+        "target": "{{to}}"
+      }
+    ],
+    "describe": "a report about a larger group that still contains the team; it answers the question about the team only in part",
+    "slots": {
+      "teams": {
+        "type": "list",
+        "values": "{{teams}}",
+        "describe": "a larger group of teams that contains the team in question, so that enough people are in it",
+        "default": "{{department}}",
+        "includes": "{{focus}}",
+        "minItems": 2
+      }
+    },
+    "price": 2,
+    "class": "widen"
+  },
+  {
+    "id": "ask-the-team",
+    "serves": "report_delivered",
+    "depth": 0,
+    "startCurve": {
+      "p0": 0.85,
+      "tauH": 4
+    },
+    "tSignalH": 1,
+    "describe": "make sure enough people of the team have answered (a follow-up survey if not), then report on the team alone",
+    "steps": [
+      {
+        "move": "survey.coverage",
+        "params": {
+          "teams": "{{focus}}",
+          "min": 5
+        },
+        "as": "coverage"
+      },
+      {
+        "move": "analysis.write",
+        "as": "script"
+      },
+      {
+        "move": "analysis.run",
+        "params": {
+          "teams": "{{focus}}"
+        },
+        "as": "stats",
+        "from": [
+          "script"
+        ]
+      },
+      {
+        "move": "report.draft",
+        "from": [
+          "stats"
+        ],
+        "as": "report"
+      },
+      {
+        "move": "report.send",
+        "from": "report",
+        "target": "{{to}}"
+      }
+    ],
+    "price": 3,
+    "class": "ask_more"
+  },
+  {
+    "id": "invite-the-team",
+    "serves": "number_in_range",
+    "startCurve": {
+      "p0": 0.7,
+      "tauH": 1
+    },
+    "tSignalH": 0.5,
+    "describe": "invite the team to a short anonymous follow-up survey, wait for the answers and count them",
+    "steps": [
+      {
+        "move": "followup.invite",
+        "target": "{{quantity|subject}}",
+        "params": {
+          "questions": "workload, manager, main reason"
+        },
+        "as": "invite"
+      },
+      {
+        "move": "followup.wait",
+        "for": "invite"
+      },
+      {
+        "move": "survey.count",
+        "params": {
+          "quantity": "{{quantity}}"
+        }
+      }
+    ],
+    "price": 2,
+    "class": "direct",
+    "fits": {
+      "quantity": "^answers:[a-z]+$"
+    }
+  },
+  {
+    "id": "wait-longer",
+    "serves": "number_in_range",
+    "startCurve": {
+      "p0": 0.5,
+      "tauH": 1
+    },
+    "tSignalH": 0.5,
+    "describe": "the invitation is still open: wait a little longer for late answers, then count again",
+    "steps": [
+      {
+        "move": "followup.wait",
+        "params": {
+          "minutes": 1
+        }
+      },
+      {
+        "move": "survey.count",
+        "params": {
+          "quantity": "{{quantity}}"
+        }
+      }
+    ],
+    "price": 1,
+    "class": "wait_longer",
+    "fits": {
+      "quantity": "^answers:[a-z]+$"
+    }
+  }
+]

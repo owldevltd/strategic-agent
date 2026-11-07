@@ -1,0 +1,14 @@
+{
+  "no_reaction": [
+    {
+      "hypothesis": "too_few_quotes",
+      "class": "hand_over"
+    }
+  ],
+  "move_failed": [
+    {
+      "hypothesis": "no_quote_in_time",
+      "class": "hand_over"
+    }
+  ]
+}

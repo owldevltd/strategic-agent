@@ -1,0 +1,12 @@
+{
+  "id": "survey-design",
+  "goal": "Find out why the design team is unhappy and report the reasons to HR",
+  "deadline": "{{in:48h}}",
+  "budget": 30,
+  "value": 40,
+  "criteria": [
+    { "id": "k1", "type": "report_delivered", "values": { "to": "hr", "topic": "design team morale" } },
+    { "id": "k2", "type": "min_group", "values": { "k": 5 }, "immutable": true },
+    { "id": "k3", "type": "no_difference", "values": { "k": 5 }, "immutable": true }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "address": "formal",
+  "namePrices": false,
+  "exclamations": false,
+  "noContactOn": [],
+  "dailyCapacityMin": 60,
+  "dayStartsHour": 8,
+  "timeZone": "UTC",
+  "learned": {}
+}

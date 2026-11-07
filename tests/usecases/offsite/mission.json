@@ -1,0 +1,124 @@
+{
+  "id": "offsite",
+  "title": "Company offsite",
+  "kind": "offsite-planning",
+  "contract": "contract.json",
+  "data": "data",
+  "master": "master.json",
+  "moves": "moves.json",
+  "strategies": "strategies.json",
+  "gates": "gates.json",
+  "diagnosis": "diagnosis.json",
+  "world": "world.json",
+  "stub": "stub.json",
+  "directory": "roster.csv",
+  "task": "Plan the one-day company offsite on 4 December 2026 for design, engineering and sales: invite each team once (one friendly reminder round for a team below 60 % answers, then the office manager decides), then book one venue for at most 6,000 EUR and order catering for the confirmed headcount at at most 25 EUR per person, each approved by a person, and finally send each team the date, venue and time.",
+  "params": {
+    "teams": [
+      "rsvp:design",
+      "rsvp:engineering",
+      "rsvp:sales"
+    ],
+    "venues": [
+      "venue:offsite"
+    ],
+    "caterings": [
+      "catering:offsite"
+    ],
+    "notices": [
+      "details:design",
+      "details:engineering",
+      "details:sales"
+    ],
+    "event": "offsite-2026",
+    "date": "2026-12-04",
+    "time": "09:30 to 17:00",
+    "quorum": 60,
+    "venueCap": 6000,
+    "perPersonCap": 25,
+    "caterer": "caterer-x"
+  },
+  "startTokens": 40,
+  "invariants": [
+    {
+      "type": "exactly_once",
+      "values": {
+        "key": "team",
+        "action": "offsite_invite"
+      }
+    },
+    {
+      "type": "exactly_once",
+      "values": {
+        "key": "team",
+        "action": "offsite_reminder"
+      }
+    },
+    {
+      "type": "exactly_once",
+      "values": {
+        "key": "event",
+        "action": "venue_booking"
+      }
+    },
+    {
+      "type": "exactly_once",
+      "values": {
+        "key": "event",
+        "action": "catering_order"
+      }
+    },
+    {
+      "type": "exactly_once",
+      "values": {
+        "key": "team",
+        "action": "offsite_details"
+      }
+    },
+    {
+      "type": "account_from_master",
+      "values": {
+        "param": "supplier",
+        "kind": "supplier"
+      }
+    },
+    {
+      "type": "human_approval",
+      "values": {
+        "actions": [
+          "venue_booking",
+          "catering_order"
+        ]
+      }
+    }
+  ],
+  "defaults": {
+    "budget": 300,
+    "value": 300,
+    "deadlineHours": 336
+  },
+  "context": {
+    "collections": [
+      "offsite"
+    ],
+    "items": [
+      "rsvp:design",
+      "rsvp:engineering",
+      "rsvp:sales",
+      "venue:offsite",
+      "catering:offsite",
+      "details:design",
+      "details:engineering",
+      "details:sales"
+    ],
+    "outcomes": [
+      "counted",
+      "decided",
+      "booked",
+      "ordered",
+      "informed"
+    ],
+    "data": "the team rosters, the answers to the invitation as they come in, the venues' answers and the caterer's price list"
+  },
+  "office": {}
+}

@@ -1,0 +1,153 @@
+{
+  "verify.send": {
+    "price": 0.1,
+    "criticality": "outward",
+    "params": {
+      "body": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "action": "verify",
+    "param": "body",
+    "humanMinutes": 1,
+    "describe": "asks the person at the address on file whether the request was theirs; the answer comes back as its own process",
+    "creates": {
+      "expectation": {
+        "key": "ref",
+        "prefix": "DSAR",
+        "fact": "identity_confirmed",
+        "need": 1,
+        "minutes": 30,
+        "extract": {
+          "confirmed": {
+            "type": "enum",
+            "values": [
+              "yes",
+              "no"
+            ],
+            "describe": "yes if the person says the request was theirs, no otherwise",
+            "critical": true
+          }
+        },
+        "parser": {
+          "confirmed": "\\b(yes|no)\\b"
+        }
+      }
+    }
+  },
+  "verify.wait": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "minutes": {
+        "type": "number",
+        "optional": true
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": null,
+    "reversible": true,
+    "commits": null,
+    "executor": "wait",
+    "describe": "waits for the answer from the address on file"
+  },
+  "data.collect": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {
+      "customer": {
+        "type": "string"
+      }
+    },
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/collect.py",
+    "labels": [
+      "confidential"
+    ],
+    "describe": "everything the three systems hold about one customer, other people blacked out",
+    "group": true
+  },
+  "export.letter": {
+    "price": 0.4,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null,
+    "executor": "ai",
+    "role": "writer",
+    "inherit": true,
+    "labels": [],
+    "outbound": "export",
+    "describe": "writes the copy of the data for the person, from what was collected",
+    "instructions": "You write the answer to a data access request (GDPR art. 15) for the person the data is about. List, system by system, every item of data you are given about them: the customer record, each support ticket with its date and text, the newsletter subscription. Leave nothing out and add nothing. Text marked [someone else] stays as it is. Plain and short.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "export.send": {
+    "price": 0.1,
+    "criticality": "outward",
+    "params": {
+      "body": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "action": "export",
+    "param": "body",
+    "humanMinutes": 2,
+    "describe": "sends the copy of the data to the person"
+  },
+  "request.text": {
+    "price": 0.05,
+    "criticality": "read",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null,
+    "executor": "code",
+    "tool": "./tools/request.py",
+    "labels": [
+      "foreign"
+    ],
+    "describe": "the request as it came in"
+  }
+}

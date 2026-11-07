@@ -1,0 +1,4 @@
+customer_id,name,email,phone,city,since
+cust-0077,Max Muster,max.muster@example.org,+49 30 1234567,Berlin,2021-03-04
+cust-3001,Lisa Brandt,lisa.brandt@example.com,+49 40 7654321,Hamburg,2022-07-19
+cust-3002,Omar Haddad,omar.h@example.net,+49 89 5550101,Munich,2023-01-02

@@ -1,0 +1,41 @@
+{
+  "responders": [
+    {
+      "on": {
+        "action": "deploy",
+        "target": "web",
+        "params": {
+          "percent": 10
+        }
+      },
+      "replies": [
+        {
+          "after": 2,
+          "from": "monitoring",
+          "subject": "canary web [{{ref}}]",
+          "text": "Canary v2.4.0 at 10 % after 2 minutes: error rate 1.9 %."
+        },
+        {
+          "after": 10,
+          "from": "monitoring",
+          "subject": "canary web [{{ref}}]",
+          "text": "Canary v2.4.0 at 10 % after 10 minutes: error rate 5.1 %."
+        }
+      ]
+    },
+    {
+      "on": {
+        "action": "rollback",
+        "target": "web"
+      },
+      "replies": [
+        {
+          "after": 2,
+          "from": "monitoring",
+          "subject": "web rollback",
+          "text": "web: v2.3.7 on all traffic again, error rate 0.3 %."
+        }
+      ]
+    }
+  ]
+}

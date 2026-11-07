@@ -1,0 +1,208 @@
+{
+  "report.draft": {
+    "executor": "ai",
+    "role": "writer",
+    "inherit": true,
+    "labels": [],
+    "instructions": "You write a short report from the material you are given. Use only the facts and numbers in it, and never guess anything about a person.",
+    "contract": {
+      "fields": {
+        "text": {
+          "type": "string"
+        }
+      }
+    },
+    "outbound": "report",
+    "price": 0.5,
+    "criticality": "internal",
+    "params": {},
+    "evidence": [],
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 3,
+    "reversible": false,
+    "commits": null
+  },
+  "report.send": {
+    "executor": "code",
+    "action": "report",
+    "param": "body",
+    "humanMinutes": 1,
+    "criticality": "outward",
+    "price": 0.1,
+    "params": {},
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null
+  },
+  "reply.send": {
+    "executor": "code",
+    "action": "reply",
+    "param": "body",
+    "humanMinutes": 1,
+    "criticality": "outward",
+    "price": 0.1,
+    "params": {
+      "body": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "delivered"
+    ],
+    "tSignalH": null,
+    "horizonH": 168,
+    "leaseMaxMin": 5,
+    "reversible": false,
+    "commits": null
+  },
+  "person.decide": {
+    "executor": "human",
+    "humanMinutes": 3,
+    "price": 0,
+    "criticality": "internal",
+    "params": {
+      "question": {
+        "type": "string"
+      },
+      "options": {
+        "type": "list"
+      },
+      "recommendation": {
+        "type": "string",
+        "optional": true
+      },
+      "classes": {
+        "type": "object",
+        "optional": true
+      }
+    },
+    "evidence": [
+      "item_resolved",
+      "confirmation"
+    ],
+    "reversible": true,
+    "tSignalH": 4,
+    "horizonH": 168,
+    "leaseMaxMin": null,
+    "commits": null
+  },
+  "person.confirm": {
+    "executor": "human",
+    "price": 0,
+    "humanMinutes": 2,
+    "criticality": "internal",
+    "evidence": [
+      "confirmation"
+    ],
+    "confirms": true,
+    "options": [
+      "yes",
+      "no"
+    ],
+    "params": {
+      "criterion": {
+        "type": "string",
+        "optional": true
+      },
+      "question": {
+        "type": "string"
+      },
+      "role": {
+        "type": "string",
+        "optional": true
+      },
+      "recommendation": {
+        "type": "string",
+        "optional": true
+      }
+    },
+    "reversible": true,
+    "tSignalH": 4,
+    "horizonH": 168,
+    "leaseMaxMin": null,
+    "commits": null
+  },
+  "meta.check": {
+    "executor": "code",
+    "trusted": "check",
+    "fact": "test_run",
+    "evidence": [
+      "test_run"
+    ],
+    "criticality": "internal",
+    "price": 0.1,
+    "describe": "trusted code checks a proposal against the catalog: only what exists may be composed",
+    "params": {
+      "version": {
+        "type": "string"
+      }
+    },
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  },
+  "meta.register": {
+    "executor": "code",
+    "trusted": "register",
+    "fact": "state_read",
+    "evidence": [
+      "state_read"
+    ],
+    "criticality": "internal",
+    "price": 0.1,
+    "describe": "trusted code puts an approved, checked proposal into the catalog",
+    "params": {
+      "version": {
+        "type": "string"
+      }
+    },
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  },
+  "move.cancel": {
+    "executor": "code",
+    "trusted": "cancel",
+    "describe": "takes back a reversible move the goal no longer needs (E6); its evidence is what was withdrawn and why",
+    "evidence": [
+      "cancelled"
+    ],
+    "criticality": "internal",
+    "price": 0,
+    "params": {},
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  },
+  "knowledge.find": {
+    "executor": "code",
+    "trusted": "find",
+    "describe": "retrieves the excerpt of the mission knowledge a later step needs, through the read gate G5 (9.1)",
+    "evidence": [],
+    "criticality": "read",
+    "price": 0.05,
+    "params": {
+      "query": {
+        "type": "string"
+      }
+    },
+    "tSignalH": null,
+    "horizonH": null,
+    "leaseMaxMin": 2,
+    "reversible": false,
+    "commits": null
+  }
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "write-and-test",
+    "serves": "test_green",
+    "class": "direct",
+    "price": 1,
+    "startCurve": { "p0": 0.8, "tauH": 2 },
+    "tSignalH": null,
+    "describe": "the agent writes the function, the frame runs it against the frozen acceptance tests",
+    "steps": [
+      { "move": "code.write", "as": "code" },
+      {
+        "move": "code.test",
+        "from": [ "code" ],
+        "params": {
+          "cases": [
+            [ "de89 3704 0044 0532 0130 00", "DE89370400440532013000" ],
+            [ "GB82-WEST-1234-5698-7654-32", "GB82WEST12345698765432" ],
+            [ "not an iban", null ],
+            [ "  NL91 ABNA 0417 1643 00 ", "NL91ABNA0417164300" ],
+            [ "fr14 2004 1010 0505 0001 3m02 606", "FR1420041010050500013M02606" ],
+            [ "AT61\t1904 3002 3457 3201", "AT611904300234573201" ],
+            [ "CH93 0076 2011 6238 5295 7", "CH9300762011623852957" ],
+            [ "be68-5390-0754-7034", "BE68539007547034" ],
+            [ "DE89 3704 0044 0532 0130 01", null ],
+            [ "DE89 3704", null ],
+            [ "DE89 3704 0044 0532 0130 0!", null ],
+            [ "DE８９370400440532013000", null ],
+            [ "", null ],
+            [ null, null ],
+            [ 12345, null ]
+          ]
+        }
+      }
+    ]
+  }
+]

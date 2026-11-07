@@ -1,0 +1,98 @@
+{
+  "move_failed": [
+    {
+      "hypothesis": "the_invoice_is_open_and_overdue",
+      "class": "remind"
+    },
+    {
+      "hypothesis": "the_claimed_payment_is_not_in_the_bank_statement",
+      "class": "ask_remittance"
+    },
+    {
+      "hypothesis": "something_a_person_must_look_at",
+      "class": "hand_over"
+    }
+  ],
+  "rejected_by_person": [
+    {
+      "hypothesis": "the_person_does_not_want_this_step",
+      "class": "hand_over"
+    }
+  ],
+  "not_reached": [
+    {
+      "hypothesis": "try_the_guarded_reminder_again",
+      "class": "remind"
+    },
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "plan_refused": [
+    {
+      "hypothesis": "try_the_guarded_reminder_again",
+      "class": "remind"
+    },
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "lease_expired": [
+    {
+      "hypothesis": "the_check_was_too_slow_once",
+      "class": "retry"
+    },
+    {
+      "hypothesis": "try_the_guarded_reminder_again",
+      "class": "remind"
+    },
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "child_failed": [
+    {
+      "hypothesis": "try_the_guarded_reminder_again",
+      "class": "remind"
+    },
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "not_sent": [
+    {
+      "hypothesis": "try_the_guarded_reminder_again",
+      "class": "remind"
+    },
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "soft_rule": [
+    {
+      "hypothesis": "try_the_guarded_reminder_again",
+      "class": "remind"
+    },
+    {
+      "hypothesis": "a_person_must_look_at_it",
+      "class": "hand_over"
+    }
+  ],
+  "already_done": [
+    {
+      "hypothesis": "the_invoice_was_reminded_before_and_a_second_reminder_is_never_sent",
+      "class": "hand_over"
+    }
+  ],
+  "unknown_recipient": [
+    {
+      "hypothesis": "the_target_is_not_the_contact_on_file_for_this_customer",
+      "class": "hand_over"
+    }
+  ]
+}

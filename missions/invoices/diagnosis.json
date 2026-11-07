@@ -1,0 +1,20 @@
+{
+  "label_blocked": [
+    {
+      "hypothesis": "the_supplier_is_not_in_the_master_data",
+      "class": "hand_over"
+    }
+  ],
+  "unknown_account": [
+    {
+      "hypothesis": "the_account_is_not_ours",
+      "class": "hand_over"
+    }
+  ],
+  "already_done": [
+    {
+      "hypothesis": "it_was_paid_already",
+      "class": "reply"
+    }
+  ]
+}
