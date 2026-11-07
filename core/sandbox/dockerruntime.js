@@ -1,7 +1,8 @@
 // A fresh container per run: no network, read-only root, a small tmpfs without exec, memory, CPU and process limits,
 // no capabilities, the core's own unprivileged user (never root), and a hard timeout inside the container. The script
-// and the mission data are mounted read-only; no secret ever enters. --rm destroys the container afterwards.
-// SANDBOX_DOCKER_RUNTIME=runsc switches to gVisor where it is installed.
+// and the mission data are mounted read-only; no secret ever enters. The code starts with an empty environment plus the
+// few variables set here: an image's own ENV (python's carries GPG_KEY; another image may carry tokens) never reaches
+// it. --rm destroys the container afterwards. SANDBOX_DOCKER_RUNTIME=runsc switches to gVisor where it is installed.
 
 app.define( 'Core.Sandbox.DockerRuntime', [ 'Core.Sandbox.Runtime', 'Lib.Hash' ], ( Runtime, Hash ) => class DockerRuntime extends Runtime {
 
@@ -16,6 +17,9 @@ app.define( 'Core.Sandbox.DockerRuntime', [ 'Core.Sandbox.Runtime', 'Lib.Hash' ]
 		this.image = DockerRuntime.image( options.image || 'python:3.12-slim' );
 		this.engine = process.env.SANDBOX_DOCKER_RUNTIME || '';
 	}
+
+	// The whole environment of the agent's code (7.1, secret hygiene).
+	static ENV = [ 'PATH=/usr/local/bin:/usr/bin:/bin', 'HOME=/tmp', 'AGENCY_DATA=/data', 'LANG=C.UTF-8' ];
 
 	static image( name ) {
 		if ( typeof name !== 'string' || name.length > 255 || !DockerRuntime.IMAGE.test( name ) ) {
@@ -33,13 +37,13 @@ app.define( 'Core.Sandbox.DockerRuntime', [ 'Core.Sandbox.Runtime', 'Lib.Hash' ]
 			'--read-only', '--tmpfs', '/tmp:rw,noexec,nosuid,size=64m',
 			'--memory', '256m', '--memory-swap', '256m', '--cpus', '0.5', '--pids-limit', '64',
 			'--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
-			'--user', DockerRuntime.user(), '-e', 'HOME=/tmp', '-e', 'AGENCY_DATA=/data', '-w', '/tmp',
+			'--user', DockerRuntime.user(), '-w', '/tmp',
 			..._mounts.flatMap( mount => [ '--mount', mount ] ),
 		];
 		if ( this.engine ) {
 			_args.push( '--runtime', this.engine );
 		}
-		_args.push( this.image, 'timeout', '-k', '2', String( this.limit ), 'python', '-I', '/work/main.py' );
+		_args.push( this.image, 'env', '-i', ...DockerRuntime.ENV, 'timeout', '-k', '2', String( this.limit ), 'python', '-I', '/work/main.py' );
 		const _untrack = track( () => Runtime.spawn( 'docker', [ 'kill', _name ], { input: '', env: process.env, timeoutSeconds: 5 } ) );
 		const _result = await Runtime.spawn( 'docker', _args, { input, env: process.env, timeoutSeconds: this.limit + 20 } );
 		_untrack();

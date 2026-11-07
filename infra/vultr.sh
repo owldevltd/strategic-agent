@@ -91,7 +91,7 @@ cmd_create() {
 
 cmd_status() {
   api GET "/instances/$(instance_id)" \
-    | jq '.instance | {id, label, region, plan, status, power_status, server_status, main_ip, v6_main_ip}'
+    | jq '.instance | {id, "label": .label, region, plan, status, power_status, server_status, main_ip, v6_main_ip}'
 }
 
 cmd_ip() { api GET "/instances/$(instance_id)" | jq -r .instance.main_ip; }

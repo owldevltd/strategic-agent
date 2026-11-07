@@ -83,7 +83,8 @@ function csv( line ) {
 const runs = calls => calls.filter( call => call.args[ 0 ] === 'run' );
 const kills = calls => calls.filter( call => call.args[ 0 ] === 'kill' );
 const nameOf = call => call.args[ call.args.indexOf( '--name' ) + 1 ];
-const imageAt = call => call.args.indexOf( 'timeout' ) - 1;
+// The image comes right before env -i, which starts the code with its own environment.
+const imageAt = call => call.args.indexOf( 'env' ) - 1;
 const options = call => call.args.slice( 0, imageAt( call ) );
 const valuesOf = ( call, flag ) => options( call ).flatMap( ( arg, i, all ) => ( all[ i - 1 ] === flag ? [ arg ] : [] ) );
 const once = ( fn, extra ) => docker( async ( runtime, calls ) => {
@@ -111,9 +112,10 @@ attack( SUBJECT, 'docker run gets exactly the argv of a contained run, in this o
 		'--read-only', '--tmpfs', '/tmp:rw,noexec,nosuid,size=64m',
 		'--memory', '256m', '--memory-swap', '256m', '--cpus', '0.5', '--pids-limit', '64',
 		'--cap-drop', 'ALL', '--security-opt', 'no-new-privileges',
-		'--user', OWN.user, '-e', 'HOME=/tmp', '-e', 'AGENCY_DATA=/data', '-w', '/tmp',
+		'--user', OWN.user, '-w', '/tmp',
 		'--mount', `type=bind,src=${_work},dst=/work,readonly`,
-		'python:3.12-slim', 'timeout', '-k', '2', '10', 'python', '-I', '/work/main.py',
+		'python:3.12-slim', 'env', '-i', 'PATH=/usr/local/bin:/usr/bin:/bin', 'HOME=/tmp', 'AGENCY_DATA=/data', 'LANG=C.UTF-8',
+		'timeout', '-k', '2', '10', 'python', '-I', '/work/main.py',
 	] );
 } ) );
 
@@ -164,10 +166,10 @@ attack( SUBJECT, 'nothing that widens the container is ever passed', () => once(
 	assert.ok( !run.args.some( arg => /docker\.sock|unconfined|apparmor|seccomp/.test( arg ) ) );
 } ) );
 
-attack( SUBJECT, 'the container gets exactly two variables, HOME=/tmp and AGENCY_DATA=/data', () => once( ( run ) => {
-	assert.deepEqual( valuesOf( run, '-e' ), [ 'HOME=/tmp', 'AGENCY_DATA=/data' ] );
+attack( SUBJECT, 'docker passes no variable in (a bare -e NAME would copy the host\'s value); the code\'s four come with env -i', () => once( ( run ) => {
+	assert.deepEqual( valuesOf( run, '-e' ), [] );
 	assert.deepEqual( valuesOf( run, '--env' ), [] );
-	assert.ok( valuesOf( run, '-e' ).every( value => value.includes( '=' ) ), 'a bare -e NAME would copy the host\'s value in' );
+	assert.ok( [ 'HOME=/tmp', 'AGENCY_DATA=/data' ].every( value => run.args.includes( value ) ) );
 } ) );
 
 attack( SUBJECT, 'no secret of the core\'s environment ever appears in the docker argv', async () => {
@@ -185,7 +187,7 @@ attack( SUBJECT, 'no secret of the core\'s environment ever appears in the docke
 
 attack( SUBJECT, 'HOME and the working directory lie in the tmpfs, so nothing is written outside it', () => once( ( run ) => {
 	assert.deepEqual( valuesOf( run, '-w' ), [ '/tmp' ] );
-	assert.ok( valuesOf( run, '-e' ).includes( 'HOME=/tmp' ) );
+	assert.ok( run.args.slice( run.args.indexOf( '-i', imageAt( run ) ) ).includes( 'HOME=/tmp' ) );
 	assert.ok( valuesOf( run, '--tmpfs' )[ 0 ].startsWith( '/tmp:' ) );
 } ) );
 
@@ -239,12 +241,19 @@ attack( SUBJECT, 'the image is python:3.12-slim by default, the configured one o
 	assert.deepEqual( runs( calls ).map( call => call.args[ imageAt( call ) ] ), [ 'python:3.12-slim', 'agency-sandbox@sha256:0123abcd', 'python:3.12-slim' ] );
 } ) );
 
-attack( SUBJECT, 'after the image comes only the hard timeout and python -I /work/main.py', () => once( ( run ) => {
-	assert.deepEqual( run.args.slice( imageAt( run ) + 1 ), [ 'timeout', '-k', '2', '10', 'python', '-I', '/work/main.py' ] );
+attack( SUBJECT, 'after the image comes only an empty environment, the hard timeout and python -I /work/main.py', () => once( ( run ) => {
+	assert.deepEqual( run.args.slice( imageAt( run ) + 1 ), [ 'env', '-i', ...DockerRuntime.ENV, 'timeout', '-k', '2', '10', 'python', '-I', '/work/main.py' ] );
+} ) );
+
+attack( SUBJECT, 'the agent\'s code sees no variable of the image: its environment is exactly PATH, HOME, AGENCY_DATA and LANG', () => once( ( run ) => {
+	const _env = run.args.slice( imageAt( run ) + 3, run.args.indexOf( 'timeout' ) );
+	assert.deepEqual( _env.map( item => item.split( '=' )[ 0 ] ), [ 'PATH', 'HOME', 'AGENCY_DATA', 'LANG' ] );
+	assert.ok( !_env.some( item => /KEY|TOKEN|SECRET|PIN|PASS/i.test( item ) ) );
+	assert.ok( !run.args.includes( '-e' ) && !run.args.includes( '--env' ), 'nothing passed with -e' );
 } ) );
 
 attack( SUBJECT, 'the limit inside the container is the runtime\'s; the client waits 20 s longer, so the container\'s limit fires first', () => once( ( run ) => {
-	assert.equal( run.args[ imageAt( run ) + 4 ], '3' );
+	assert.equal( run.args[ run.args.indexOf( 'timeout' ) + 3 ], '3' );
 	assert.equal( run.options.timeoutSeconds, 23 );
 }, { options: { timeoutSeconds: 3 } } ) );
 
@@ -458,7 +467,8 @@ attack( SUBJECT, 'the container user can read the vault the core prepared for th
 } );
 
 attack( SUBJECT, 'a time limit of 0 does not switch off the limit inside the container', () => once( ( run ) => {
-	assert.ok( Number( run.args[ imageAt( run ) + 4 ] ) > 0, `timeout got ${run.args[ imageAt( run ) + 4 ]}` );
+	const _limit = run.args[ run.args.indexOf( 'timeout' ) + 3 ];
+	assert.ok( Number( _limit ) > 0, `timeout got ${_limit}` );
 }, { options: { timeoutSeconds: 0 } } ) );
 
 attack( SUBJECT, 'the kill after a failure names exactly the container that ran, not another run\'s', () => docker( async ( runtime, calls ) => {
@@ -469,7 +479,7 @@ attack( SUBJECT, 'the kill after a failure names exactly the container that ran,
 
 attack( SUBJECT, 'the options all come before the image; after it no docker option can appear', () => once( ( run ) => {
 	const _after = run.args.slice( imageAt( run ) + 1 ).filter( arg => arg.startsWith( '-' ) );
-	assert.deepEqual( _after, [ '-k', '-I' ], 'only the options of timeout and python' );
+	assert.deepEqual( _after, [ '-i', '-k', '-I' ], 'only the options of env, timeout and python' );
 	assert.ok( !run.args[ imageAt( run ) ].startsWith( '-' ) );
 }, { engine: 'runsc', run: { dataDir: '/srv/v' } } ) );
 
